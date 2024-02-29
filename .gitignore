@@ -1,6 +1,7 @@
 ### Project specific ###
 lib
 global.json
+datadump
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,csharp,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,csharp,windows

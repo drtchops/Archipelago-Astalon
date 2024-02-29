@@ -1,6 +1,6 @@
 namespace Archipelago;
 
-public class Config
+public class Settings
 {
     public string address { get; set; }
     public int port { get; set; }
@@ -9,4 +9,5 @@ public class Config
 
     public bool invincibility { get; set; }
     public bool maxDamage { get; set; }
+    public bool freeKeys { get; set; }
 }
