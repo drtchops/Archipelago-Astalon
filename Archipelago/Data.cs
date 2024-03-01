@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Archipelago;
 
 public static class Data
 {
-    public static Dictionary<ItemProperties.ItemID, string> LocationMap = new Dictionary<ItemProperties.ItemID, string>(){
+    public static Dictionary<ItemProperties.ItemID, string> LocationMap = new Dictionary<ItemProperties.ItemID, string>
+    {
         {ItemProperties.ItemID.AmuletOfSol, "Hall of the Phantoms - Amulet of Sol"},
         {ItemProperties.ItemID.BanishSpell, "Gorgon Tomb - Banish Spell"},
         {ItemProperties.ItemID.GorgonHeart, "Gorgon Tomb - Gorgonheart"},
@@ -23,19 +23,20 @@ public static class Data
         {ItemProperties.ItemID.VoidCharm, "Gorgon Tomb - Void Charm"},
         {ItemProperties.ItemID.CloakOfLevitation, "Mechanism - Cloak of Levitation"},
         {ItemProperties.ItemID.AdornedKey, "Tower Roots - Adorned Key"},
-        {ItemProperties.ItemID.PrincesCrown, "Cyclops Den - Prince's Crown"},
+        // {ItemProperties.ItemID.PrincesCrown, "Cyclops Den - Prince's Crown"},
         {ItemProperties.ItemID.AscendantKey, "Gorgon Tomb - Ascendant Key"},
         {ItemProperties.ItemID.TalariaBoots, "Mechanism - Talaria Boots"},
-        {ItemProperties.ItemID.MonsterBall, "Gorgon Tomb - Monster Ball"},
+        // {ItemProperties.ItemID.MonsterBall, "Gorgon Tomb - Monster Ball"},
         {ItemProperties.ItemID.BloodChalice, "The Apex - Blood Chalice"},
         {ItemProperties.ItemID.MorningStar, "Serpent Path - Morning Star"},
-        {ItemProperties.ItemID.CyclopsIdol, "Mechanism - Cyclops Idol"},
+        // {ItemProperties.ItemID.CyclopsIdol, "Mechanism - Cyclops Idol"},
         {ItemProperties.ItemID.BoreasGauntlet, "Hall of the Phantoms - Boreas Gauntlet"},
-        {ItemProperties.ItemID.FamiliarGil, "Catacombs - Gil"},
+        // {ItemProperties.ItemID.FamiliarGil, "Catacombs - Gil"},
         {ItemProperties.ItemID.MagicBlock, "Cathedral - Magic Block"},
     };
 
-    public static Dictionary<string, ItemProperties.ItemID> ItemMap = new Dictionary<string, ItemProperties.ItemID>(){
+    public static Dictionary<string, ItemProperties.ItemID> ItemMap = new Dictionary<string, ItemProperties.ItemID>
+    {
         {"Amulet of Sol", ItemProperties.ItemID.AmuletOfSol},
         {"Banish Spell", ItemProperties.ItemID.BanishSpell},
         {"Gorgonheart", ItemProperties.ItemID.GorgonHeart},
@@ -53,19 +54,20 @@ public static class Data
         {"Void Charm", ItemProperties.ItemID.VoidCharm},
         {"Cloak of Levitation", ItemProperties.ItemID.CloakOfLevitation},
         {"Adorned Key", ItemProperties.ItemID.AdornedKey},
-        {"Prince's Crown", ItemProperties.ItemID.PrincesCrown},
+        // {"Prince's Crown", ItemProperties.ItemID.PrincesCrown}, // not sure how this is handled
         {"Ascendant Key", ItemProperties.ItemID.AscendantKey},
         {"Talaria Boots", ItemProperties.ItemID.TalariaBoots},
-        {"Monster Ball", ItemProperties.ItemID.MonsterBall},
+        // {"Monster Ball", ItemProperties.ItemID.MonsterBall},
         {"Blood Chalice", ItemProperties.ItemID.BloodChalice},
         {"Morning Star", ItemProperties.ItemID.MorningStar},
-        {"Cyclops Idol", ItemProperties.ItemID.CyclopsIdol},
+        // {"Cyclops Idol", ItemProperties.ItemID.CyclopsIdol}, // crashes
         {"Boreas Gauntlet", ItemProperties.ItemID.BoreasGauntlet},
-        {"Gil", ItemProperties.ItemID.FamiliarGil},
+        // {"Gil", ItemProperties.ItemID.FamiliarGil}, // crashes
         {"Magic Block", ItemProperties.ItemID.MagicBlock},
     };
 
-    public static Dictionary<string, string> IconMap = new Dictionary<string, string>(){
+    public static Dictionary<string, string> IconMap = new Dictionary<string, string>
+    {
         {"Amulet of Sol", "Item_AmuletOfSol"},
         {"Banish Spell", "Item_BanishSpell"},
         {"Gorgonheart", "Item_GorgonHeart"},
@@ -96,57 +98,62 @@ public static class Data
         {"Max HP +1", "Item_HealthStone_1"},
         {"Max HP +2", "Item_HealthStone_1"},
         {"Max HP +3", "Item_HealthStone_1"},
+        {"Max HP +4", "Item_HealthStone_1"},
         {"Max HP +5", "Item_HealthStone_1"},
-        {"Attack +1", "Item_HealthStone_1"},
+        {"Attack +1", "Item_PowerStone_1"},
     };
 
-    public static Dictionary<int, string> AttackMap = new Dictionary<int, string>() {
-        {0, "Gorgon Tomb - Attack +1"},
-        // {0, "Mechanism - Attack +1 (1)"},
-        // {0, "Mechanism - Attack +1 (2)"},
-        // {0, "Ruins of Ash - Attack +1"},
-        // {0, "Catacombs - Attack +1 (1)"},
-        // {0, "Catacombs - Attack +1 (2)"},
-        // {0, "Catacombs - Attack +1 (3)"},
-        // {0, "Catacombs - Attack +1 (4)"},
-        // {0, "Catacombs - Attack +1 (5)"},
+    public static Dictionary<int, string> AttackMap = new Dictionary<int, string>
+    {
+        {7094, "Gorgon Tomb - Attack +1"}, // past void charm + green eye
+        {6753, "Mechanism - Attack +1 (Above Volantis)"}, // above valantis, needs griffon claw
+        {9229, "Mechanism - Attack +1 (Morning Star Blocks)"}, // need bram & morning star
+        {8996, "Ruins of Ash - Attack +1"}, // needs moring star
+        {6563, "Catacombs - Attack +1 (Item Chain Red)"}, // item chain, needs red
+        {7105, "Catacombs - Attack +1 (Item Chain Blue)"}, // item chain, needs blue
+        {7107, "Catacombs - Attack +1 (Item Chain Green)"}, // item chain, needs green
+        {6594, "Catacombs - Attack +1 (Climbable Root)"}, // climb up root
+        {10042, "Catacombs - Attack +1 (Poison Roots)"}, // after poison roots
+        {8531, "Cyclops Den - Attack +1"},
+        {8619, "Cathedral - Attack +1"},
+        {8181, "Serpent Path - Attack +1"},
     };
 
-    public static Dictionary<int, string> HPMap = new Dictionary<int, string>() {
-        // {0, "Cyclops Den - Attack +1"},
-        // {0, "Cathedral - Attack +1"},
-        // {0, "Serpent Path - Attack +1"},
-        // {0, "Gorgon Tomb - Max HP +1"},
-        // {0, "Gorgon Tomb - Max HP +5"},
-        // {0, "Mechanism - Max HP +1"},
-        // {0, "Mechanism - Max HP +3"},
-        // {0, "Hall of the Phantoms - Max HP +1 (1)"},
-        // {0, "Hall of the Phantoms - Max HP +1 (2)"},
-        // {0, "Hall of the Phantoms - Max HP +2 (1)"},
-        // {0, "Hall of the Phantoms - Max HP +2 (2)"},
-        // {0, "Hall of the Phantoms - Max HP +5 (1)"},
-        // {0, "Hall of the Phantoms - Max HP +5 (2)"},
-        // {0, "Hall of the Phantoms - Max HP +5 (3)"},
-        // {0, "Ruins of Ash - Max HP +1"},
-        // {0, "Ruins of Ash - Max HP +2"},
-        // {0, "Ruins of Ash - Max HP +5"},
-        // {0, "The Apex - Max HP +1"},
-        // {0, "The Apex - Max HP +5"},
-        {6177, "Catacombs - Max HP +1 (1)"}, // first room of catacombs
-        // {0, "Catacombs - Max HP +1 (2)"},
-        // {0, "Catacombs - Max HP +1 (3)"},
-        // {0, "Catacombs - Max HP +2 (1)"},
-        // {0, "Catacombs - Max HP +2 (2)"},
-        // {0, "Catacombs - Max HP +2 (3)"},
-        // {0, "Catacombs - Max HP +2 (4)"},
-        // {0, "Catacombs - Max HP +5"},
-        // {0, "Tower Roots - Max HP +1"},
-        // {0, "Tower Roots - Max HP +2"},
-        // {0, "Cyclops Den - Max HP +1"},
-        // {0, "Cathedral - Max HP +1 (1)"},
-        // {0, "Cathedral - Max HP +1 (2)"},
-        // {0, "Cathedral - Max HP +2"},
-        // {0, "Cathedral - Max HP +5"},
-        // {0, "Serpent Path - Max HP +1"},
+    public static Dictionary<int, string> HPMap = new Dictionary<int, string>
+    {
+        {6145, "Gorgon Tomb - Max HP +1 (Ring of the Ancients)"}, // by ring of the ancients, needs red eye
+        {6134, "Gorgon Tomb - Max HP +5 (Ascendant Key)"}, // above ascendant key, needs griffon claw
+        {9936, "Mechanism - Max HP +1 (Secret Switch)"}, // secret switch
+        {10280, "Mechanism - Max HP +1 (Morning Star Blocks)"}, // tunnel to HotP, needs morning star
+        {6201, "Mechanism - Max HP +3 (Above Checkpoint)"}, // above checkpoint, needs griffon claw
+        {9979, "Hall of the Phantoms - Max HP +1 (Griffon Claw)"}, // left of claw
+        {6173, "Hall of the Phantoms - Max HP +2 (Secret Ladder)"}, // secret ladder
+        {9279, "Hall of the Phantoms - Max HP +2 (Boreas Gauntlet)"}, // after teleporter maze, needs zeek
+        {6436, "Hall of the Phantoms - Max HP +5 (Old Man)"}, // above old man, need claw
+        {6740, "Hall of the Phantoms - Max HP +5 (Teleport Maze)"}, // after tp maze
+        {6518, "Hall of the Phantoms - Max HP +5 (Above Start)"}, // above start
+        {9846, "Ruins of Ash - Max HP +1 (Left of Ascent)"}, // left of ascend
+        {9570, "Ruins of Ash - Max HP +2 (Right Side)"}, // right side, needs boreas or morning star
+        {10025, "Ruins of Ash - Max HP +5 (After Solaria)"}, // after solaria
+        {10070, "Darkness - Max HP +4"},
+        {8731, "The Apex - Max HP +1 (Blood Chalice)"}, // towards blood chalice
+        {6820, "The Apex - Max HP +5 (After Heart)"}, // after heart
+        {6177, "Catacombs - Max HP +1 (First Room)"}, // first room of catacombs
+        {10003, "Catacombs - Max HP +1 (Cyclops Arena)"}, // cyclops room, needs sword of mirrors
+        {10324, "Catacombs - Max HP +1 (Above Poison Roots)"}, // before poison roots
+        {10137, "Catacombs - Max HP +2 (Before Poison Roots)"}, // before poison roots
+        {10043, "Catacombs - Max HP +2 (After Poison Roots)"}, // after poison roots
+        {10581, "Catacombs - Max HP +2 (Before Gemini Bottom)"}, // before boss bottom
+        {10583, "Catacombs - Max HP +2 (Before Gemini Top)"}, // before boss top
+        {10138, "Catacombs - Max HP +2 (Above Gemini)"}, // above boss, need boreas gauntlet & griffon claw
+        {10121, "Catacombs - Max HP +5 (Item Chain)"}, // item chain, needs morning star, griffon claw, bell
+        {9779, "Tower Roots - Max HP +1 (Bottom)"}, // bottom
+        {9778, "Tower Roots - Max HP +2 (Top)"}, // top
+        {8532, "Cyclops Den - Max HP +1"},
+        {9833, "Cathedral - Max HP +1 (Top Left)"}, // top left
+        {9834, "Cathedral - Max HP +1 (Top Right)"}, // top right
+        {10204, "Cathedral - Max HP +2 (Left Climb)"}, // top of left side, needs claw
+        {8609, "Cathedral - Max HP +5 (Bell)"}, // near bell
+        {8202, "Serpent Path - Max HP +1"}, // before frog
     };
 }

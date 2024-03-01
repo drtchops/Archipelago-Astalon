@@ -10,4 +10,5 @@ public class Settings
     public bool invincibility { get; set; }
     public bool maxDamage { get; set; }
     public bool freeKeys { get; set; }
+    public bool freePurchases { get; set; }
 }

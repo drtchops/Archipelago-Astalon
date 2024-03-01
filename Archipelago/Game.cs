@@ -125,6 +125,17 @@ public class Game
                     break;
             }
         }
+
+        [HarmonyPatch(nameof(PlayerData.RemoveOrbs))]
+        [HarmonyPrefix]
+        public static bool RemoveOrbs()
+        {
+            if (Main.Settings.freePurchases)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 
     [HarmonyPatch(typeof(Player))]
@@ -202,9 +213,13 @@ public class Game
     {
         [HarmonyPatch(nameof(GameplayUIManager.DisplayItemBox))]
         [HarmonyPrefix]
-        public static void DisplayItemBox(string _itemIcon, string _itemText, ref bool disableController)
+        public static void DisplayItemBox(string _itemIcon, ref string _itemText, ref bool disableController)
         {
             Main.Log.LogInfo($"GameplayUIManager.DisplayItemBox({_itemIcon}, {_itemText})");
+            if (_itemText.StartsWith("ARCHIPELAGO:"))
+            {
+                _itemText = _itemText.Substring(12);
+            }
             disableController = false;
             ItemBoxDisplayed = true;
         }
@@ -350,36 +365,47 @@ public class Game
             Main.Log.LogWarning("Cannot get item: PlayerData is not loaded");
             return false;
         }
-        if (GameplayUIManager.Instance is null)
-        {
-            Main.Log.LogWarning("Cannot get item: GameplayUIManager is null");
-            return false;
-        }
-        if (GameplayUIManager.Instance.isOnMainMenu)
-        {
-            Main.Log.LogWarning("Cannot get item: on main menu");
-            return false;
-        }
-        if (GameLoader.Instance.gameIsLoading)
-        {
-            Main.Log.LogWarning("Cannot get item: loading");
-            return false;
-        }
+        // if (GameplayUIManager.Instance is null)
+        // {
+        //     Main.Log.LogWarning("Cannot get item: GameplayUIManager is null");
+        //     return false;
+        // }
+        // if (GameplayUIManager.Instance.isOnMainMenu)
+        // {
+        //     Main.Log.LogWarning("Cannot get item: on main menu");
+        //     return false;
+        // }
+        // if (GameLoader.Instance.gameIsLoading)
+        // {
+        //     Main.Log.LogWarning("Cannot get item: loading");
+        //     return false;
+        // }
 
         return true;
     }
 
     public static bool CanDisplayMessage()
     {
-        if (!CanGetItem())
+        if (GameplayUIManager.Instance is null)
         {
+            Main.Log.LogWarning("Cannot display message: GameplayUIManager is null");
             return false;
         }
-        if (GameplayUIManager.Instance.dialogueRunning)
-        {
-            Main.Log.LogWarning("Cannot display message: dialogue running");
-            return false;
-        }
+        // if (GameplayUIManager.Instance.isOnMainMenu)
+        // {
+        //     Main.Log.LogWarning("Cannot get item: on main menu");
+        //     return false;
+        // }
+        // if (GameLoader.Instance.gameIsLoading)
+        // {
+        //     Main.Log.LogWarning("Cannot get item: loading");
+        //     return false;
+        // }
+        // if (GameplayUIManager.Instance.dialogueRunning)
+        // {
+        //     Main.Log.LogWarning("Cannot display message: dialogue running");
+        //     return false;
+        // }
         if (!ItemBoxDisplayed)
         {
             Main.Log.LogWarning("Cannot display message: item box not yet displayed");
@@ -485,7 +511,7 @@ public class Game
                 return true;
             }
 
-            int bonus = 0;
+            var bonus = 0;
             switch (itemName)
             {
                 case "Max HP +1":
@@ -497,6 +523,9 @@ public class Game
                 case "Max HP +3":
                     bonus = 3;
                     break;
+                case "Max HP +4":
+                    bonus = 4;
+                    break;
                 case "Max HP +5":
                     bonus = 5;
                     break;
@@ -507,9 +536,26 @@ public class Game
             Player.PlayerDataLocal.collectedHearts.Add((int)itemInfo.LocationID);
             // GameplayUIManager.Instance.UpdateHealthBar(Player.Instance, true);
         }
-        else if (itemName == "100 Orbs")
+        else if (itemName.EndsWith("Orbs"))
         {
-            Player.PlayerDataLocal.AddOrbs(100);
+            var amount = 0;
+            switch (itemName)
+            {
+                case "50 Orbs":
+                    amount = 50;
+                    break;
+                case "100 Orbs":
+                    amount = 100;
+                    break;
+                case "200 Orbs":
+                    amount = 200;
+                    break;
+            }
+            Player.PlayerDataLocal.currentOrbs += amount;
+            Player.PlayerDataLocal.collectedOrbs += amount;
+            // crashing?
+            // Player.Instance.CollectOrbs(amount);
+            // Player.PlayerDataLocal.AddOrbs(amount);
         }
         else if (Data.ItemMap.TryGetValue(itemName, out var itemID))
         {

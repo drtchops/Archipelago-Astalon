@@ -24,6 +24,7 @@ public class Main : BasePlugin
         var configInvincibility = Config.Bind("Cheats", "invincibility", false, "Whether the player character is invincible");
         var configMaxDamage = Config.Bind("Cheats", "maxDamage", false, "Whether enemies always take 99 damage from attacks");
         var configFreeKeys = Config.Bind("Cheats", "freeKeys", false, "Whether keys are not used when opening doors");
+        var configFreePurchases = Config.Bind("Cheats", "freePurchases", false, "Whether orbs are not spent when purchasing upgrades");
 
         Settings = new Settings
         {
@@ -34,6 +35,7 @@ public class Main : BasePlugin
             invincibility = configInvincibility.Value,
             maxDamage = configMaxDamage.Value,
             freeKeys = configFreeKeys.Value,
+            freePurchases = configFreePurchases.Value,
         };
 
         Game = new Game();
