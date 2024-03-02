@@ -28,12 +28,6 @@ public class APManager
     public DeathLinkService DeathLink;
     public bool ReceivingItem;
 
-    class Config
-    {
-        public bool RandomizeAttackPickups { get; set; }
-        public bool RandomizeHealthPickups { get; set; }
-    }
-
     public bool Connect()
     {
         if (Connected)
@@ -89,9 +83,9 @@ public class APManager
 
     public void OnConnect(LoginSuccessful login)
     {
-        var config = ((JObject)login.SlotData["settings"]).ToObject<Config>();
-        Main.Settings.RandomizeAttackPickups = config.RandomizeAttackPickups;
-        Main.Settings.RandomizeHealthPickups = config.RandomizeHealthPickups;
+        var config = (JObject)login.SlotData["settings"];
+        Main.Settings.RandomizeAttackPickups = (bool)config["randomize_attack_pickups"];
+        Main.Settings.RandomizeHealthPickups = (bool)config["randomize_health_pickups"];
 
         DeathLink = Session.CreateDeathLinkService();
         DeathLink.OnDeathLinkReceived += ReceiveDeath;
