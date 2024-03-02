@@ -2,13 +2,16 @@ namespace Archipelago;
 
 public class Settings
 {
-    public string address { get; set; }
-    public int port { get; set; }
-    public string slotName { get; set; }
-    public string password { get; set; }
+    public string Address { get; set; }
+    public int Port { get; set; }
+    public string SlotName { get; set; }
+    public string Password { get; set; }
 
-    public bool invincibility { get; set; }
-    public bool maxDamage { get; set; }
-    public bool freeKeys { get; set; }
-    public bool freePurchases { get; set; }
+    public bool Invincibility { get; set; }
+    public bool MaxDamage { get; set; }
+    public bool FreeKeys { get; set; }
+    public bool FreePurchases { get; set; }
+
+    public bool RandomizeAttackPickups { get; set; }
+    public bool RandomizeHealthPickups { get; set; }
 }

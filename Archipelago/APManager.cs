@@ -4,6 +4,8 @@ using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Packets;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using Newtonsoft.Json.Linq;
 
 namespace Archipelago;
 
@@ -23,7 +25,14 @@ public class APManager
     public int[] AP_VERSION = new int[] { 0, 4, 4 };
     public bool Connected;
     public ArchipelagoSession Session;
+    public DeathLinkService DeathLink;
     public bool ReceivingItem;
+
+    class Config
+    {
+        public bool RandomizeAttackPickups { get; set; }
+        public bool RandomizeHealthPickups { get; set; }
+    }
 
     public bool Connect()
     {
@@ -32,12 +41,12 @@ public class APManager
             return true;
         }
 
-        if (Main.Settings.address is null || Main.Settings.address.Length == 0)
+        if (Main.Settings.Address is null || Main.Settings.Address.Length == 0)
         {
             return false;
         }
 
-        Session = ArchipelagoSessionFactory.CreateSession(Main.Settings.address, Main.Settings.port);
+        Session = ArchipelagoSessionFactory.CreateSession(Main.Settings.Address, Main.Settings.Port);
         Session.Socket.ErrorReceived += Session_ErrorReceived;
         Session.Socket.SocketClosed += Session_SocketClosed;
         Session.Items.ItemReceived += Session_ReceiveItem;
@@ -49,12 +58,13 @@ public class APManager
         {
             loginResult = Session.TryConnectAndLogin(
                 "Astalon",
-                Main.Settings.slotName,
+                Main.Settings.SlotName,
                 ItemsHandlingFlags.AllItems,
                 new Version(AP_VERSION[0], AP_VERSION[1], AP_VERSION[2]),
                 null,
                 null,
-                Main.Settings.password);
+                Main.Settings.Password,
+                true);
         }
         catch (Exception e)
         {
@@ -79,8 +89,17 @@ public class APManager
 
     public void OnConnect(LoginSuccessful login)
     {
-        // slot data
-        // deathlink
+        var config = ((JObject)login.SlotData["settings"]).ToObject<Config>();
+        Main.Settings.RandomizeAttackPickups = config.RandomizeAttackPickups;
+        Main.Settings.RandomizeHealthPickups = config.RandomizeHealthPickups;
+
+        DeathLink = Session.CreateDeathLinkService();
+        DeathLink.OnDeathLinkReceived += ReceiveDeath;
+        // if (deathLinkEnabled) {
+        //     DeathLink.EnableDeathLink();
+        // } else {
+        //     DeathLink.DisableDeathLink();
+        // }
     }
 
     public void Session_SocketClosed(string reason)
@@ -119,15 +138,6 @@ public class APManager
         var id = Session.Locations.GetLocationIdFromName("Astalon", location);
         Session.Locations.CompleteLocationChecks(id);
         Main.Log.LogInfo($"Found item: {id}");
-
-        // var scout = Session.Locations.ScoutLocationsAsync(id);
-        // scout.Wait();
-        // var locationInfo = scout.Result.Locations[0];
-        // var itemName = Session.Items.GetItemName(locationInfo.Item);
-        // var name = GetPlayerName(locationInfo.Player);
-        // var message = itemName;
-        // message = $"{name}'s {message}";
-        // Game.DisplayItem(message, ItemProperties.ItemID.GorgonHeart);
     }
 
     public ItemInfo ScoutLocation(string location)
@@ -210,5 +220,19 @@ public class APManager
             return -1;
         }
         return Session.ConnectionInfo.Slot;
+    }
+
+    public void SendDeath()
+    {
+        if (Connected)
+        {
+            var name = Session.Players.GetPlayerAliasAndName(Session.ConnectionInfo.Slot);
+            DeathLink.SendDeathLink(new DeathLink(name));
+        }
+    }
+
+    public void ReceiveDeath(DeathLink link)
+    {
+        // TODO
     }
 }

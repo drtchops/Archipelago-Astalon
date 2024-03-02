@@ -28,14 +28,14 @@ public class Main : BasePlugin
 
         Settings = new Settings
         {
-            address = configAddress.Value,
-            port = configPort.Value,
-            slotName = configSlotName.Value,
-            password = configPassword.Value,
-            invincibility = configInvincibility.Value,
-            maxDamage = configMaxDamage.Value,
-            freeKeys = configFreeKeys.Value,
-            freePurchases = configFreePurchases.Value,
+            Address = configAddress.Value,
+            Port = configPort.Value,
+            SlotName = configSlotName.Value,
+            Password = configPassword.Value,
+            Invincibility = configInvincibility.Value,
+            MaxDamage = configMaxDamage.Value,
+            FreeKeys = configFreeKeys.Value,
+            FreePurchases = configFreePurchases.Value,
         };
 
         Game = new Game();
