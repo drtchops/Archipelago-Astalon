@@ -27,6 +27,7 @@ public class APManager
     public ArchipelagoSession Session;
     public DeathLinkService DeathLink;
     public bool ReceivingItem;
+    public bool ReceivingDeath;
 
     public bool Connect()
     {
@@ -86,14 +87,25 @@ public class APManager
         var config = (JObject)login.SlotData["settings"];
         Main.Settings.RandomizeAttackPickups = (bool)config["randomize_attack_pickups"];
         Main.Settings.RandomizeHealthPickups = (bool)config["randomize_health_pickups"];
+        Main.Settings.SkipCutscenes = (bool)config["skip_cutscenes"];
+        Main.Settings.StartWithZeek = (bool)config["start_with_zeek"];
+        Main.Settings.StartWithBram = (bool)config["start_with_bram"];
+        Main.Settings.StartWithQOL = (bool)config["start_with_qol"];
+        // Main.Settings.FreeApexElevator = (bool)config["free_apex_elevator"];
+        Main.Settings.DeathLink = (bool)config["death_link"];
 
         DeathLink = Session.CreateDeathLinkService();
         DeathLink.OnDeathLinkReceived += ReceiveDeath;
-        // if (deathLinkEnabled) {
-        //     DeathLink.EnableDeathLink();
-        // } else {
-        //     DeathLink.DisableDeathLink();
-        // }
+        if (Main.Settings.DeathLink)
+        {
+            DeathLink.EnableDeathLink();
+        }
+        else
+        {
+            DeathLink.DisableDeathLink();
+        }
+
+        Game.InitializeSave();
     }
 
     public void Session_SocketClosed(string reason)
@@ -218,15 +230,17 @@ public class APManager
 
     public void SendDeath()
     {
-        if (Connected)
+        if (Connected && !ReceivingDeath && Main.Settings.DeathLink)
         {
-            var name = Session.Players.GetPlayerAliasAndName(Session.ConnectionInfo.Slot);
+            var name = Session.Players.GetPlayerName(Session.ConnectionInfo.Slot);
             DeathLink.SendDeathLink(new DeathLink(name));
         }
     }
 
     public void ReceiveDeath(DeathLink link)
     {
-        // TODO
+        ReceivingDeath = true;
+        Game.KillPlayer();
+        ReceivingDeath = false;
     }
 }

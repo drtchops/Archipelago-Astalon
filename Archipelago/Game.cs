@@ -2,6 +2,7 @@ using HarmonyLib;
 using I2.Loc;
 using UnityEngine;
 using Archipelago.MultiClient.Net.Enums;
+using BepInEx.Unity.IL2CPP.UnityEngine;
 
 namespace Archipelago;
 
@@ -14,7 +15,7 @@ public class Game
         public string Message { get; set; }
         public string Icon { get; set; }
         public string Sound { get; set; }
-        public float Duration { get; set; } = 0.5f;
+        public float Duration { get; set; } = 2.5f;
         public bool DisableController { get; set; } = false;
     }
 
@@ -156,6 +157,24 @@ public class Game
             }
             return true;
         }
+
+        // [HarmonyPatch(nameof(PlayerData.UnlockElevator))]
+        // [HarmonyPrefix]
+        // public static void UnlockElevatorPrefix()
+        // {
+        //     Main.Log.LogDebug("PlayerData.UnlockElevatorPrefix()");
+        //     Main.Log.LogDebug(Player.PlayerDataLocal.elevatorsOpened);
+        //     Main.Log.LogDebug(string.Join(", ", Player.PlayerDataLocal.elevatorsFound.ToArray()));
+        // }
+
+        // [HarmonyPatch(nameof(PlayerData.UnlockElevator))]
+        // [HarmonyPostfix]
+        // public static void UnlockElevatorPostfix()
+        // {
+        //     Main.Log.LogDebug("PlayerData.UnlockElevatorPostfix()");
+        //     Main.Log.LogDebug(Player.PlayerDataLocal.elevatorsOpened);
+        //     Main.Log.LogDebug(string.Join(", ", Player.PlayerDataLocal.elevatorsFound.ToArray()));
+        // }
     }
 
     [HarmonyPatch(typeof(Player))]
@@ -174,9 +193,6 @@ public class Game
         {
             Main.Log.LogDebug("Player.Activate()");
             Main.APManager.Connect();
-            // Player.PlayerDataLocal.firstElevatorLit = true;
-            // Player.PlayerDataLocal.deaths = 1;
-            // Player.PlayerDataLocal.cs_ending1 = true;
         }
 
         [HarmonyPatch(nameof(Player.Deactivate))]
@@ -186,12 +202,13 @@ public class Game
             Main.Log.LogDebug("Player.Deactivate()");
         }
 
-        // [HarmonyPatch(nameof(Player.GetMaxHealth))]
-        // [HarmonyPrefix]
-        // public static void GetMaxHealth()
-        // {
-        //     Main.Log.LogDebug("Player.GetMaxHealth()");
-        // }
+        [HarmonyPatch(nameof(Player.DeathSequence), typeof(bool), typeof(bool))]
+        [HarmonyPrefix]
+        public static void DeathSequence()
+        {
+            Main.Log.LogDebug("Player.DeathSequence()");
+            Main.APManager.SendDeath();
+        }
     }
 
     [HarmonyPatch(typeof(EnemyEntity), nameof(EnemyEntity.Damage))]
@@ -218,7 +235,7 @@ public class Game
             {
                 _itemText = _itemText.Substring(12);
             }
-            disableController = false;
+            disableController = true;
             ItemBoxDisplayed = true;
         }
 
@@ -244,12 +261,12 @@ public class Game
         // }
     }
 
-    [HarmonyPatch(typeof(Cutscene), nameof(Cutscene.PlayScene))]
-    class Cutscene_PlayScene_Patch
+    [HarmonyPatch(typeof(Cutscene), nameof(Cutscene.PlayCutscene))]
+    class Cutscene_PlayCutscene_Patch
     {
         public static void Prefix(Cutscene __instance)
         {
-            Main.Log.LogDebug($"Cutscene.PlayScene({__instance.cutsceneID})");
+            Main.Log.LogDebug($"Cutscene.PlayCutscene({__instance.cutsceneID})");
         }
     }
 
@@ -266,21 +283,59 @@ public class Game
         }
     }
 
-    [HarmonyPatch(typeof(CutsceneManager), nameof(CutsceneManager.PlayCutscene), typeof(string), typeof(Room), typeof(bool), typeof(Vector2))]
-    class CutsceneManager_PlayCutscene_Patch1
+    [HarmonyPatch(typeof(CutsceneManager))]
+    class CutsceneManager_Patch
     {
-        public static void Prefix(string ID)
+        [HarmonyPatch(nameof(CutsceneManager.PlayCutscene), typeof(string), typeof(Room), typeof(bool), typeof(Vector2))]
+        [HarmonyPrefix]
+        public static void PlayCutscene1(string ID)
         {
             Main.Log.LogDebug($"CutsceneManager.PlayCutscene1({ID})");
         }
-    }
 
-    [HarmonyPatch(typeof(CutsceneManager), nameof(CutsceneManager.PlayCutscene), typeof(string), typeof(Room), typeof(bool), typeof(int), typeof(int))]
-    class CutsceneManager_PlayCutscene_Patch2
-    {
-        public static void Prefix(string ID)
+        [HarmonyPatch(nameof(CutsceneManager.PlayCutscene), typeof(string), typeof(Room), typeof(bool), typeof(int), typeof(int))]
+        [HarmonyPostfix]
+        public static void PlayCutscene2(string ID)
         {
             Main.Log.LogDebug($"CutsceneManager.PlayCutscene2({ID})");
+        }
+    }
+
+    [HarmonyPatch(typeof(CutsceneController))]
+    class CutsceneController_Patch
+    {
+        [HarmonyPatch(nameof(CutsceneController.Play))]
+        [HarmonyPrefix]
+        public static void Play()
+        {
+            Main.Log.LogDebug("CutsceneController.Play()");
+        }
+
+        [HarmonyPatch(nameof(CutsceneController.Stop))]
+        [HarmonyPrefix]
+        public static void Stop()
+        {
+            Main.Log.LogDebug("CutsceneController.Stop()");
+        }
+    }
+
+    [HarmonyPatch(typeof(CutsceneObject), nameof(CutsceneObject.LoadData))]
+    class CutsceneObject_LoadData_Patch
+    {
+        public static void Postfix(CutsceneObject __instance)
+        {
+            Main.Log.LogDebug($"CutsceneObject.LoadData({__instance.sceneID})");
+        }
+    }
+
+    [HarmonyPatch(typeof(CS_Scene3), nameof(CS_Scene3.PlayScene))]
+    [HarmonyPatch(typeof(CS_Scene4), nameof(CS_Scene4.PlayScene))]
+    [HarmonyPatch(typeof(CS_Scene9), nameof(CS_Scene9.PlayScene))]
+    class CS_Scene_Patch
+    {
+        public static void Prefix()
+        {
+            Main.Log.LogDebug("CS_Scene3.PlayScene");
         }
     }
 
@@ -348,6 +403,143 @@ public class Game
         {
             Main.Log.LogDebug("GameLoader.LoadMainMenu()");
             Main.APManager.Disconnect();
+        }
+    }
+
+    [HarmonyPatch(typeof(SaveManager))]
+    class SaveManager_Patch
+    {
+        [HarmonyPatch(nameof(SaveManager.ApplyCurrentSave))]
+        [HarmonyPrefix]
+        public static void ApplyCurrentSave(bool showIcon)
+        {
+            Main.Log.LogDebug($"SaveManager.UpdateSave({showIcon})");
+        }
+
+        [HarmonyPatch(nameof(SaveManager.InitializeFirstSave))]
+        [HarmonyPostfix]
+        public static void InitializeFirstSave()
+        {
+            Main.Log.LogDebug("SaveManager.InitializeFirstSave");
+        }
+    }
+
+    [HarmonyPatch(typeof(Boss_BlackKnightFinal))]
+    class Boss_BlackKnightFinal_Patch
+    {
+        [HarmonyPatch(nameof(Boss_BlackKnightFinal.MedusaDied))]
+        [HarmonyPrefix]
+        public static void MedusaDied()
+        {
+            Main.Log.LogDebug("Boss_BlackKnightFinal.MedusaDied()");
+            Main.APManager.SendCompletion();
+        }
+    }
+
+    [HarmonyPatch(typeof(AstalonDebug))]
+    class Debug_Patch
+    {
+        [HarmonyPatch(nameof(AstalonDebug.Update))]
+        public static void Prefix()
+        {
+            if (GameManager.Instance?.player is not null &&
+                Input.GetKeyInt(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.LeftControl) &&
+                Input.GetKeyInt(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.LeftShift) &&
+                Input.GetKeyInt(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.K))
+            {
+                GameManager.Instance.player.Kill();
+            }
+        }
+    }
+
+    public static void InitializeSave()
+    {
+        Main.Log.LogDebug("Initializing Save");
+
+        if (Main.Settings.SkipCutscenes)
+        {
+            Player.PlayerDataLocal.cs_bkbossfinal1 = true;
+            Player.PlayerDataLocal.cs_bkbossintro1 = true;
+            Player.PlayerDataLocal.cs_bkFinalToMedusa = true;
+            Player.PlayerDataLocal.cs_finalPlatformRide = true;
+            if (Player.PlayerDataLocal.epimetheusSequence == 0)
+            {
+                Player.PlayerDataLocal.epimetheusSequence = 1;
+            }
+
+            if (!Player.PlayerDataLocal.firstElevatorLit)
+            {
+                Player.PlayerDataLocal.firstElevatorLit = true;
+                if (Player.PlayerDataLocal.elevatorsFound is null)
+                {
+                    Player.PlayerDataLocal.elevatorsFound = new Il2CppSystem.Collections.Generic.List<int>();
+                }
+                if (!Player.PlayerDataLocal.elevatorsFound.Contains(6629))
+                {
+                    Player.PlayerDataLocal.elevatorsFound.Add(6629);
+                }
+
+                // blocks around first elevator
+                var room = GameManager.GetRoomFromID(6629);
+                for (var i = 6641; i < 6647; i++)
+                {
+                    SaveManager.CurrentSave.SetObjectData(i, "_objectOnFalseobjectOn__linkID189linkID_", 6629);
+                }
+                room.UpdateObjectState(SaveManager.CurrentSave);
+            }
+        }
+
+        if (Player.PlayerDataLocal.unlockedCharacters is null)
+        {
+            Player.PlayerDataLocal.unlockedCharacters = new Il2CppSystem.Collections.Generic.List<CharacterProperties.Character>();
+        }
+
+        if (Main.Settings.StartWithZeek)
+        {
+            if (!Player.PlayerDataLocal.unlockedCharacters.Contains(CharacterProperties.Character.Zeek))
+            {
+                Player.PlayerDataLocal.unlockedCharacters.Add(CharacterProperties.Character.Zeek);
+            }
+
+            var deal = GameManager.Instance.itemManager.GetDealProperties(DealProperties.DealID.Deal_SubMenu_Zeek);
+            deal.availableOnStart = true;
+        }
+
+        if (Main.Settings.StartWithBram)
+        {
+            Player.PlayerDataLocal.bramFreed = true;
+            Player.PlayerDataLocal.bramSeen = true;
+            if (!Player.PlayerDataLocal.unlockedCharacters.Contains(CharacterProperties.Character.Bram))
+            {
+                Player.PlayerDataLocal.unlockedCharacters.Add(CharacterProperties.Character.Bram);
+            }
+
+            var deal = GameManager.Instance.itemManager.GetDealProperties(DealProperties.DealID.Deal_SubMenu_Bram);
+            deal.availableOnStart = true;
+        }
+
+        if (Main.Settings.StartWithQOL)
+        {
+            if (Player.PlayerDataLocal.purchasedDeals is null)
+            {
+                Player.PlayerDataLocal.purchasedDeals = new Il2CppSystem.Collections.Generic.List<DealProperties.DealID>();
+            }
+            var deals = new DealProperties.DealID[]{
+                DealProperties.DealID.Deal_Knowledge,
+                DealProperties.DealID.Deal_OrbReaper,
+                DealProperties.DealID.Deal_TitanEgo,
+                DealProperties.DealID.Deal_MapReveal,
+                DealProperties.DealID.Deal_Gift,
+                DealProperties.DealID.Deal_LockedDoors,
+            };
+            foreach (var deal in deals)
+            {
+                if (!Player.PlayerDataLocal.purchasedDeals.Contains(deal))
+                {
+                    Player.PlayerDataLocal.purchasedDeals.Add(deal);
+                }
+            }
+            Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.MarkOfEpimetheus);
         }
     }
 
@@ -427,6 +619,10 @@ public class Game
         }
 
         Data.IconMap.TryGetValue(itemInfo.Name, out var icon);
+        if (icon == "" || icon is null)
+        {
+            icon = "Item_AmuletOfSol";
+        }
         var sound = "pickup";
         if (itemInfo.Flags == ItemFlags.Advancement)
         {
@@ -434,7 +630,7 @@ public class Game
         }
         else if (itemInfo.Flags == ItemFlags.Trap)
         {
-            sound = "player-hit";
+            sound = "evil-laugh";
         }
 
         return new ItemBox
@@ -546,5 +742,13 @@ public class Game
             DisplayItem(itemInfo);
         }
         return true;
+    }
+
+    public static void KillPlayer()
+    {
+        if (GameManager.Instance?.player is not null)
+        {
+            GameManager.Instance.player.Kill();
+        }
     }
 }

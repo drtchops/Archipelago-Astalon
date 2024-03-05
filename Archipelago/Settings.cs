@@ -14,4 +14,10 @@ public class Settings
 
     public bool RandomizeAttackPickups { get; set; }
     public bool RandomizeHealthPickups { get; set; }
+    public bool SkipCutscenes { get; set; }
+    public bool StartWithZeek { get; set; }
+    public bool StartWithBram { get; set; }
+    public bool StartWithQOL { get; set; }
+    public bool FreeApexElevator { get; set; }
+    public bool DeathLink { get; set; }
 }
