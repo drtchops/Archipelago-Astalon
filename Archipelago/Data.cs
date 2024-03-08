@@ -101,6 +101,9 @@ public static class Data
         {"Max HP +4", "Item_HealthStone_1"},
         {"Max HP +5", "Item_HealthStone_1"},
         {"Attack +1", "Item_PowerStone_1"},
+        {"White Key", "WhiteKey_1"},
+        {"Blue Key", "BlueKey_1"},
+        {"Red Key", "RedKey_1"},
     };
 
     public static Dictionary<int, string> AttackMap = new Dictionary<int, string>
@@ -156,4 +159,18 @@ public static class Data
         {8609, "Cathedral - Max HP +5 (Bell)"}, // near bell
         {8202, "Serpent Path - Max HP +1"}, // before frog
     };
+
+    public static Dictionary<int, string> RedKeyMap = new Dictionary<int, string>
+    {
+        {9941, "Gorgon Tomb - Red Key"},
+        {9571, "Mechanism - Red Key"},
+        {3090, "Hall of the Phantoms - Red Key"},
+        {7176, "Ruins of Ash - Red Key"},
+        {7273, "Tower Roots - Red Key"},
+    };
+
+    // elevator rooms
+    // 6629 - start elevator
+    // 248 - gorgon tomb 2
+    // 4109 - the apex
 }

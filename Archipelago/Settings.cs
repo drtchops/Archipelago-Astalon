@@ -14,10 +14,15 @@ public class Settings
 
     public bool RandomizeAttackPickups { get; set; }
     public bool RandomizeHealthPickups { get; set; }
+    public bool RandomizeWhiteKeys { get; set; }
+    public bool RandomizeBlueKeys { get; set; }
+    public bool RandomizeRedKeys { get; set; }
+    public bool RandomizeFamiliars { get; set; }
     public bool SkipCutscenes { get; set; }
     public bool StartWithZeek { get; set; }
     public bool StartWithBram { get; set; }
     public bool StartWithQOL { get; set; }
     public bool FreeApexElevator { get; set; }
+    public int CostMultiplier { get; set; }
     public bool DeathLink { get; set; }
 }

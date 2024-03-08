@@ -18,16 +18,15 @@ public class ItemInfo
     public string PlayerName { get; set; }
     public bool IsLocal { get; set; }
     public long LocationID { get; set; }
+    public bool Receiving { get; set; }
 }
 
 public class APManager
 {
-    public int[] AP_VERSION = new int[] { 0, 4, 4 };
+    public int[] AP_VERSION = new []{ 0, 4, 4 };
     public bool Connected;
     public ArchipelagoSession Session;
     public DeathLinkService DeathLink;
-    public bool ReceivingItem;
-    public bool ReceivingDeath;
 
     public bool Connect()
     {
@@ -45,7 +44,7 @@ public class APManager
         Session.Socket.ErrorReceived += Session_ErrorReceived;
         Session.Socket.SocketClosed += Session_SocketClosed;
         Session.Items.ItemReceived += Session_ReceiveItem;
-        // add Session.Locations.CheckedLocationsUpdated
+        // add Session.Locations.CheckedLocationsUpdated?
 
         LoginResult loginResult;
 
@@ -87,11 +86,16 @@ public class APManager
         var config = (JObject)login.SlotData["settings"];
         Main.Settings.RandomizeAttackPickups = (bool)config["randomize_attack_pickups"];
         Main.Settings.RandomizeHealthPickups = (bool)config["randomize_health_pickups"];
+        //Main.Settings.RandomizeWhiteKeys = (bool)config["randomize_white_keys"];
+        //Main.Settings.RandomizeBlueKeys = (bool)config["randomize_blue_keys"];
+        Main.Settings.RandomizeRedKeys = (bool)config["randomize_red_keys"];
+        //Main.Settings.RandomizeFamiliars = (bool)config["randomize_familiars"];
         Main.Settings.SkipCutscenes = (bool)config["skip_cutscenes"];
         Main.Settings.StartWithZeek = (bool)config["start_with_zeek"];
         Main.Settings.StartWithBram = (bool)config["start_with_bram"];
         Main.Settings.StartWithQOL = (bool)config["start_with_qol"];
-        // Main.Settings.FreeApexElevator = (bool)config["free_apex_elevator"];
+        Main.Settings.FreeApexElevator = (bool)config["free_apex_elevator"];
+        //Main.Settings.CostMultiplier = (int)config["cost_multiplier"];
         Main.Settings.DeathLink = (bool)config["death_link"];
 
         DeathLink = Session.CreateDeathLinkService();
@@ -187,10 +191,10 @@ public class APManager
 
     public void Session_ReceiveItem(ReceivedItemsHelper helper)
     {
-        var item = helper.PeekItem();
         var itemName = helper.PeekItemName();
-        Main.Log.LogInfo($"Received item: {itemName}");
-        var player = helper.PeekItem().Player;
+        var item = helper.DequeueItem();
+        Main.Log.LogInfo($"Received item: {item.Item} - {itemName}");
+        var player = item.Player;
         var itemInfo = new ItemInfo
         {
             ID = item.Item,
@@ -200,13 +204,9 @@ public class APManager
             PlayerName = GetPlayerName(player),
             IsLocal = player == GetCurrentPlayer(),
             LocationID = item.Location,
+            Receiving = true,
         };
-        ReceivingItem = true;
-        if (Game.GiveItem(itemInfo, display: !itemInfo.IsLocal))
-        {
-            helper.DequeueItem();
-        }
-        ReceivingItem = false;
+        Main.Game.IncomingItems.Enqueue(itemInfo);
     }
 
     public string GetPlayerName(int slot)
@@ -230,17 +230,31 @@ public class APManager
 
     public void SendDeath()
     {
-        if (Connected && !ReceivingDeath && Main.Settings.DeathLink)
+        if (Connected && Main.Settings.DeathLink)
         {
-            var name = Session.Players.GetPlayerName(Session.ConnectionInfo.Slot);
+            var name = Session.Players.GetPlayerName(GetCurrentPlayer());
             DeathLink.SendDeathLink(new DeathLink(name));
         }
     }
 
     public void ReceiveDeath(DeathLink link)
     {
-        ReceivingDeath = true;
-        Game.KillPlayer();
-        ReceivingDeath = false;
+        Main.Game.IncomingDeath = true;
+    }
+
+    public void ToggleDeathLink()
+    {
+        if (Main.Settings.DeathLink)
+        {
+            Main.Log.LogInfo("Disabling death link");
+            DeathLink.DisableDeathLink();
+            Main.Settings.DeathLink = false;
+        }
+        else
+        {
+            Main.Log.LogInfo("Enabling death link");
+            DeathLink.EnableDeathLink();
+            Main.Settings.DeathLink = true;
+        }
     }
 }
