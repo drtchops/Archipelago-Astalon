@@ -22,7 +22,7 @@ public class Game
 
     public Queue<ItemInfo> IncomingItems = new Queue<ItemInfo>();
     public Queue<ItemInfo> IncomingMessages = new Queue<ItemInfo>();
-    public bool IncomingDeath;
+    public string IncomingDeath;
     public bool ReceivingItem;
     public bool ShouldToggleDeathLink = true;
 
@@ -229,7 +229,10 @@ public class Game
         public static void DeathSequence()
         {
             Main.Log.LogDebug("Player.DeathSequence()");
-            Main.APManager.SendDeath();
+            if (Main.Game.IncomingDeath is null)
+            {
+                Main.APManager.SendDeath();
+            }
         }
 
         [HarmonyPatch(nameof(Player.AssignRoom))]
@@ -450,10 +453,17 @@ public class Game
         {
             var holdingMods = Input.GetKeyInt(KeyCode.LeftControl) && Input.GetKeyInt(KeyCode.LeftShift);
 
-            if (Main.Game.IncomingDeath)
+            if (Main.Game.IncomingDeath is not null)
             {
                 Player.Instance?.Kill();
-                Main.Game.IncomingDeath = false;
+                Main.Game.IncomingMessages.Enqueue(new ItemInfo
+                {
+                    Name = "Death",
+                    PlayerName = Main.Game.IncomingDeath,
+                    Receiving = true,
+                    Flags = ItemFlags.Trap,
+                });
+                Main.Game.IncomingDeath = null;
             }
 
             if (GameManager.Instance?.player is not null && holdingMods && Input.GetKeyInt(KeyCode.K))

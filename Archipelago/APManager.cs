@@ -239,7 +239,7 @@ public class APManager
 
     public void ReceiveDeath(DeathLink link)
     {
-        Main.Game.IncomingDeath = true;
+        Main.Game.IncomingDeath = link.Source;
     }
 
     public void ToggleDeathLink()
