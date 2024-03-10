@@ -6,6 +6,7 @@ using Archipelago.MultiClient.Net.Packets;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Newtonsoft.Json.Linq;
+using System.Collections.ObjectModel;
 
 namespace Archipelago;
 
@@ -35,7 +36,7 @@ public class APManager
             return true;
         }
 
-        if (Main.Settings.Address is null || Main.Settings.Address.Length == 0)
+        if (Main.Settings.Address == null || Main.Settings.Address.Length == 0)
         {
             return false;
         }
@@ -43,8 +44,8 @@ public class APManager
         Session = ArchipelagoSessionFactory.CreateSession(Main.Settings.Address, Main.Settings.Port);
         Session.Socket.ErrorReceived += Session_ErrorReceived;
         Session.Socket.SocketClosed += Session_SocketClosed;
-        Session.Items.ItemReceived += Session_ReceiveItem;
-        // add Session.Locations.CheckedLocationsUpdated?
+        Session.Items.ItemReceived += Session_ItemReceived;
+        Session.Locations.CheckedLocationsUpdated += Session_CheckedLocationsUpdated;
 
         LoginResult loginResult;
 
@@ -146,7 +147,7 @@ public class APManager
         }
 
         var id = Session.Locations.GetLocationIdFromName("Astalon", location);
-        Session.Locations.CompleteLocationChecks(id);
+        Session.Locations.CompleteLocationChecksAsync(id);
         Main.Log.LogInfo($"Found item: {id}");
     }
 
@@ -158,19 +159,29 @@ public class APManager
         }
 
         var id = Session.Locations.GetLocationIdFromName("Astalon", location);
+        return ScoutLocation(id);
+    }
+
+    public ItemInfo ScoutLocation(long id)
+    {
+        if (!Connected)
+        {
+            return null;
+        }
+
         var scout = Session.Locations.ScoutLocationsAsync(id);
         scout.Wait();
-        var locationInfo = scout.Result.Locations[0];
-        var itemName = Session.Items.GetItemName(locationInfo.Item);
-        var name = GetPlayerName(locationInfo.Player);
+        var networkItem = scout.Result.Locations[0];
+        var itemName = Session.Items.GetItemName(networkItem.Item);
+        var name = GetPlayerName(networkItem.Player);
         return new ItemInfo
         {
             ID = id,
             Name = itemName,
-            Flags = locationInfo.Flags,
-            Player = locationInfo.Player,
+            Flags = networkItem.Flags,
+            Player = networkItem.Player,
             PlayerName = name,
-            IsLocal = locationInfo.Player == GetCurrentPlayer(),
+            IsLocal = networkItem.Player == GetCurrentPlayer(),
             LocationID = id,
         };
     }
@@ -189,7 +200,7 @@ public class APManager
         Session.Socket.SendPacket(packet);
     }
 
-    public void Session_ReceiveItem(ReceivedItemsHelper helper)
+    public void Session_ItemReceived(ReceivedItemsHelper helper)
     {
         var itemName = helper.PeekItemName();
         var item = helper.DequeueItem();
@@ -206,13 +217,26 @@ public class APManager
             LocationID = item.Location,
             Receiving = true,
         };
-        Main.Game.IncomingItems.Enqueue(itemInfo);
+        Game.IncomingItems.Enqueue(itemInfo);
+    }
+
+    public void Session_CheckedLocationsUpdated(ReadOnlyCollection<long> newCheckedLocations)
+    {
+        Main.Log.LogInfo($"new locations checked: {string.Join(", ", newCheckedLocations)}");
+        foreach (var id in newCheckedLocations)
+        {
+            var itemInfo = ScoutLocation(id);
+            if (itemInfo != null && !itemInfo.IsLocal)
+            {
+                Game.IncomingMessages.Enqueue(itemInfo);
+            }
+        }
     }
 
     public string GetPlayerName(int slot)
     {
         var name = Session.Players.GetPlayerName(slot);
-        if (name == "" || name is null)
+        if (name == "" || name == null)
         {
             name = "Server";
         }
@@ -239,7 +263,7 @@ public class APManager
 
     public void ReceiveDeath(DeathLink link)
     {
-        Main.Game.IncomingDeath = link.Source;
+        Game.DeathSource = link.Source;
     }
 
     public void ToggleDeathLink()

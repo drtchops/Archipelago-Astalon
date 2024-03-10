@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Archipelago;
 
-public class Game
+public static class Game
 {
     public class ItemBox
     {
@@ -20,11 +20,11 @@ public class Game
         public bool DisableController { get; set; } = false;
     }
 
-    public Queue<ItemInfo> IncomingItems = new Queue<ItemInfo>();
-    public Queue<ItemInfo> IncomingMessages = new Queue<ItemInfo>();
-    public string IncomingDeath;
-    public bool ReceivingItem;
-    public bool ShouldToggleDeathLink = true;
+    public static Queue<ItemInfo> IncomingItems = new();
+    public static Queue<ItemInfo> IncomingMessages = new();
+    public static string DeathSource;
+    public static int DeathCounter = -1;
+    public static bool ShouldToggleDeathLink = true;
 
     [HarmonyPatch(typeof(Item), nameof(Item.Collect))]
     class Item_Collect_Patch
@@ -32,14 +32,11 @@ public class Game
         public static void Prefix(Item __instance)
         {
             Main.Log.LogDebug($"Item.Collect({__instance}, {__instance.actorID})");
-            if (Data.LocationMap.TryGetValue(__instance.itemProperties.itemID, out var location))
+            if (Data.LocationMap.ContainsKey(__instance.itemProperties.itemID))
             {
-                var itemInfo = Main.APManager.ScoutLocation(location);
-                if (itemInfo is not null && !itemInfo.IsLocal)
-                {
-                    Main.Game.IncomingMessages.Enqueue(itemInfo);
-                }
                 __instance.useItemBox = false;
+                __instance.collectedSound = null;
+                __instance.collectedText = null;
             }
         }
     }
@@ -50,14 +47,12 @@ public class Game
         public static void Prefix(Item_PlayerHeart __instance)
         {
             Main.Log.LogDebug($"Item_PlayerHeart.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
-            if (Main.Settings.RandomizeHealthPickups && Data.HPMap.TryGetValue(__instance.actorID, out var location))
+            if (Main.Settings.RandomizeHealthPickups && Data.HPMap.ContainsKey(__instance.actorID))
             {
-                var itemInfo = Main.APManager.ScoutLocation(location);
-                if (itemInfo is not null && !itemInfo.IsLocal)
-                {
-                    Main.Game.IncomingMessages.Enqueue(itemInfo);
-                }
+                __instance.heartGain = 0;
                 __instance.useItemBox = false;
+                __instance.collectedSound = null;
+                __instance.collectedText = null;
             }
         }
     }
@@ -68,14 +63,12 @@ public class Game
         public static void Prefix(Item_PlayerStrength __instance)
         {
             Main.Log.LogDebug($"Item_PlayerStrength.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
-            if (Main.Settings.RandomizeAttackPickups && Data.AttackMap.TryGetValue(__instance.actorID, out var location))
+            if (Main.Settings.RandomizeAttackPickups && Data.AttackMap.ContainsKey(__instance.actorID))
             {
-                var itemInfo = Main.APManager.ScoutLocation(location);
-                if (itemInfo is not null && !itemInfo.IsLocal)
-                {
-                    Main.Game.IncomingMessages.Enqueue(itemInfo);
-                }
+                __instance.strengthGain = 0;
                 __instance.useItemBox = false;
+                __instance.collectedSound = null;
+                __instance.collectedText = null;
             }
         }
     }
@@ -86,14 +79,11 @@ public class Game
         public static void Prefix(Key __instance)
         {
             Main.Log.LogDebug($"Key.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
-            if (__instance.keyType == Key.KeyType.Red && Main.Settings.RandomizeRedKeys && Data.RedKeyMap.TryGetValue(__instance.actorID, out var location))
+            if (__instance.keyType == Key.KeyType.Red && Main.Settings.RandomizeRedKeys && Data.RedKeyMap.ContainsKey(__instance.actorID))
             {
-                var itemInfo = Main.APManager.ScoutLocation(location);
-                if (itemInfo is not null && !itemInfo.IsLocal)
-                {
-                    Main.Game.IncomingMessages.Enqueue(itemInfo);
-                }
                 __instance.useItemBox = false;
+                __instance.collectedSound = null;
+                __instance.collectedText = null;
             }
         }
     }
@@ -101,12 +91,19 @@ public class Game
     [HarmonyPatch(typeof(PlayerData))]
     class PlayerData_Patch
     {
+        [HarmonyPatch(nameof(PlayerData.CollectItem), typeof(ItemProperties.ItemID))]
+        [HarmonyPrefix]
+        public static void CollectItemID(ItemProperties.ItemID itemID)
+        {
+            Main.Log.LogDebug($"PlayerData.CollectItemID({itemID})");
+        }
+
         [HarmonyPatch(nameof(PlayerData.CollectItem), typeof(ItemProperties))]
         [HarmonyPrefix]
         public static bool CollectItem(ItemProperties itemProp, PlayerData __instance)
         {
-            Main.Log.LogDebug($"PlayerData.CollectItem({itemProp.itemID})");
-            if (!Main.Game.ReceivingItem && Data.LocationMap.TryGetValue(itemProp.itemID, out var location))
+            Main.Log.LogDebug($"PlayerData.CollectItemProps({itemProp.itemID})");
+            if (Data.LocationMap.TryGetValue(itemProp.itemID, out var location))
             {
                 Main.APManager.SendLocation(location);
                 return false;
@@ -119,7 +116,7 @@ public class Game
         public static bool CollectHeart(int _id)
         {
             Main.Log.LogDebug($"PlayerData.CollectHeart({_id})");
-            if (Main.Settings.RandomizeHealthPickups && !Main.Game.ReceivingItem && Data.HPMap.TryGetValue(_id, out var location))
+            if (Main.Settings.RandomizeHealthPickups && Data.HPMap.TryGetValue(_id, out var location))
             {
                 Main.APManager.SendLocation(location);
                 return false;
@@ -132,7 +129,7 @@ public class Game
         public static bool CollectKey(int _id)
         {
             Main.Log.LogDebug($"PlayerData.CollectKey({_id})");
-            if (Main.Settings.RandomizeRedKeys && !Main.Game.ReceivingItem && Data.RedKeyMap.TryGetValue(_id, out var location))
+            if (Main.Settings.RandomizeRedKeys && Data.RedKeyMap.TryGetValue(_id, out var location))
             {
                 Main.APManager.SendLocation(location);
                 return false;
@@ -145,11 +142,41 @@ public class Game
         public static bool CollectStrength(int _id)
         {
             Main.Log.LogDebug($"PlayerData.CollectStrength({_id})");
-            if (Main.Settings.RandomizeAttackPickups && !Main.Game.ReceivingItem && Data.AttackMap.TryGetValue(_id, out var location))
+            if (Main.Settings.RandomizeAttackPickups && Data.AttackMap.TryGetValue(_id, out var location))
             {
                 Main.APManager.SendLocation(location);
                 return false;
             }
+            return true;
+        }
+
+        [HarmonyPatch(nameof(PlayerData.AddKey))]
+        [HarmonyPrefix]
+        public static bool AddKey(Key.KeyType keyType)
+        {
+            Main.Log.LogDebug($"PlayerData.AddKey({keyType})");
+
+            if (keyType == Key.KeyType.White && Main.Settings.RandomizeWhiteKeys)
+            {
+                return false;
+            }
+            if (keyType == Key.KeyType.Blue && Main.Settings.RandomizeBlueKeys)
+            {
+                return false;
+            }
+            if (keyType == Key.KeyType.Red && Main.Settings.RandomizeRedKeys)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        [HarmonyPatch(nameof(PlayerData.AddKeys))]
+        [HarmonyPrefix]
+        public static bool AddKeys(Key.KeyType keyType, int amount)
+        {
+            Main.Log.LogDebug($"PlayerData.AddKeys({keyType}, {amount})");
             return true;
         }
 
@@ -229,7 +256,7 @@ public class Game
         public static void DeathSequence()
         {
             Main.Log.LogDebug("Player.DeathSequence()");
-            if (Main.Game.IncomingDeath is null)
+            if (DeathCounter <= 0)
             {
                 Main.APManager.SendDeath();
             }
@@ -268,6 +295,26 @@ public class Game
             }
         }
 
+        [HarmonyPatch(nameof(Boss_Worm.DamageEffectBody))]
+        [HarmonyPrefix]
+        public static void DamageEffectBody(ref int damageAmount)
+        {
+            if (Main.Settings.MaxDamage)
+            {
+                damageAmount = 999;
+            }
+        }
+
+        [HarmonyPatch(nameof(Boss_Worm.DamageEntity))]
+        [HarmonyPrefix]
+        public static void DamageEntity(ref int damageAmount)
+        {
+            if (Main.Settings.MaxDamage)
+            {
+                damageAmount = 999;
+            }
+        }
+
         [HarmonyPatch(nameof(Boss_Worm.DamageTail))]
         [HarmonyPrefix]
         public static void DamageTail(ref int damageAmount)
@@ -284,13 +331,18 @@ public class Game
     {
         [HarmonyPatch(nameof(GameplayUIManager.DisplayItemBox))]
         [HarmonyPrefix]
-        public static void DisplayItemBox(string _itemIcon, ref string _itemText, ref bool disableController)
+        public static bool DisplayItemBox(string _itemIcon, ref string _itemText, ref bool disableController)
         {
             Main.Log.LogDebug($"GameplayUIManager.DisplayItemBox({_itemIcon}, {_itemText})");
+            if (_itemText == null)
+            {
+                return false;
+            }
             if (_itemText.StartsWith("ARCHIPELAGO:"))
             {
                 _itemText = _itemText.Substring(12);
             }
+            return true;
         }
     }
 
@@ -453,51 +505,59 @@ public class Game
         {
             var holdingMods = Input.GetKeyInt(KeyCode.LeftControl) && Input.GetKeyInt(KeyCode.LeftShift);
 
-            if (Main.Game.IncomingDeath is not null)
+            if (DeathSource != null && DeathCounter == -1 && CanBeKilled())
             {
-                Player.Instance?.Kill();
-                Main.Game.IncomingMessages.Enqueue(new ItemInfo
+                DeathCounter = 60;
+                IncomingMessages.Enqueue(new ItemInfo
                 {
                     Name = "Death",
-                    PlayerName = Main.Game.IncomingDeath,
+                    PlayerName = DeathSource,
                     Receiving = true,
                     Flags = ItemFlags.Trap,
                 });
-                Main.Game.IncomingDeath = null;
+                Player.Instance.Kill(false, false);
             }
 
-            if (GameManager.Instance?.player is not null && holdingMods && Input.GetKeyInt(KeyCode.K))
+            if (DeathCounter > 0)
+            {
+                DeathCounter--;
+            }
+            if (DeathCounter == 0)
+            {
+                DeathCounter = -1;
+                DeathSource = null;
+            }
+
+            if (GameManager.Instance?.player != null && holdingMods && Input.GetKeyInt(KeyCode.K))
             {
                 GameManager.Instance.player.Kill();
             }
 
-            if (Main.Game.CanGetItem() && Main.Game.IncomingItems.TryDequeue(out var item))
+            if (CanGetItem() && IncomingItems.TryDequeue(out var item))
             {
-                Main.Game.ReceivingItem = true;
-                var display = Main.Game.GiveItem(item);
+                var display = GiveItem(item);
                 if (display)
                 {
-                    Main.Game.IncomingMessages.Enqueue(item);
+                    IncomingMessages.Enqueue(item);
                 }
-                Main.Game.ReceivingItem = false;
             }
 
-            if (Main.Game.CanDisplayMessage() && Main.Game.IncomingMessages.TryDequeue(out var message))
+            if (CanDisplayMessage() && IncomingMessages.TryDequeue(out var message))
             {
-                Main.Game.DisplayItem(message);
+                DisplayItem(message);
             }
 
             if (holdingMods && Input.GetKeyInt(KeyCode.L))
             {
-                if (Main.Game.ShouldToggleDeathLink)
+                if (ShouldToggleDeathLink)
                 {
                     Main.APManager.ToggleDeathLink();
-                    Main.Game.ShouldToggleDeathLink = false;
+                    ShouldToggleDeathLink = false;
                 }
             }
             else
             {
-                Main.Game.ShouldToggleDeathLink = true;
+                ShouldToggleDeathLink = true;
             }
 
             if (holdingMods && Input.GetKeyInt(KeyCode.V))
@@ -525,7 +585,7 @@ public class Game
             if (!Player.PlayerDataLocal.firstElevatorLit)
             {
                 Player.PlayerDataLocal.firstElevatorLit = true;
-                if (Player.PlayerDataLocal.elevatorsFound is null)
+                if (Player.PlayerDataLocal.elevatorsFound == null)
                 {
                     Player.PlayerDataLocal.elevatorsFound = new Il2CppSystem.Collections.Generic.List<int>();
                 }
@@ -544,7 +604,7 @@ public class Game
             }
         }
 
-        if (Player.PlayerDataLocal.unlockedCharacters is null)
+        if (Player.PlayerDataLocal.unlockedCharacters == null)
         {
             Player.PlayerDataLocal.unlockedCharacters = new Il2CppSystem.Collections.Generic.List<CharacterProperties.Character>();
         }
@@ -575,7 +635,7 @@ public class Game
 
         if (Main.Settings.StartWithQOL)
         {
-            if (Player.PlayerDataLocal.purchasedDeals is null)
+            if (Player.PlayerDataLocal.purchasedDeals == null)
             {
                 Player.PlayerDataLocal.purchasedDeals = new Il2CppSystem.Collections.Generic.List<DealProperties.DealID>();
             }
@@ -599,21 +659,21 @@ public class Game
         }
     }
 
-    public bool CanGetItem()
+    public static bool CanGetItem()
     {
-        if (GameManager.Instance?.player?.playerData is null)
+        if (GameManager.Instance?.player?.playerData == null)
         {
-            //Main.Log.LogWarning("Cannot get item: PlayerData is null");
+            //Main.Log.LogWarning("Cannot get item: PlayerData == null");
             return false;
         }
-        if (Player.Instance is null || !Player.Instance.playerDataLoaded)
+        if (Player.Instance == null || !Player.Instance.playerDataLoaded)
         {
             //Main.Log.LogWarning("Cannot get item: PlayerData is not loaded");
             return false;
         }
-        // if (GameplayUIManager.Instance is null)
+        // if (GameplayUIManager.Instance == null)
         // {
-        //     Main.Log.LogWarning("Cannot get item: GameplayUIManager is null");
+        //     Main.Log.LogWarning("Cannot get item: GameplayUIManager == null");
         //     return false;
         // }
         // if (GameplayUIManager.Instance.isOnMainMenu)
@@ -630,14 +690,14 @@ public class Game
         return true;
     }
 
-    public bool CanDisplayMessage()
+    public static bool CanDisplayMessage()
     {
-        if (GameplayUIManager.Instance is null)
+        if (GameplayUIManager.Instance == null)
         {
-            //Main.Log.LogWarning("Cannot display message: GameplayUIManager is null");
+            //Main.Log.LogWarning("Cannot display message: GameplayUIManager == null");
             return false;
         }
-        if (GameplayUIManager.Instance.itemBox is null || GameplayUIManager.Instance.itemBox.active)
+        if (GameplayUIManager.Instance.itemBox == null || GameplayUIManager.Instance.itemBox.active)
         {
             //Main.Log.LogWarning("Cannot display message: itemBox null or displayed");
             return false;
@@ -666,13 +726,34 @@ public class Game
         return true;
     }
 
-    public ItemBox FormatItemBox(ItemInfo itemInfo)
+    public static bool CanBeKilled()
+    {
+        if (!CanGetItem())
+        {
+            return false;
+        }
+        if (Player.PlayerDataLocal.currentHealth <= 0)
+        {
+            return false;
+        }
+        if (Player.Instance.isInElevator)
+        {
+            return false;
+        }
+        if (GameplayUIManager.Instance.ESOpen || GameplayUIManager.Instance.inGameMenuOpen)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static ItemBox FormatItemBox(ItemInfo itemInfo)
     {
         var message = itemInfo.Name;
         if (!itemInfo.IsLocal)
         {
             var playerName = itemInfo.PlayerName;
-            if (playerName == "" || playerName is null)
+            if (playerName == "" || playerName == null)
             {
                 playerName = "Server";
             }
@@ -687,10 +768,11 @@ public class Game
         }
 
         Data.IconMap.TryGetValue(itemInfo.Name, out var icon);
-        if (icon == "" || icon is null)
+        if (icon == "" || icon == null)
         {
             icon = "Item_AmuletOfSol";
         }
+
         var sound = "pickup";
         if (itemInfo.Flags == ItemFlags.Advancement)
         {
@@ -709,7 +791,7 @@ public class Game
         };
     }
 
-    public bool DisplayItem(ItemInfo itemInfo)
+    public static bool DisplayItem(ItemInfo itemInfo)
     {
         if (!CanDisplayMessage())
         {
@@ -718,10 +800,11 @@ public class Game
 
         var itemBox = FormatItemBox(itemInfo);
         GameplayUIManager.Instance.DisplayItemBox(itemBox.Icon, itemBox.Message, itemBox.Duration, itemBox.DisableController);
+        AudioManager.Play(itemBox.Sound);
         return true;
     }
 
-    public bool GiveItem(ItemInfo itemInfo)
+    public static bool GiveItem(ItemInfo itemInfo)
     {
         if (!CanGetItem())
         {
@@ -729,6 +812,8 @@ public class Game
         }
 
         var itemName = itemInfo.Name;
+        Main.Log.LogDebug($"Giving item: {itemName}");
+
         if (itemName == "Attack +1")
         {
             if (Player.PlayerDataLocal.collectedStrengths.Contains((int)itemInfo.LocationID))
@@ -769,11 +854,11 @@ public class Game
             Player.PlayerDataLocal.currentHealth += bonus;
             // TODO: replace this with a proper int based on slot data
             Player.PlayerDataLocal.collectedHearts.Add((int)itemInfo.LocationID);
-            GameplayUIManager.Instance.UpdateHealthBar(Player.Instance, true);
+            GameplayUIManager.Instance?.UpdateHealthBar(Player.Instance, true);
         }
         else if (itemName.EndsWith("Orbs"))
         {
-            // TODO: check if already collected
+            // TODO: check if already received
 
             var amount = 0;
             switch (itemName)
@@ -788,10 +873,7 @@ public class Game
                     amount = 200;
                     break;
             }
-            //Player.PlayerDataLocal.currentOrbs += amount;
-            //Player.PlayerDataLocal.collectedOrbs += amount;
             Player.Instance.CollectOrbs(amount);
-            // Player.PlayerDataLocal.AddOrbs(amount);
         }
         else if (Data.ItemMap.TryGetValue(itemName, out var itemID))
         {
@@ -808,6 +890,7 @@ public class Game
         }
         else if (itemName.EndsWith("Key"))
         {
+            // TODO: check if already received
             if (itemName == "White Key")
             {
                 Player.PlayerDataLocal.AddKey(Key.KeyType.White);
@@ -821,38 +904,16 @@ public class Game
                 Player.PlayerDataLocal.AddKey(Key.KeyType.Red);
             }
         }
-        else if (itemName.StartsWith("Red Door"))
+        else if (Data.RedDoorMap.TryGetValue(itemName, out (int roomID, int objectID) ids))
         {
-            if (itemName == "Red Door (Zeek)")
+            if (SaveManager.CurrentSave.GetObjectData(ids.objectID) == "_wasOpenedTruewasOpened_")
             {
-                var room = GameManager.GetRoomFromID(3227);
-                SaveManager.CurrentSave.SetObjectData(3288, "_wasOpenedTruewasOpened_", 3227);
-                room.UpdateObjectState(SaveManager.CurrentSave);
+                return false;
             }
-            else if (itemName == "Red Door (Cathedral)")
-            {
-                var room = GameManager.GetRoomFromID(7055);
-                SaveManager.CurrentSave.SetObjectData(7252, "_wasOpenedTruewasOpened_", 7055);
-                room.UpdateObjectState(SaveManager.CurrentSave);
-            }
-            else if (itemName == "Red Door (Serpent Path)")
-            {
-                var room = GameManager.GetRoomFromID(5804);
-                SaveManager.CurrentSave.SetObjectData(7335, "_wasOpenedTruewasOpened_", 5804);
-                room.UpdateObjectState(SaveManager.CurrentSave);
-            }
-            else if (itemName == "Red Door (Tower Roots)")
-            {
-                var room = GameManager.GetRoomFromID(2706);
-                SaveManager.CurrentSave.SetObjectData(8812, "_wasOpenedTruewasOpened_", 2706);
-                room.UpdateObjectState(SaveManager.CurrentSave);
-            }
-            else if (itemName == "Red Door (Dev Room)")
-            {
-                var room = GameManager.GetRoomFromID(2598);
-                SaveManager.CurrentSave.SetObjectData(3276, "_wasOpenedTruewasOpened_", 2598);
-                room.UpdateObjectState(SaveManager.CurrentSave);
-            }
+
+            var room = GameManager.GetRoomFromID(ids.roomID);
+            SaveManager.CurrentSave.SetObjectData(ids.objectID, "_wasOpenedTruewasOpened_", ids.roomID);
+            room.UpdateObjectState(SaveManager.CurrentSave);
         }
         else
         {

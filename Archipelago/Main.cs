@@ -12,7 +12,6 @@ public class Main : BasePlugin
 {
     public static new ManualLogSource Log = Logger.CreateLogSource("Archipelago");
     public static Settings Settings;
-    public static Game Game;
     public static APManager APManager;
 
     public override void Load()
@@ -38,7 +37,6 @@ public class Main : BasePlugin
             FreePurchases = configFreePurchases.Value,
         };
 
-        Game = new Game();
         APManager = new APManager();
 
         var harmony = new Harmony("Archipelago");

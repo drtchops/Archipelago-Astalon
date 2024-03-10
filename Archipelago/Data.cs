@@ -4,7 +4,7 @@ namespace Archipelago;
 
 public static class Data
 {
-    public static Dictionary<ItemProperties.ItemID, string> LocationMap = new Dictionary<ItemProperties.ItemID, string>
+    public static readonly Dictionary<ItemProperties.ItemID, string> LocationMap = new()
     {
         {ItemProperties.ItemID.AmuletOfSol, "Hall of the Phantoms - Amulet of Sol"},
         {ItemProperties.ItemID.BanishSpell, "Gorgon Tomb - Banish Spell"},
@@ -35,7 +35,7 @@ public static class Data
         {ItemProperties.ItemID.MagicBlock, "Cathedral - Magic Block"},
     };
 
-    public static Dictionary<string, ItemProperties.ItemID> ItemMap = new Dictionary<string, ItemProperties.ItemID>
+    public static readonly Dictionary<string, ItemProperties.ItemID> ItemMap = new()
     {
         {"Amulet of Sol", ItemProperties.ItemID.AmuletOfSol},
         {"Banish Spell", ItemProperties.ItemID.BanishSpell},
@@ -66,7 +66,7 @@ public static class Data
         {"Magic Block", ItemProperties.ItemID.MagicBlock},
     };
 
-    public static Dictionary<string, string> IconMap = new Dictionary<string, string>
+    public static readonly Dictionary<string, string> IconMap = new()
     {
         {"Amulet of Sol", "Item_AmuletOfSol"},
         {"Banish Spell", "Item_BanishSpell"},
@@ -120,7 +120,7 @@ public static class Data
         {"Zeek", "ElevatorMenu_Icon_Zeek"},
     };
 
-    public static Dictionary<int, string> AttackMap = new Dictionary<int, string>
+    public static readonly Dictionary<int, string> AttackMap = new()
     {
         {7094, "Gorgon Tomb - Attack +1"}, // past void charm + green eye
         {6753, "Mechanism - Attack +1 (Above Volantis)"}, // above valantis, needs griffon claw
@@ -136,7 +136,7 @@ public static class Data
         {8181, "Serpent Path - Attack +1"},
     };
 
-    public static Dictionary<int, string> HPMap = new Dictionary<int, string>
+    public static readonly Dictionary<int, string> HPMap = new()
     {
         {6145, "Gorgon Tomb - Max HP +1 (Ring of the Ancients)"}, // by ring of the ancients, needs red eye
         {6134, "Gorgon Tomb - Max HP +5 (Ascendant Key)"}, // above ascendant key, needs griffon claw
@@ -174,13 +174,32 @@ public static class Data
         {8202, "Serpent Path - Max HP +1"}, // before frog
     };
 
-    public static Dictionary<int, string> RedKeyMap = new Dictionary<int, string>
+    public static readonly Dictionary<int, string> WhiteKeyMap = new()
+    {
+        //{0, "Gorgon Tomb - White Key"},
+    };
+
+    public static readonly Dictionary<int, string> BlueKeyMap = new()
+    {
+        //{0, "Gorgon Tomb - Blue Key"},
+    };
+
+    public static readonly Dictionary<int, string> RedKeyMap = new()
     {
         {9941, "Gorgon Tomb - Red Key"},
         {9571, "Mechanism - Red Key"},
         {3090, "Hall of the Phantoms - Red Key"},
         {7176, "Ruins of Ash - Red Key"},
         {7273, "Tower Roots - Red Key"},
+    };
+
+    public static readonly Dictionary<string, (int, int)> RedDoorMap = new()
+    {
+        {"Red Door (Zeek)", (3227, 3288)},
+        {"Red Door (Cathedral)", (7055, 7252)},
+        {"Red Door (Serpent Path)", (5804, 7335)},
+        {"Red Door (Tower Roots)", (2706, 8812)},
+        {"Red Door (Dev Room)", (2598, 3276)},
     };
 
     // elevator rooms
