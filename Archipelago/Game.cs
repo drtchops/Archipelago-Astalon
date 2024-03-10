@@ -468,7 +468,7 @@ public static class Game
             Main.Log.LogDebug($"SaveManager.UpdateSave({showIcon})");
             //foreach (var data in SaveManager.CurrentSave.objectsData)
             //{
-            //    if (data.RoomID == 3227)
+            //    if (data.RoomID == 248)
             //    {
             //        Main.Log.LogInfo($"ID={data.ID} Room={data.RoomID} Data='{data.Data}'");
             //    }
@@ -890,10 +890,19 @@ public static class Game
             }
 
             Player.PlayerDataLocal.CollectItem(itemID);
-            //if (itemID == ItemProperties.ItemID.AscendantKey)
-            //{
-            //    Player.PlayerDataLocal.elevatorsOpened = true;
-            //}
+            if (itemID == ItemProperties.ItemID.AscendantKey)
+            {
+                Player.PlayerDataLocal.elevatorsOpened = true;
+            }
+            foreach (var roomID in Player.PlayerDataLocal.elevatorsFound)
+            {
+                Player.PlayerDataLocal.UnlockElevator(roomID);
+            }
+            Player.PlayerDataLocal.UnlockElevator(6629);
+            if (Settings.FreeApexElevator)
+            {
+                Player.PlayerDataLocal.UnlockElevator(4109);
+            }
         }
         else if (itemName.EndsWith("Key"))
         {
