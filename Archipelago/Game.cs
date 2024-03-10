@@ -3,9 +3,7 @@ using I2.Loc;
 using Archipelago.MultiClient.Net.Enums;
 using BepInEx.Unity.IL2CPP.UnityEngine;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Il2CppSystem;
-using System.Linq;
 
 namespace Archipelago;
 
@@ -47,7 +45,7 @@ public static class Game
         public static void Prefix(Item_PlayerHeart __instance)
         {
             Main.Log.LogDebug($"Item_PlayerHeart.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
-            if (Main.Settings.RandomizeHealthPickups && Data.HPMap.ContainsKey(__instance.actorID))
+            if (Settings.RandomizeHealthPickups && Data.HPMap.ContainsKey(__instance.actorID))
             {
                 __instance.heartGain = 0;
                 __instance.useItemBox = false;
@@ -63,7 +61,7 @@ public static class Game
         public static void Prefix(Item_PlayerStrength __instance)
         {
             Main.Log.LogDebug($"Item_PlayerStrength.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
-            if (Main.Settings.RandomizeAttackPickups && Data.AttackMap.ContainsKey(__instance.actorID))
+            if (Settings.RandomizeAttackPickups && Data.AttackMap.ContainsKey(__instance.actorID))
             {
                 __instance.strengthGain = 0;
                 __instance.useItemBox = false;
@@ -79,7 +77,7 @@ public static class Game
         public static void Prefix(Key __instance)
         {
             Main.Log.LogDebug($"Key.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
-            if (__instance.keyType == Key.KeyType.Red && Main.Settings.RandomizeRedKeys && Data.RedKeyMap.ContainsKey(__instance.actorID))
+            if (__instance.keyType == Key.KeyType.Red && Settings.RandomizeRedKeys && Data.RedKeyMap.ContainsKey(__instance.actorID))
             {
                 __instance.useItemBox = false;
                 __instance.collectedSound = null;
@@ -116,7 +114,7 @@ public static class Game
         public static bool CollectHeart(int _id)
         {
             Main.Log.LogDebug($"PlayerData.CollectHeart({_id})");
-            if (Main.Settings.RandomizeHealthPickups && Data.HPMap.TryGetValue(_id, out var location))
+            if (Settings.RandomizeHealthPickups && Data.HPMap.TryGetValue(_id, out var location))
             {
                 Main.APManager.SendLocation(location);
                 return false;
@@ -129,7 +127,7 @@ public static class Game
         public static bool CollectKey(int _id)
         {
             Main.Log.LogDebug($"PlayerData.CollectKey({_id})");
-            if (Main.Settings.RandomizeRedKeys && Data.RedKeyMap.TryGetValue(_id, out var location))
+            if (Settings.RandomizeRedKeys && Data.RedKeyMap.TryGetValue(_id, out var location))
             {
                 Main.APManager.SendLocation(location);
                 return false;
@@ -142,7 +140,7 @@ public static class Game
         public static bool CollectStrength(int _id)
         {
             Main.Log.LogDebug($"PlayerData.CollectStrength({_id})");
-            if (Main.Settings.RandomizeAttackPickups && Data.AttackMap.TryGetValue(_id, out var location))
+            if (Settings.RandomizeAttackPickups && Data.AttackMap.TryGetValue(_id, out var location))
             {
                 Main.APManager.SendLocation(location);
                 return false;
@@ -156,15 +154,15 @@ public static class Game
         {
             Main.Log.LogDebug($"PlayerData.AddKey({keyType})");
 
-            if (keyType == Key.KeyType.White && Main.Settings.RandomizeWhiteKeys)
+            if (keyType == Key.KeyType.White && Settings.RandomizeWhiteKeys)
             {
                 return false;
             }
-            if (keyType == Key.KeyType.Blue && Main.Settings.RandomizeBlueKeys)
+            if (keyType == Key.KeyType.Blue && Settings.RandomizeBlueKeys)
             {
                 return false;
             }
-            if (keyType == Key.KeyType.Red && Main.Settings.RandomizeRedKeys)
+            if (keyType == Key.KeyType.Red && Settings.RandomizeRedKeys)
             {
                 return false;
             }
@@ -184,7 +182,7 @@ public static class Game
         [HarmonyPostfix]
         public static void UseKey(Key.KeyType keyType)
         {
-            if (!Main.Settings.FreeKeys)
+            if (!Settings.FreeKeys)
             {
                 return;
             }
@@ -207,7 +205,7 @@ public static class Game
         [HarmonyPrefix]
         public static bool RemoveOrbs()
         {
-            if (Main.Settings.FreePurchases)
+            if (Settings.FreePurchases)
             {
                 return false;
             }
@@ -219,7 +217,7 @@ public static class Game
         public static void UnlockElevatorPostfix()
         {
             Main.Log.LogDebug("PlayerData.UnlockElevatorPostfix()");
-            if (!Main.Settings.FreeApexElevator && Player.PlayerDataLocal.elevatorsFound.Contains(4109) && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
+            if (!Settings.FreeApexElevator && Player.PlayerDataLocal.elevatorsFound.Contains(4109) && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
             {
                 Player.PlayerDataLocal.elevatorsFound.Remove(4109);
             }
@@ -233,7 +231,7 @@ public static class Game
         [HarmonyPrefix]
         public static bool Damage()
         {
-            return !Main.Settings.Invincibility;
+            return !Settings.Invincibility;
         }
 
         [HarmonyPatch(nameof(Player.Activate))]
@@ -275,7 +273,7 @@ public static class Game
     {
         public static void Prefix(ref int damageAmount)
         {
-            if (Main.Settings.MaxDamage)
+            if (Settings.MaxDamage)
             {
                 damageAmount = 999;
             }
@@ -289,7 +287,7 @@ public static class Game
         [HarmonyPrefix]
         public static void DamageBody(ref int damageAmount)
         {
-            if (Main.Settings.MaxDamage)
+            if (Settings.MaxDamage)
             {
                 damageAmount = 999;
             }
@@ -299,7 +297,7 @@ public static class Game
         [HarmonyPrefix]
         public static void DamageEffectBody(ref int damageAmount)
         {
-            if (Main.Settings.MaxDamage)
+            if (Settings.MaxDamage)
             {
                 damageAmount = 999;
             }
@@ -309,7 +307,7 @@ public static class Game
         [HarmonyPrefix]
         public static void DamageEntity(ref int damageAmount)
         {
-            if (Main.Settings.MaxDamage)
+            if (Settings.MaxDamage)
             {
                 damageAmount = 999;
             }
@@ -319,7 +317,7 @@ public static class Game
         [HarmonyPrefix]
         public static void DamageTail(ref int damageAmount)
         {
-            if (Main.Settings.MaxDamage)
+            if (Settings.MaxDamage)
             {
                 damageAmount = 999;
             }
@@ -571,7 +569,7 @@ public static class Game
     {
         Main.Log.LogDebug("Initializing Save");
 
-        if (Main.Settings.SkipCutscenes)
+        if (Settings.SkipCutscenes)
         {
             Player.PlayerDataLocal.cs_bkbossfinal1 = true;
             Player.PlayerDataLocal.cs_bkbossintro1 = true;
@@ -609,7 +607,7 @@ public static class Game
             Player.PlayerDataLocal.unlockedCharacters = new Il2CppSystem.Collections.Generic.List<CharacterProperties.Character>();
         }
 
-        if (Main.Settings.StartWithZeek)
+        if (Settings.StartWithZeek)
         {
             if (!Player.PlayerDataLocal.unlockedCharacters.Contains(CharacterProperties.Character.Zeek))
             {
@@ -620,7 +618,7 @@ public static class Game
             deal.availableOnStart = true;
         }
 
-        if (Main.Settings.StartWithBram)
+        if (Settings.StartWithBram)
         {
             Player.PlayerDataLocal.bramFreed = true;
             Player.PlayerDataLocal.bramSeen = true;
@@ -633,7 +631,7 @@ public static class Game
             deal.availableOnStart = true;
         }
 
-        if (Main.Settings.StartWithQOL)
+        if (Settings.StartWithQOL)
         {
             if (Player.PlayerDataLocal.purchasedDeals == null)
             {
@@ -656,6 +654,15 @@ public static class Game
                 }
             }
             Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.MarkOfEpimetheus);
+        }
+
+        if (Settings.CostMultiplier != 100 && GameManager.Instance.itemManager.GetDealProperties(DealProperties.DealID.Deal_Gift).DealPrice == 666)
+        {
+            var mul = Settings.CostMultiplier / 100f;
+            foreach (var deal in GameManager.Instance.itemManager.gameDeals)
+            {
+                deal.dealPrice = (int)Math.Round(deal.dealPrice * mul);
+            }
         }
     }
 

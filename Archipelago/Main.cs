@@ -11,7 +11,6 @@ namespace Archipelago;
 public class Main : BasePlugin
 {
     public static new ManualLogSource Log = Logger.CreateLogSource("Archipelago");
-    public static Settings Settings;
     public static APManager APManager;
 
     public override void Load()
@@ -25,17 +24,14 @@ public class Main : BasePlugin
         var configFreeKeys = Config.Bind("Cheats", "freeKeys", false, "Whether keys are not used when opening doors");
         var configFreePurchases = Config.Bind("Cheats", "freePurchases", false, "Whether orbs are not spent when purchasing upgrades");
 
-        Settings = new Settings
-        {
-            Address = configAddress.Value,
-            Port = configPort.Value,
-            SlotName = configSlotName.Value,
-            Password = configPassword.Value,
-            Invincibility = configInvincibility.Value,
-            MaxDamage = configMaxDamage.Value,
-            FreeKeys = configFreeKeys.Value,
-            FreePurchases = configFreePurchases.Value,
-        };
+        Settings.Address = configAddress.Value;
+        Settings.Port = configPort.Value;
+        Settings.SlotName = configSlotName.Value;
+        Settings.Password = configPassword.Value;
+        Settings.Invincibility = configInvincibility.Value;
+        Settings.MaxDamage = configMaxDamage.Value;
+        Settings.FreeKeys = configFreeKeys.Value;
+        Settings.FreePurchases = configFreePurchases.Value;
 
         APManager = new APManager();
 

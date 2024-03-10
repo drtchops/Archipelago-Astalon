@@ -36,12 +36,12 @@ public class APManager
             return true;
         }
 
-        if (Main.Settings.Address == null || Main.Settings.Address.Length == 0)
+        if (Settings.Address == null || Settings.Address.Length == 0)
         {
             return false;
         }
 
-        Session = ArchipelagoSessionFactory.CreateSession(Main.Settings.Address, Main.Settings.Port);
+        Session = ArchipelagoSessionFactory.CreateSession(Settings.Address, Settings.Port);
         Session.Socket.ErrorReceived += Session_ErrorReceived;
         Session.Socket.SocketClosed += Session_SocketClosed;
         Session.Items.ItemReceived += Session_ItemReceived;
@@ -53,12 +53,12 @@ public class APManager
         {
             loginResult = Session.TryConnectAndLogin(
                 "Astalon",
-                Main.Settings.SlotName,
+                Settings.SlotName,
                 ItemsHandlingFlags.AllItems,
                 new Version(AP_VERSION[0], AP_VERSION[1], AP_VERSION[2]),
                 null,
                 null,
-                Main.Settings.Password,
+                Settings.Password,
                 true);
         }
         catch (Exception e)
@@ -85,23 +85,23 @@ public class APManager
     public void OnConnect(LoginSuccessful login)
     {
         var config = (JObject)login.SlotData["settings"];
-        Main.Settings.RandomizeAttackPickups = (bool)config["randomize_attack_pickups"];
-        Main.Settings.RandomizeHealthPickups = (bool)config["randomize_health_pickups"];
-        //Main.Settings.RandomizeWhiteKeys = (bool)config["randomize_white_keys"];
-        //Main.Settings.RandomizeBlueKeys = (bool)config["randomize_blue_keys"];
-        Main.Settings.RandomizeRedKeys = (bool)config["randomize_red_keys"];
-        //Main.Settings.RandomizeFamiliars = (bool)config["randomize_familiars"];
-        Main.Settings.SkipCutscenes = (bool)config["skip_cutscenes"];
-        Main.Settings.StartWithZeek = (bool)config["start_with_zeek"];
-        Main.Settings.StartWithBram = (bool)config["start_with_bram"];
-        Main.Settings.StartWithQOL = (bool)config["start_with_qol"];
-        Main.Settings.FreeApexElevator = (bool)config["free_apex_elevator"];
-        //Main.Settings.CostMultiplier = (int)config["cost_multiplier"];
-        Main.Settings.DeathLink = (bool)config["death_link"];
+        Settings.RandomizeAttackPickups = (bool)config["randomize_attack_pickups"];
+        Settings.RandomizeHealthPickups = (bool)config["randomize_health_pickups"];
+        //Settings.RandomizeWhiteKeys = (bool)config["randomize_white_keys"];
+        //Settings.RandomizeBlueKeys = (bool)config["randomize_blue_keys"];
+        Settings.RandomizeRedKeys = (bool)config["randomize_red_keys"];
+        //Settings.RandomizeFamiliars = (bool)config["randomize_familiars"];
+        Settings.SkipCutscenes = (bool)config["skip_cutscenes"];
+        Settings.StartWithZeek = (bool)config["start_with_zeek"];
+        Settings.StartWithBram = (bool)config["start_with_bram"];
+        Settings.StartWithQOL = (bool)config["start_with_qol"];
+        Settings.FreeApexElevator = (bool)config["free_apex_elevator"];
+        Settings.CostMultiplier = (int)config["cost_multiplier"];
+        Settings.DeathLink = (bool)config["death_link"];
 
         DeathLink = Session.CreateDeathLinkService();
         DeathLink.OnDeathLinkReceived += ReceiveDeath;
-        if (Main.Settings.DeathLink)
+        if (Settings.DeathLink)
         {
             DeathLink.EnableDeathLink();
         }
@@ -254,7 +254,7 @@ public class APManager
 
     public void SendDeath()
     {
-        if (Connected && Main.Settings.DeathLink)
+        if (Connected && Settings.DeathLink)
         {
             var name = Session.Players.GetPlayerName(GetCurrentPlayer());
             DeathLink.SendDeathLink(new DeathLink(name));
@@ -268,17 +268,17 @@ public class APManager
 
     public void ToggleDeathLink()
     {
-        if (Main.Settings.DeathLink)
+        if (Settings.DeathLink)
         {
             Main.Log.LogInfo("Disabling death link");
             DeathLink.DisableDeathLink();
-            Main.Settings.DeathLink = false;
+            Settings.DeathLink = false;
         }
         else
         {
             Main.Log.LogInfo("Enabling death link");
             DeathLink.EnableDeathLink();
-            Main.Settings.DeathLink = true;
+            Settings.DeathLink = true;
         }
     }
 }
