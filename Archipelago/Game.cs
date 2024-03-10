@@ -893,15 +893,15 @@ public static class Game
             if (itemID == ItemProperties.ItemID.AscendantKey)
             {
                 Player.PlayerDataLocal.elevatorsOpened = true;
-            }
-            foreach (var roomID in Player.PlayerDataLocal.elevatorsFound)
-            {
-                Player.PlayerDataLocal.UnlockElevator(roomID);
-            }
-            Player.PlayerDataLocal.UnlockElevator(6629);
-            if (Settings.FreeApexElevator)
-            {
-                Player.PlayerDataLocal.UnlockElevator(4109);
+                foreach (var roomID in Player.PlayerDataLocal.elevatorsFound)
+                {
+                    Player.PlayerDataLocal.UnlockElevator(roomID);
+                }
+                Player.PlayerDataLocal.UnlockElevator(6629);
+                if (Settings.FreeApexElevator)
+                {
+                    Player.PlayerDataLocal.UnlockElevator(4109);
+                }
             }
         }
         else if (itemName.EndsWith("Key"))
