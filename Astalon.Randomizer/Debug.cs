@@ -57,6 +57,13 @@ public static class Debug
             Plugin.ToggleConsole();
         }
 
+#if DEBUG
+        if (GUI.Button(new(0, 100, width, height), "Dump Room Data"))
+        {
+            Game.DumpRoom = true;
+        }
+#endif
+
         GUI.EndGroup();
 
         GUI.BeginGroup(new(left2, top, width, 125));

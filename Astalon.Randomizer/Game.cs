@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Archipelago.MultiClient.Net.Enums;
 using Astalon.Randomizer.Archipelago;
 using BepInEx;
@@ -23,6 +24,8 @@ public static class Game
     public static bool CanInitializeSave { get; set; }
     public static bool UnlockElevators { get; set; }
     public static bool TriggerDeath { get; set; }
+    public static bool DumpRoom { get; set; }
+    public static bool ReceivingItem { get; set; }
     private static int _deathCounter = -1;
     private static bool _saveInitialized;
 
@@ -39,7 +42,6 @@ public static class Game
         Player.PlayerDataLocal.collectedStrengths ??= new();
         Player.PlayerDataLocal.collectedHearts ??= new();
         Player.PlayerDataLocal.elevatorsFound ??= new();
-        Player.PlayerDataLocal.unlockedCharacters ??= new();
         Player.PlayerDataLocal.purchasedDeals ??= new();
 
         if (ArchipelagoClient.ServerData.SlotData.SkipCutscenes)
@@ -50,7 +52,8 @@ public static class Game
             Player.PlayerDataLocal.cs_finalPlatformRide = true;
             if (Player.PlayerDataLocal.epimetheusSequence == 0)
             {
-                Player.PlayerDataLocal.epimetheusSequence = 1;
+                Player.PlayerDataLocal.epimetheusSequence = 10;
+                Player.PlayerDataLocal.deaths = 1;
             }
 
             if (!Player.PlayerDataLocal.firstElevatorLit)
@@ -62,36 +65,37 @@ public static class Game
                 }
 
                 // blocks around first elevator
-                var room = GameManager.GetRoomFromID(6629);
                 for (var i = 6641; i < 6647; i++)
                 {
-                    SaveManager.CurrentSave.SetObjectData(i, "_objectOnFalseobjectOn__linkID189linkID_", 6629);
+                    UpdateObjectData(i, 6629, "objectOn", "False");
                 }
 
-                room.UpdateObjectState(SaveManager.CurrentSave);
+                // tutorial rooms
+                UpdateObjectData(6729, 6670, "objectOn", "True");
+                UpdateObjectData(6757, 6670, "unlockStep", "3");
+                UpdateObjectData(458, 6671, "wasActivated", "True");
+                UpdateObjectData(459, 6672, "wasActivated", "True");
+                UpdateObjectData(460, 6672, "objectOn", "False");
+                UpdateObjectData(6708, 6672, "wasActivated", "True");
+                UpdateObjectData(6709, 6672, "objectOn", "False");
+                UpdateObjectData(6722, 6672, "wasActivated", "True");
+                UpdateObjectData(454, 6673, "wasActivated", "True");
             }
         }
 
         if (ArchipelagoClient.ServerData.SlotData.StartWithZeek)
         {
-            if (!Player.PlayerDataLocal.unlockedCharacters.Contains(CharacterProperties.Character.Zeek))
-            {
-                Player.PlayerDataLocal.unlockedCharacters.Add(CharacterProperties.Character.Zeek);
-            }
-
+            Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Zeek);
             var deal = GameManager.Instance.itemManager.GetDealProperties(DealProperties.DealID.Deal_SubMenu_Zeek);
             deal.availableOnStart = true;
         }
 
         if (ArchipelagoClient.ServerData.SlotData.StartWithBram)
         {
+            Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
+            // TODO: check if I need to do these
             Player.PlayerDataLocal.bramFreed = true;
             Player.PlayerDataLocal.bramSeen = true;
-            if (!Player.PlayerDataLocal.unlockedCharacters.Contains(CharacterProperties.Character.Bram))
-            {
-                Player.PlayerDataLocal.unlockedCharacters.Add(CharacterProperties.Character.Bram);
-            }
-
             var deal = GameManager.Instance.itemManager.GetDealProperties(DealProperties.DealID.Deal_SubMenu_Bram);
             deal.availableOnStart = true;
         }
@@ -128,6 +132,13 @@ public static class Game
             }
         }
 
+        var validated = ArchipelagoClient.ServerData.ValidateSave();
+        if (!validated)
+        {
+            Plugin.ArchipelagoClient.Disconnect();
+        }
+
+        Plugin.ArchipelagoClient.SyncLocations();
         _saveInitialized = true;
     }
 
@@ -255,19 +266,52 @@ public static class Game
         }
 
         Data.IconMap.TryGetValue(itemInfo.Name, out var icon);
+
+        if (itemInfo.Name.StartsWith("White Door"))
+        {
+            icon = "WhiteKey_1";
+        }
+
+        if (itemInfo.Name.StartsWith("Blue Door"))
+        {
+            icon = "BlueKey_1";
+        }
+
+        if (itemInfo.Name.StartsWith("Red Door"))
+        {
+            icon = "RedKey_1";
+        }
+
+        if (itemInfo.Name.StartsWith("Max HP"))
+        {
+            icon = "Item_HealthStone_1";
+        }
+
+        if (itemInfo.Name.EndsWith("Orbs"))
+        {
+            icon = "Deal_OrbReaper";
+        }
+
         if (icon.IsNullOrWhiteSpace())
         {
             icon = "Item_AmuletOfSol";
         }
 
-        var sound = "pickup";
-        if (itemInfo.Flags == ItemFlags.Advancement)
+        string sound;
+        switch (itemInfo.Flags)
         {
-            sound = "secret";
-        }
-        else if (itemInfo.Flags == ItemFlags.Trap)
-        {
-            sound = "evil-laugh";
+            case ItemFlags.Advancement:
+                sound = "secret";
+                break;
+            //case ItemFlags.NeverExclude:
+            //    sound = "secret";
+            //    break;
+            case ItemFlags.Trap:
+                sound = "evil-laugh";
+                break;
+            default:
+                sound = "pickup";
+                break;
         }
 
         return new()
@@ -304,21 +348,11 @@ public static class Game
 
         if (itemName == "Attack +1")
         {
-            if (Player.PlayerDataLocal.collectedStrengths.Contains((int)itemInfo.LocationId))
-            {
-                return false;
-            }
-
             Player.PlayerDataLocal.strengthBonusShared += 1;
             Player.PlayerDataLocal.collectedStrengths.Add((int)itemInfo.LocationId);
         }
         else if (itemName.StartsWith("Max HP"))
         {
-            if (Player.PlayerDataLocal.collectedHearts.Contains((int)itemInfo.LocationId))
-            {
-                return false;
-            }
-
             var bonus = 0;
             switch (itemName)
             {
@@ -341,14 +375,10 @@ public static class Game
 
             Player.PlayerDataLocal.healthItemBonus += bonus;
             Player.PlayerDataLocal.currentHealth += bonus;
-            // TODO: replace this with a proper int based on slot data
-            Player.PlayerDataLocal.collectedHearts.Add((int)itemInfo.LocationId);
             GameplayUIManager.Instance?.UpdateHealthBar(Player.Instance, true);
         }
         else if (itemName.EndsWith("Orbs"))
         {
-            // TODO: check if already received
-
             var amount = 0;
             switch (itemName)
             {
@@ -367,32 +397,39 @@ public static class Game
         }
         else if (Data.ItemMap.TryGetValue(itemName, out var itemId))
         {
-            if (Player.PlayerDataLocal.collectedItems.Contains(itemId))
-            {
-                return false;
-            }
-
+            ReceivingItem = true;
             Player.PlayerDataLocal.CollectItem(itemId);
-            if (itemId == ItemProperties.ItemID.AscendantKey)
-            {
-                Player.PlayerDataLocal.elevatorsOpened = true;
-                foreach (var roomId in Player.PlayerDataLocal.elevatorsFound)
-                {
-                    Player.PlayerDataLocal.UnlockElevator(roomId);
-                }
+            ReceivingItem = false;
 
-                Player.PlayerDataLocal.UnlockElevator(6629);
-                if (ArchipelagoClient.ServerData.SlotData.FreeApexElevator)
-                {
-                    Player.PlayerDataLocal.UnlockElevator(4109);
-                }
+            switch (itemId)
+            {
+                case ItemProperties.ItemID.AscendantKey:
+                    Player.PlayerDataLocal.elevatorsOpened = true;
+                    foreach (var roomId in Player.PlayerDataLocal.elevatorsFound)
+                    {
+                        Player.PlayerDataLocal.UnlockElevator(roomId);
+                    }
+
+                    Player.PlayerDataLocal.UnlockElevator(6629);
+                    if (ArchipelagoClient.ServerData.SlotData.FreeApexElevator)
+                    {
+                        Player.PlayerDataLocal.UnlockElevator(4109);
+                    }
+
+                    break;
+                case ItemProperties.ItemID.ZeekItem:
+                    // TODO: figure out why this item doesn't work
+                    Player.PlayerDataLocal.zeekItem = true;
+                    Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.CyclopsIdol);
+                    Player.PlayerDataLocal.zeekQuestStatus = Room_Zeek.ZeekQuestStatus.QuestStarted;
+                    Player.PlayerDataLocal.zeekSeen = true;
+                    break;
             }
         }
         else if (itemName.EndsWith("Key"))
         {
             switch (itemName)
             {
-                // TODO: check if already received
                 case "White Key":
                     Player.PlayerDataLocal.AddKey(Key.KeyType.White);
                     break;
@@ -404,16 +441,17 @@ public static class Game
                     break;
             }
         }
-        else if (Data.RedDoorMap.TryGetValue(itemName, out (int roomID, int objectID) ids))
+        else if (Data.WhiteDoorMap.TryGetValue(itemName, out var whiteIds))
         {
-            if (SaveManager.CurrentSave.GetObjectData(ids.objectID) == "_wasOpenedTruewasOpened_")
-            {
-                return false;
-            }
-
-            var room = GameManager.GetRoomFromID(ids.roomID);
-            SaveManager.CurrentSave.SetObjectData(ids.objectID, "_wasOpenedTruewasOpened_", ids.roomID);
-            room.UpdateObjectState(SaveManager.CurrentSave);
+            return OpenDoor(whiteIds);
+        }
+        else if (Data.BlueDoorMap.TryGetValue(itemName, out var blueIds))
+        {
+            return OpenDoor(blueIds);
+        }
+        else if (Data.RedDoorMap.TryGetValue(itemName, out var redIds))
+        {
+            return OpenDoor(redIds);
         }
         else
         {
@@ -474,6 +512,27 @@ public static class Game
             return true;
         }
 
+        if (ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys &&
+            Data.WhiteKeyMap.TryGetValue(entityId, out var whiteKeyLocation))
+        {
+            Plugin.ArchipelagoClient.SendLocation(whiteKeyLocation);
+            return true;
+        }
+
+        if (ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
+            Data.BlueKeyMap.TryGetValue(entityId, out var blueKeyLocation))
+        {
+            Plugin.ArchipelagoClient.SendLocation(blueKeyLocation);
+            return true;
+        }
+
+        if (ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys && entityId == 0 &&
+            Data.PotKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var potKeyLocation))
+        {
+            Plugin.ArchipelagoClient.SendLocation(potKeyLocation);
+            return true;
+        }
+
         if (ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
             Data.RedKeyMap.TryGetValue(entityId, out var redKeyLocation))
         {
@@ -482,6 +541,46 @@ public static class Game
         }
 
         return false;
+    }
+
+    public static string GetValue(string data, string property)
+    {
+        var re = new Regex($"_{property}(.*){property}_");
+        var match = re.Match(data);
+        return match.Success ? match.Groups[1].Value : "";
+    }
+
+    public static string SetValue(string data, string property, string value)
+    {
+        var newValue = $"_{property}{value}{property}_";
+        var re = new Regex($"_{property}(.*){property}_");
+        var match = re.Match(data);
+        if (match.Success)
+        {
+            return re.Replace(data, newValue);
+        }
+
+        return data + newValue;
+    }
+
+    public static void UpdateObjectData(int objectId, int roomId, string property, string value)
+    {
+        var room = GameManager.GetRoomFromID(roomId);
+        var data = SaveManager.CurrentSave.GetObjectData(objectId);
+        SaveManager.SaveObject(objectId, SetValue(data, property, value), roomId);
+        room.UpdateObjectState(SaveManager.CurrentSave);
+    }
+
+    public static bool OpenDoor((int roomId, int objectId) ids)
+    {
+        var data = SaveManager.CurrentSave.GetObjectData(ids.objectId);
+        if (GetValue(data, "wasOpened").ToLower() == "true")
+        {
+            return false;
+        }
+
+        UpdateObjectData(ids.objectId, ids.roomId, "wasOpened", "True");
+        return true;
     }
 
     public static void Update()
@@ -522,10 +621,18 @@ public static class Game
 
         if (CanGetItem() && IncomingItems.TryDequeue(out var item))
         {
-            var display = GiveItem(item);
-            if (display)
+            if (item.Index < ArchipelagoClient.ServerData.ItemIndex)
             {
-                IncomingMessages.Enqueue(item);
+                Plugin.Logger.LogDebug($"Ignoring previously obtained item {item.Id}");
+            }
+            else
+            {
+                ArchipelagoClient.ServerData.ItemIndex++;
+                var display = GiveItem(item);
+                if (display)
+                {
+                    IncomingMessages.Enqueue(item);
+                }
             }
         }
 
@@ -538,6 +645,20 @@ public static class Game
         {
             Player.PlayerDataLocal?.UnlockAllElevators();
             UnlockElevators = false;
+        }
+
+        if (DumpRoom && Player.PlayerDataLocal?.currentRoomID != null)
+        {
+            Plugin.Logger.LogDebug($"Data for room={Player.PlayerDataLocal.currentRoomID}");
+            foreach (var data in SaveManager.CurrentSave.objectsData)
+            {
+                if (data.RoomID == Player.PlayerDataLocal.currentRoomID)
+                {
+                    Plugin.Logger.LogDebug($"Id={data.ID} Data='{data.Data}'");
+                }
+            }
+
+            DumpRoom = false;
         }
     }
 }

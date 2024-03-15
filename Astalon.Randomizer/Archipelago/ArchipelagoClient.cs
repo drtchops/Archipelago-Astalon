@@ -8,6 +8,7 @@ using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
+using Il2CppSystem.Collections.Generic;
 
 namespace Astalon.Randomizer.Archipelago;
 
@@ -21,6 +22,7 @@ public class ItemInfo
     public bool IsLocal { get; set; }
     public long LocationId { get; set; }
     public bool Receiving { get; set; }
+    public int Index { get; set; }
 }
 
 public class ArchipelagoClient
@@ -33,6 +35,8 @@ public class ArchipelagoClient
     public static ArchipelagoData ServerData { get; } = new();
     private DeathLinkHandler _deathLinkHandler;
     private ArchipelagoSession _session;
+    private int _receivedIndex;
+    private bool _ignoreLocations;
 
     public ArchipelagoClient(string uri, string slotName, string password)
     {
@@ -79,6 +83,8 @@ public class ArchipelagoClient
     {
         LoginResult loginResult;
         _attemptingConnection = true;
+        _receivedIndex = 0;
+        _ignoreLocations = true;
 
         try
         {
@@ -86,7 +92,7 @@ public class ArchipelagoClient
                 "Astalon",
                 ServerData.SlotName,
                 ItemsHandlingFlags.AllItems,
-                new Version(ArchipelagoVersion),
+                new(ArchipelagoVersion),
                 password: ServerData.Password,
                 requestSlotData: true);
         }
@@ -113,6 +119,8 @@ public class ArchipelagoClient
     public void OnConnect(LoginSuccessful login)
     {
         ServerData.SetupSession(login.SlotData, _session.RoomState.Seed);
+        _ignoreLocations = false;
+        SyncLocations();
         _deathLinkHandler = new(_session.CreateDeathLinkService(), ServerData.SlotName, ServerData.SlotData.DeathLink);
         _attemptingConnection = false;
         Game.InitializeSave();
@@ -158,6 +166,8 @@ public class ArchipelagoClient
     {
         if (!Connected)
         {
+            Plugin.Logger.LogWarning($"No connection, saving location {location} for later");
+            ServerData.PendingLocations.Add(location);
             return;
         }
 
@@ -165,15 +175,22 @@ public class ArchipelagoClient
         _session.Locations.CompleteLocationChecksAsync(id);
     }
 
-    public ItemInfo ScoutLocation(string location)
+    public void SyncLocations()
     {
-        if (!Connected)
+        if (!Connected || ServerData.PendingLocations.Count == 0)
         {
-            return null;
+            return;
         }
 
-        var id = _session.Locations.GetLocationIdFromName("Astalon", location);
-        return ScoutLocation(id);
+        List<long> ids = new();
+        foreach (var location in ServerData.PendingLocations)
+        {
+            ids.Add(_session.Locations.GetLocationIdFromName("Astalon", location));
+        }
+
+        Plugin.Logger.LogInfo($"Sending location checks: {string.Join(", ", ServerData.PendingLocations)}");
+        _session.Locations.CompleteLocationChecksAsync(ids.ToArray());
+        ServerData.PendingLocations.Clear();
     }
 
     public ItemInfo ScoutLocation(long id)
@@ -230,16 +247,30 @@ public class ArchipelagoClient
             IsLocal = player == GetCurrentPlayer(),
             LocationId = item.Location,
             Receiving = true,
+            Index = _receivedIndex,
         });
+        _receivedIndex++;
     }
 
     public void Session_CheckedLocationsUpdated(ReadOnlyCollection<long> newCheckedLocations)
     {
+        if (_ignoreLocations)
+        {
+            return;
+        }
+
+        Plugin.Logger.LogDebug($"New locations checked: {string.Join(", ", newCheckedLocations)}");
         foreach (var id in newCheckedLocations)
         {
             var itemInfo = ScoutLocation(id);
+            if (itemInfo == null)
+            {
+                Plugin.Logger.LogWarning($"Scouting failed for location {id}");
+                continue;
+            }
+
             Plugin.Logger.LogInfo($"Checked location: {id} - {itemInfo.Name} for {itemInfo.PlayerName}");
-            if (itemInfo is { IsLocal: false })
+            if (!itemInfo.IsLocal)
             {
                 Game.IncomingMessages.Enqueue(itemInfo);
             }

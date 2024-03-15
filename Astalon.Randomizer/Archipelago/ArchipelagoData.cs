@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using BepInEx;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -95,15 +96,17 @@ public class ArchipelagoData
     public string Uri;
     public string SlotName;
     public string Password;
-    public int Index;
-
-    public List<long> CheckedLocations = new();
+    public int ItemIndex;
+    public List<string> PendingLocations = new();
 
     /// <summary>
     ///     seed for this archipelago data. Can be used when loading a file to verify the session the player is trying to
     ///     load is valid to the room it's connecting to.
     /// </summary>
     private string _seed;
+
+    private const int BaseObjectId = 333000;
+    private const int BaseRoomId = -1;
 
     public ArchipelagoSlotData SlotData;
 
@@ -131,12 +134,45 @@ public class ArchipelagoData
         _seed = roomSeed;
     }
 
-    /// <summary>
-    ///     returns the object as a json string to be written to a file which you can then load
-    /// </summary>
-    /// <returns></returns>
-    public override string ToString()
+    public bool ValidateSave()
     {
-        return JsonConvert.SerializeObject(this);
+        if (!_seed.IsNullOrWhiteSpace())
+        {
+            var seed = SaveManager.CurrentSave.GetObjectData(BaseObjectId);
+            Plugin.Logger.LogDebug($"seed={seed}");
+            if (!seed.IsNullOrWhiteSpace() && seed != _seed)
+            {
+                Plugin.Logger.LogError($"Expected seed {_seed} but found {seed}. Did you load the right save?");
+                return false;
+            }
+        }
+
+        var index = SaveManager.CurrentSave.GetObjectData(BaseObjectId + 1);
+        Plugin.Logger.LogDebug($"index={index}");
+        ItemIndex = !index.IsNullOrWhiteSpace() ? int.Parse(index) : 0;
+
+        var pendingLocations = SaveManager.CurrentSave.GetObjectData(BaseObjectId + 2);
+        Plugin.Logger.LogDebug($"pendingLocations={pendingLocations}");
+        if (!pendingLocations.IsNullOrWhiteSpace())
+        {
+            PendingLocations = JsonConvert.DeserializeObject<List<string>>(pendingLocations);
+        }
+
+        return true;
+    }
+
+    public void UpdateSave()
+    {
+        SaveManager.SaveObject(BaseObjectId, _seed ?? "", BaseRoomId);
+        SaveManager.SaveObject(BaseObjectId + 1, ItemIndex.ToString(), BaseRoomId);
+        SaveManager.SaveObject(BaseObjectId + 2, JsonConvert.SerializeObject(PendingLocations), BaseRoomId);
+    }
+
+    public void Clear()
+    {
+        _seed = "";
+        SlotData = null;
+        ItemIndex = 0;
+        PendingLocations.Clear();
     }
 }

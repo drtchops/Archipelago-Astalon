@@ -64,9 +64,33 @@ internal class Key_Collect_Patch
 {
     public static void Prefix(Key __instance)
     {
-        Plugin.Logger.LogDebug($"Key.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
-        if (__instance.keyType == Key.KeyType.Red && ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
-            Data.RedKeyMap.ContainsKey(__instance.actorID))
+        Plugin.Logger.LogDebug($"Key.Collect({__instance}, {__instance.actorID}, {__instance.room.roomID})");
+        switch (__instance.keyType)
+        {
+            case Key.KeyType.White when ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys &&
+                                        Data.WhiteKeyMap.ContainsKey(__instance.actorID):
+            case Key.KeyType.Blue when ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
+                                       Data.BlueKeyMap.ContainsKey(__instance.actorID):
+            case Key.KeyType.Red when ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
+                                      Data.RedKeyMap.ContainsKey(__instance.actorID):
+                __instance.useItemBox = false;
+                __instance.collectedSound = null;
+                __instance.collectedText = null;
+                break;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(KeyPickable), nameof(KeyPickable.Collect))]
+internal class KeyPickable_Collect_Patch
+{
+    public static void Prefix(KeyPickable __instance)
+    {
+        Plugin.Logger.LogDebug(
+            $"KeyPickable.Collect({__instance}, {__instance.actorID}, {__instance.room?.roomID}, {__instance.keyType}, {__instance.poolName})");
+        if (__instance.keyType == Key.KeyType.Blue && ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
+            (Data.BlueKeyMap.ContainsKey(__instance.actorID) ||
+             (__instance.actorID == 0 && Data.PotKeyMap.ContainsKey(Player.PlayerDataLocal.currentRoomID))))
         {
             __instance.useItemBox = false;
             __instance.collectedSound = null;
@@ -80,9 +104,15 @@ internal class PlayerData_Patch
 {
     [HarmonyPatch(nameof(PlayerData.CollectItem), typeof(ItemProperties.ItemID))]
     [HarmonyPrefix]
-    public static void CollectItemID(ItemProperties.ItemID itemID)
+    public static bool CollectItemID(ItemProperties.ItemID itemID)
     {
         Plugin.Logger.LogDebug($"PlayerData.CollectItemID({itemID})");
+        if (!Game.ReceivingItem && itemID == ItemProperties.ItemID.ZeekItem)
+        {
+            return !Game.CollectItem(itemID);
+        }
+
+        return true;
     }
 
     [HarmonyPatch(nameof(PlayerData.CollectItem), typeof(ItemProperties))]
@@ -177,6 +207,13 @@ internal class PlayerData_Patch
     {
         Plugin.Logger.LogDebug("PlayerData.UnlockElevatorPostfix()");
         Game.RemoveFreeElevator();
+    }
+
+    [HarmonyPatch(nameof(PlayerData.UnlockCharacter))]
+    [HarmonyPrefix]
+    public static void UnlockCharacter(CharacterProperties.Character _character)
+    {
+        Plugin.Logger.LogDebug($"PlayerData.UnlockCharacter({_character})");
     }
 }
 
@@ -413,6 +450,8 @@ internal class GameLoader_Patch
         Plugin.Logger.LogDebug($"GameLoader.RestartGame()");
         Game.CanInitializeSave = false;
         Game.ExitSave();
+        Plugin.ArchipelagoClient.Disconnect();
+        ArchipelagoClient.ServerData.Clear();
     }
 
     [HarmonyPatch(nameof(GameLoader.PlayIntro))]
@@ -440,14 +479,7 @@ internal class SaveManager_Patch
         Plugin.Logger.LogDebug($"SaveManager.ApplyCurrentSave({showIcon})");
         Game.CanInitializeSave = true;
         Game.InitializeSave();
-
-        //foreach (var data in SaveManager.CurrentSave.objectsData)
-        //{
-        //    if (data.RoomID == 248)
-        //    {
-        //        Main.Log.LogDebug($"Id={data.Id} Room={data.RoomID} Data='{data.Data}'");
-        //    }
-        //}
+        ArchipelagoClient.ServerData.UpdateSave();
     }
 
     [HarmonyPatch(nameof(SaveManager.InitializeFirstSave))]
@@ -477,5 +509,14 @@ internal class Debug_Patch
     public static void Prefix()
     {
         Game.Update();
+    }
+}
+
+[HarmonyPatch(typeof(InputListener), nameof(InputListener.Update))]
+internal class InputListener_Patch
+{
+    public static bool Prefix()
+    {
+        return ArchipelagoConsole.Hidden || !Settings.ShowConsole;
     }
 }
