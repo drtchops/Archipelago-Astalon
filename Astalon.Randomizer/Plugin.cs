@@ -166,7 +166,5 @@ public class Il2CppBase : MonoBehaviour
         }
 
         GUI.EndGroup();
-
-        // this is a good place to create and add a bunch of debug buttons
     }
 }

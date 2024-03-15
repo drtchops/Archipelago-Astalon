@@ -26,12 +26,12 @@ public static class Data
         //{ ItemProperties.ItemID.PrincesCrown, "Cyclops Den - Prince's Crown" },
         { ItemProperties.ItemID.AscendantKey, "Gorgon Tomb - Ascendant Key" },
         { ItemProperties.ItemID.TalariaBoots, "Mechanism - Talaria Boots" },
-        // {ItemProperties.ItemID.MonsterBall, "Gorgon Tomb - Monster Ball"},
+        //{ ItemProperties.ItemID.MonsterBall, "Gorgon Tomb - Monster Ball" },
         { ItemProperties.ItemID.BloodChalice, "The Apex - Blood Chalice" },
         { ItemProperties.ItemID.MorningStar, "Serpent Path - Morning Star" },
         //{ ItemProperties.ItemID.ZeekItem, "Mechanism - Cyclops Idol" },
         { ItemProperties.ItemID.BoreasGauntlet, "Hall of the Phantoms - Boreas Gauntlet" },
-        // {ItemProperties.ItemID.FamiliarGil, "Catacombs - Gil"},
+        //{ ItemProperties.ItemID.FamiliarGil, "Catacombs - Gil" },
         { ItemProperties.ItemID.MagicBlock, "Cathedral - Magic Block" },
     };
 
@@ -57,12 +57,12 @@ public static class Data
         //{ "Prince's Crown", ItemProperties.ItemID.PrincesCrown }, // not sure how this is handled
         { "Ascendant Key", ItemProperties.ItemID.AscendantKey },
         { "Talaria Boots", ItemProperties.ItemID.TalariaBoots },
-        // {"Monster Ball", ItemProperties.ItemID.MonsterBall},
+        //{ "Monster Ball", ItemProperties.ItemID.MonsterBall },
         { "Blood Chalice", ItemProperties.ItemID.BloodChalice },
         { "Morning Star", ItemProperties.ItemID.MorningStar },
         //{ "Cyclops Idol", ItemProperties.ItemID.ZeekItem },
         { "Boreas Gauntlet", ItemProperties.ItemID.BoreasGauntlet },
-        // {"Gil", ItemProperties.ItemID.FamiliarGil}, // crashes
+        //{ "Gil", ItemProperties.ItemID.FamiliarGil }, // crashes
         { "Magic Block", ItemProperties.ItemID.MagicBlock },
     };
 

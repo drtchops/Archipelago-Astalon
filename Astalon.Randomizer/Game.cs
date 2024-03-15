@@ -165,21 +165,12 @@ public static class Game
             //Main.Log.LogWarning("Cannot get item: PlayerData is not loaded");
             return false;
         }
-        // if (GameplayUIManager.Instance == null)
-        // {
-        //     Main.Log.LogWarning("Cannot get item: GameplayUIManager == null");
-        //     return false;
-        // }
-        // if (GameplayUIManager.Instance.isOnMainMenu)
-        // {
-        //     Main.Log.LogWarning("Cannot get item: on main menu");
-        //     return false;
-        // }
-        // if (GameLoader.Instance.gameIsLoading)
-        // {
-        //     Main.Log.LogWarning("Cannot get item: loading");
-        //     return false;
-        // }
+
+        //if (GameLoader.Instance.gameIsLoading)
+        //{
+        //    //Main.Log.LogWarning("Cannot get item: loading");
+        //    return false;
+        //}
 
         return true;
     }
@@ -202,24 +193,16 @@ public static class Game
             //Main.Log.LogWarning("Cannot display message: itemBox null or displayed");
             return false;
         }
-        // if (GameplayUIManager.Instance.isOnMainMenu)
-        // {
-        //     Main.Log.LogWarning("Cannot get item: on main menu");
-        //     return false;
-        // }
-        // if (GameLoader.Instance.gameIsLoading)
-        // {
-        //     Main.Log.LogWarning("Cannot get item: loading");
-        //     return false;
-        // }
-        // if (GameplayUIManager.Instance.dialogueRunning)
-        // {
-        //     Main.Log.LogWarning("Cannot display message: dialogue running");
-        //     return false;
-        // }
-        //if (!ItemBoxDisplayed)
+
+        //if (GameLoader.Instance.gameIsLoading)
         //{
-        //    Main.Log.LogWarning("Cannot display message: item box not yet displayed");
+        //    //Main.Log.LogWarning("Cannot get item: loading");
+        //    return false;
+        //}
+
+        //if (GameplayUIManager.Instance.dialogueRunning)
+        //{
+        //    //Main.Log.LogWarning("Cannot display message: dialogue running");
         //    return false;
         //}
 
@@ -297,22 +280,13 @@ public static class Game
             icon = "Item_AmuletOfSol";
         }
 
-        string sound;
-        switch (itemInfo.Flags)
+        var sound = itemInfo.Flags switch
         {
-            case ItemFlags.Advancement:
-                sound = "secret";
-                break;
-            //case ItemFlags.NeverExclude:
-            //    sound = "secret";
-            //    break;
-            case ItemFlags.Trap:
-                sound = "evil-laugh";
-                break;
-            default:
-                sound = "pickup";
-                break;
-        }
+            ItemFlags.Advancement => "secret",
+            //ItemFlags.NeverExclude => "secret",
+            ItemFlags.Trap => "evil-laugh",
+            _ => "pickup",
+        };
 
         return new()
         {
@@ -353,25 +327,15 @@ public static class Game
         }
         else if (itemName.StartsWith("Max HP"))
         {
-            var bonus = 0;
-            switch (itemName)
+            var bonus = itemName switch
             {
-                case "Max HP +1":
-                    bonus = 1;
-                    break;
-                case "Max HP +2":
-                    bonus = 2;
-                    break;
-                case "Max HP +3":
-                    bonus = 3;
-                    break;
-                case "Max HP +4":
-                    bonus = 4;
-                    break;
-                case "Max HP +5":
-                    bonus = 5;
-                    break;
-            }
+                "Max HP +1" => 1,
+                "Max HP +2" => 2,
+                "Max HP +3" => 3,
+                "Max HP +4" => 4,
+                "Max HP +5" => 5,
+                _ => 0,
+            };
 
             Player.PlayerDataLocal.healthItemBonus += bonus;
             Player.PlayerDataLocal.currentHealth += bonus;
@@ -379,19 +343,16 @@ public static class Game
         }
         else if (itemName.EndsWith("Orbs"))
         {
-            var amount = 0;
-            switch (itemName)
+            var amount = itemName switch
             {
-                case "50 Orbs":
-                    amount = 50;
-                    break;
-                case "100 Orbs":
-                    amount = 100;
-                    break;
-                case "200 Orbs":
-                    amount = 200;
-                    break;
-            }
+                "50 Orbs" => 50,
+                "100 Orbs" => 100,
+                "200 Orbs" => 200,
+                "500 Orbs" => 500,
+                "1000 Orbs" => 1000,
+                "2000 Orbs" => 2000,
+                _ => 0,
+            };
 
             Player.Instance.CollectOrbs(amount);
         }
