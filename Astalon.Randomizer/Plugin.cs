@@ -49,6 +49,8 @@ public class Plugin : BasePlugin
 
         Logger = Log;
 
+        //Game.Awake();
+
         var harmony = new Harmony("Archipelago");
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 
@@ -120,9 +122,6 @@ public class Il2CppBase : MonoBehaviour
                 return;
             }
 
-            // if your game doesn't usually show the cursor this line may be necessary
-            // Cursor.visible = false;
-
             GUI.BeginGroup(new(Screen.width - 304, Screen.height - 52, 304, 48));
             GUI.Box(new(0, 0, 300, 48), "");
             GUI.Label(new(4, 0, 300, 20), $"{ModDisplayInfo} (F1 for Debug)");
@@ -130,9 +129,6 @@ public class Il2CppBase : MonoBehaviour
             GUI.EndGroup();
             return;
         }
-
-        // if your game doesn't usually show the cursor this line may be necessary
-        // Cursor.visible = true;
 
         GUI.BeginGroup(new(Screen.width - 308, Screen.height - 132, 308, 128));
 
@@ -160,7 +156,7 @@ public class Il2CppBase : MonoBehaviour
 
         var pressedButton = GUI.Button(new(4, 100, 100, 20), "Connect");
         // requires that the player at least puts *something* in the slot name
-        if (!ArchipelagoClient.ServerData.SlotName.IsNullOrWhiteSpace() && (pressedEnter || pressedButton))
+        if (!string.IsNullOrWhiteSpace(ArchipelagoClient.ServerData.SlotName) && (pressedEnter || pressedButton))
         {
             Plugin.ArchipelagoClient.Connect();
         }

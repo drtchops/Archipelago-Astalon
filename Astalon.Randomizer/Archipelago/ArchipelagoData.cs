@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using BepInEx;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -136,11 +135,11 @@ public class ArchipelagoData
 
     public bool ValidateSave()
     {
-        if (!_seed.IsNullOrWhiteSpace())
+        if (!string.IsNullOrWhiteSpace(_seed))
         {
             var seed = SaveManager.CurrentSave.GetObjectData(BaseObjectId);
             Plugin.Logger.LogDebug($"seed={seed}");
-            if (!seed.IsNullOrWhiteSpace() && seed != _seed)
+            if (!string.IsNullOrWhiteSpace(seed) && seed != _seed)
             {
                 Plugin.Logger.LogError($"Expected seed {_seed} but found {seed}. Did you load the right save?");
                 return false;
@@ -149,11 +148,11 @@ public class ArchipelagoData
 
         var index = SaveManager.CurrentSave.GetObjectData(BaseObjectId + 1);
         Plugin.Logger.LogDebug($"index={index}");
-        ItemIndex = !index.IsNullOrWhiteSpace() ? int.Parse(index) : 0;
+        ItemIndex = string.IsNullOrWhiteSpace(index) ? 0 : int.Parse(index);
 
         var pendingLocations = SaveManager.CurrentSave.GetObjectData(BaseObjectId + 2);
         Plugin.Logger.LogDebug($"pendingLocations={pendingLocations}");
-        if (!pendingLocations.IsNullOrWhiteSpace())
+        if (!string.IsNullOrWhiteSpace(pendingLocations))
         {
             PendingLocations = JsonConvert.DeserializeObject<List<string>>(pendingLocations);
         }

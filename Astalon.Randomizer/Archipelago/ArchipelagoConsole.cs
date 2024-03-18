@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx;
 using UnityEngine;
 
 namespace Astalon.Randomizer.Archipelago;
@@ -34,7 +33,7 @@ public static class ArchipelagoConsole
 
     public static void LogMessage(string message)
     {
-        if (message.IsNullOrWhiteSpace())
+        if (string.IsNullOrWhiteSpace(message))
         {
             return;
         }
@@ -56,13 +55,14 @@ public static class ArchipelagoConsole
             return;
         }
 
-        // I don't know why this needs to be recreated every time
-        Texture2D bg = new(1, 1);
-        bg.SetPixel(0, 0, new(0, 0, 0, 0.8f));
-        bg.Apply();
-        GUI.skin.box.normal.background = bg;
-        GUI.skin.button.normal.background = bg;
-        GUI.skin.textField.normal.background = bg;
+        // this seems to very rarely crash
+        //// I don't know why this needs to be recreated every time
+        //Texture2D bg = new(1, 1);
+        //bg.SetPixel(0, 0, new(0, 0, 0, 0.8f));
+        //bg.Apply();
+        //GUI.skin.box.normal.background = bg;
+        //GUI.skin.button.normal.background = bg;
+        //GUI.skin.textField.normal.background = bg;
 
         if (!Hidden || Time.time - _lastUpdateTime < HideTimeout)
         {
@@ -96,7 +96,7 @@ public static class ArchipelagoConsole
         GUI.SetNextControlName("message");
         _commandText = GUI.TextField(_commandTextRect, _commandText);
         var pressedButton = GUI.Button(_sendCommandButton, "Send");
-        if (!_commandText.IsNullOrWhiteSpace() && (pressedButton || pressedEnter))
+        if (!string.IsNullOrWhiteSpace(_commandText) && (pressedButton || pressedEnter))
         {
             Plugin.ArchipelagoClient.SendMessage(_commandText);
             _commandText = "";

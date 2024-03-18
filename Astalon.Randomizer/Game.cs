@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Archipelago.MultiClient.Net.Enums;
 using Astalon.Randomizer.Archipelago;
-using BepInEx;
 using Il2CppSystem;
+using UnityEngine;
 
 namespace Astalon.Randomizer;
 
@@ -18,6 +20,9 @@ public class ItemBox
 
 public static class Game
 {
+    public const string Name = "Astalon";
+    public const string DefaultIcon = "BlueOrb_1";
+
     public static Queue<ItemInfo> IncomingItems { get; } = new();
     public static Queue<ItemInfo> IncomingMessages { get; } = new();
     public static string DeathSource { get; private set; }
@@ -26,8 +31,178 @@ public static class Game
     public static bool TriggerDeath { get; set; }
     public static bool DumpRoom { get; set; }
     public static bool ReceivingItem { get; set; }
+
+    private static readonly string DataDir = Path.GetFullPath("BepInEx/data/Archipelago");
     private static int _deathCounter = -1;
     private static bool _saveInitialized;
+    private static tk2dBaseSprite _baseSprite;
+    private static tk2dSpriteCollectionData _spriteCollectionData;
+    private static tk2dSpriteAnimationClip _spriteAnimationClip;
+    private static bool _injectedAnimation;
+
+    public static void Awake()
+    {
+        var apTexture = LoadImageAsTexture("ap-item.png");
+        var gameObject = tk2dSprite.CreateFromTexture(
+            apTexture,
+            tk2dSpriteCollectionSize.ForTk2dCamera(),
+            new(0, 0, 16, 16),
+            new(8, 8));
+        _baseSprite = gameObject.GetComponent<tk2dSprite>();
+
+        _spriteCollectionData = tk2dSpriteCollectionData.CreateFromTexture(
+            LoadImageAsTexture("multi-images.png"),
+            tk2dSpriteCollectionSize.ForTk2dCamera(),
+            new(new string[] { "AP_ITEM", "AP_ITEM_BRIGHT" }),
+            new(new Rect[] { new(0, 0, 16, 16), new(16, 0, 16, 16) }),
+            new(new Vector2[] { new(8, 8), new(8, 8) }));
+
+        _spriteAnimationClip = new()
+        {
+            fps = 6,
+            loopStart = 0,
+            name = "AP_ITEM",
+            wrapMode = tk2dSpriteAnimationClip.WrapMode.Loop,
+            frames = new(new tk2dSpriteAnimationFrame[]
+            {
+                new()
+                {
+                    eventFloat = 0,
+                    eventInfo = null,
+                    eventInt = 0,
+                    spriteCollection = _spriteCollectionData,
+                    spriteId = 0,
+                    triggerEvent = false,
+                },
+                new()
+                {
+                    eventFloat = 0,
+                    eventInfo = null,
+                    eventInt = 0,
+                    spriteCollection = _spriteCollectionData,
+                    spriteId = 1,
+                    triggerEvent = false,
+                },
+            }),
+        };
+    }
+
+    public static Texture2D LoadImageAsTexture(string filename)
+    {
+        var path = $"{DataDir}/{filename}";
+        var bytes = File.ReadAllBytes(path);
+        var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+        texture.LoadImage(bytes, false);
+        return texture;
+    }
+
+    public static void UpdateSprite(tk2dBaseSprite sprite)
+    {
+        sprite.SetSprite(_baseSprite.Collection, 0);
+    }
+
+    public static void UpdateAnimation(tk2dSpriteAnimator animator)
+    {
+        if (!_injectedAnimation)
+        {
+            var newClips = animator.library.clips.ToList();
+            newClips.Add(_spriteAnimationClip);
+            animator.library.clips = newClips.ToArray();
+            _injectedAnimation = true;
+        }
+
+        var clipId = animator.GetClipIdByName("AP_ITEM");
+        animator.defaultClipId = clipId;
+        animator.Play("AP_ITEM");
+    }
+
+    public static void UpdateItem(Item item)
+    {
+        if (item.itemProperties?.itemID == null)
+        {
+            return;
+        }
+
+        if (Data.LocationMap.TryGetValue(item.itemProperties.itemID, out var location))
+        {
+            UpdateEntityAppearance(item.gameObject, location);
+        }
+    }
+
+    public static void UpdateEntity(GameObject gameObject, int actorId)
+    {
+        string location = null;
+
+        if (ArchipelagoClient.ServerData.SlotData.RandomizeHealthPickups &&
+            Data.HealthMap.TryGetValue(actorId, out var healthLocation))
+        {
+            location = healthLocation;
+        }
+
+        if (ArchipelagoClient.ServerData.SlotData.RandomizeAttackPickups &&
+            Data.AttackMap.TryGetValue(actorId, out var attackLocation))
+        {
+            location = attackLocation;
+        }
+
+        if (ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys &&
+            Data.WhiteKeyMap.TryGetValue(actorId, out var whiteLocation))
+        {
+            location = whiteLocation;
+        }
+
+        if (ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
+            Data.BlueKeyMap.TryGetValue(actorId, out var blueLocation))
+        {
+            location = blueLocation;
+        }
+
+        if (ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys && actorId == 0 &&
+            Data.PotKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var potLocation))
+        {
+            location = potLocation;
+        }
+
+        if (ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
+            Data.RedKeyMap.TryGetValue(actorId, out var redLocation))
+        {
+            location = redLocation;
+        }
+
+        if (location != null)
+        {
+            UpdateEntityAppearance(gameObject, location);
+        }
+    }
+
+    public static void UpdateEntityAppearance(GameObject gameObject, string location)
+    {
+        var itemInfo = Plugin.ArchipelagoClient.ScoutLocation(location);
+        var itemName = itemInfo != null && itemInfo.IsAstalon ? itemInfo.Name : "";
+        var icon = GetIcon(itemName);
+        var animationName = icon switch
+        {
+            "WhiteKey_1" => "WhiteKey",
+            "BlueKey_1" => "BlueKey",
+            "RedKey_1" => "RedKey",
+            "BlueOrb_1" => "TrapOrb",
+            _ => icon,
+        };
+
+        var animator = gameObject.GetComponent<tk2dSpriteAnimator>();
+        if (animator != null)
+        {
+            var clipId = animator.GetClipIdByName(animationName);
+            animator.defaultClipId = clipId;
+            animator.Play(animationName);
+        }
+
+        var sprite = gameObject.GetComponent<tk2dBaseSprite>();
+        if (sprite != null)
+        {
+            sprite.SetSprite(icon);
+        }
+    }
 
     public static void InitializeSave()
     {
@@ -38,9 +213,6 @@ public static class Game
 
         Plugin.Logger.LogDebug("Initializing Save");
 
-        Player.PlayerDataLocal.collectedItems ??= new();
-        Player.PlayerDataLocal.collectedStrengths ??= new();
-        Player.PlayerDataLocal.collectedHearts ??= new();
         Player.PlayerDataLocal.elevatorsFound ??= new();
         Player.PlayerDataLocal.purchasedDeals ??= new();
 
@@ -234,13 +406,48 @@ public static class Game
         return true;
     }
 
+    public static string GetIcon(string itemName)
+    {
+        if (itemName.StartsWith("White Door"))
+        {
+            return "WhiteKey_1";
+        }
+
+        if (itemName.StartsWith("Blue Door"))
+        {
+            return "BlueKey_1";
+        }
+
+        if (itemName.StartsWith("Red Door"))
+        {
+            return "RedKey_1";
+        }
+
+        if (itemName.StartsWith("Max HP"))
+        {
+            return "Item_HealthStone_1";
+        }
+
+        if (itemName.EndsWith("Orbs"))
+        {
+            return "Deal_OrbReaper";
+        }
+
+        if (Data.IconMap.TryGetValue(itemName, out var icon))
+        {
+            return icon;
+        }
+
+        return DefaultIcon;
+    }
+
     public static ItemBox FormatItemBox(ItemInfo itemInfo)
     {
         var message = itemInfo.Name;
         if (!itemInfo.IsLocal)
         {
             var playerName = itemInfo.PlayerName;
-            if (playerName.IsNullOrWhiteSpace())
+            if (string.IsNullOrWhiteSpace(playerName))
             {
                 playerName = "Server";
             }
@@ -248,40 +455,9 @@ public static class Game
             message = itemInfo.Receiving ? $"{message} from {playerName}" : $"{playerName}'s {message}";
         }
 
-        Data.IconMap.TryGetValue(itemInfo.Name, out var icon);
-
-        if (itemInfo.Name.StartsWith("White Door"))
-        {
-            icon = "WhiteKey_1";
-        }
-
-        if (itemInfo.Name.StartsWith("Blue Door"))
-        {
-            icon = "BlueKey_1";
-        }
-
-        if (itemInfo.Name.StartsWith("Red Door"))
-        {
-            icon = "RedKey_1";
-        }
-
-        if (itemInfo.Name.StartsWith("Max HP"))
-        {
-            icon = "Item_HealthStone_1";
-        }
-
-        if (itemInfo.Name.EndsWith("Orbs"))
-        {
-            icon = "Deal_OrbReaper";
-        }
-
-        if (icon.IsNullOrWhiteSpace())
-        {
-            icon = "Item_AmuletOfSol";
-        }
-
         var sound = itemInfo.Flags switch
         {
+            //ItemFlags.Advancement => "applause",
             ItemFlags.Advancement => "secret",
             //ItemFlags.NeverExclude => "secret",
             ItemFlags.Trap => "evil-laugh",
@@ -291,7 +467,7 @@ public static class Game
         return new()
         {
             Message = message,
-            Icon = icon,
+            Icon = GetIcon(itemInfo.Name),
             Sound = sound,
         };
     }
@@ -323,7 +499,6 @@ public static class Game
         if (itemName == "Attack +1")
         {
             Player.PlayerDataLocal.strengthBonusShared += 1;
-            Player.PlayerDataLocal.collectedStrengths.Add((int)itemInfo.LocationId);
         }
         else if (itemName.StartsWith("Max HP"))
         {
@@ -382,6 +557,7 @@ public static class Game
                     // TODO: figure out why this item doesn't work
                     Player.PlayerDataLocal.zeekItem = true;
                     Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.CyclopsIdol);
+                    Player.PlayerDataLocal.AddKey(Key.KeyType.Cyclops);
                     Player.PlayerDataLocal.zeekQuestStatus = Room_Zeek.ZeekQuestStatus.QuestStarted;
                     Player.PlayerDataLocal.zeekSeen = true;
                     break;
@@ -425,7 +601,7 @@ public static class Game
 
     public static void RemoveFreeElevator()
     {
-        if (!ArchipelagoClient.ServerData.SlotData.FreeApexElevator &&
+        if (ArchipelagoClient.Connected && !ArchipelagoClient.ServerData.SlotData.FreeApexElevator &&
             Player.PlayerDataLocal.elevatorsFound.Contains(4109) &&
             !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
         {

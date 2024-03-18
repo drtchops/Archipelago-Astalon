@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
-using BepInEx;
 
 namespace Astalon.Randomizer.Archipelago;
 
@@ -59,7 +58,7 @@ public class DeathLinkHandler
     {
         _deathLinks.Enqueue(deathLink);
 
-        Plugin.Logger.LogDebug(deathLink.Cause.IsNullOrWhiteSpace()
+        Plugin.Logger.LogDebug(string.IsNullOrWhiteSpace(deathLink.Cause)
             ? $"Received Death Link from: {deathLink.Source}"
             : deathLink.Cause);
     }

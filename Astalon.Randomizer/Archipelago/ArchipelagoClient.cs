@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
@@ -7,7 +8,6 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Packets;
-using BepInEx;
 using Il2CppSystem.Collections.Generic;
 
 namespace Astalon.Randomizer.Archipelago;
@@ -23,6 +23,7 @@ public class ItemInfo
     public long LocationId { get; set; }
     public bool Receiving { get; set; }
     public int Index { get; set; }
+    public bool IsAstalon { get; set; }
 }
 
 public class ArchipelagoClient
@@ -37,6 +38,7 @@ public class ArchipelagoClient
     private ArchipelagoSession _session;
     private int _receivedIndex;
     private bool _ignoreLocations;
+    private readonly Dictionary<long, ItemInfo> _locationCache = new();
 
     public ArchipelagoClient(string uri, string slotName, string password)
     {
@@ -52,7 +54,7 @@ public class ArchipelagoClient
             return;
         }
 
-        if (ServerData.Uri.IsNullOrWhiteSpace())
+        if (string.IsNullOrWhiteSpace(ServerData.Uri))
         {
             return;
         }
@@ -89,7 +91,7 @@ public class ArchipelagoClient
         try
         {
             loginResult = _session.TryConnectAndLogin(
-                "Astalon",
+                Game.Name,
                 ServerData.SlotName,
                 ItemsHandlingFlags.AllItems,
                 new(ArchipelagoVersion),
@@ -171,7 +173,7 @@ public class ArchipelagoClient
             return;
         }
 
-        var id = _session.Locations.GetLocationIdFromName("Astalon", location);
+        var id = _session.Locations.GetLocationIdFromName(Game.Name, location);
         _session.Locations.CompleteLocationChecksAsync(id);
     }
 
@@ -185,7 +187,7 @@ public class ArchipelagoClient
         List<long> ids = new();
         foreach (var location in ServerData.PendingLocations)
         {
-            ids.Add(_session.Locations.GetLocationIdFromName("Astalon", location));
+            ids.Add(_session.Locations.GetLocationIdFromName(Game.Name, location));
         }
 
         Plugin.Logger.LogInfo($"Sending location checks: {string.Join(", ", ServerData.PendingLocations)}");
@@ -193,8 +195,24 @@ public class ArchipelagoClient
         ServerData.PendingLocations.Clear();
     }
 
+    public ItemInfo ScoutLocation(string name)
+    {
+        if (!Connected)
+        {
+            return null;
+        }
+
+        var id = _session.Locations.GetLocationIdFromName(Game.Name, name);
+        return ScoutLocation(id);
+    }
+
     public ItemInfo ScoutLocation(long id)
     {
+        if (_locationCache.TryGetValue(id, out var cachedInfo))
+        {
+            return cachedInfo;
+        }
+
         if (!Connected)
         {
             return null;
@@ -205,7 +223,7 @@ public class ArchipelagoClient
         var networkItem = scout.Result.Locations[0];
         var itemName = _session.Items.GetItemName(networkItem.Item);
         var name = GetPlayerName(networkItem.Player);
-        return new()
+        var itemInfo = new ItemInfo
         {
             Id = id,
             Name = itemName,
@@ -214,7 +232,10 @@ public class ArchipelagoClient
             PlayerName = name,
             IsLocal = networkItem.Player == GetCurrentPlayer(),
             LocationId = id,
+            IsAstalon = GetPlayerGame(networkItem.Player) == Game.Name,
         };
+        _locationCache[id] = itemInfo;
+        return itemInfo;
     }
 
     public void SendCompletion()
@@ -248,6 +269,7 @@ public class ArchipelagoClient
             LocationId = item.Location,
             Receiving = true,
             Index = _receivedIndex,
+            IsAstalon = true,
         });
         _receivedIndex++;
     }
@@ -280,12 +302,17 @@ public class ArchipelagoClient
     public string GetPlayerName(int slot)
     {
         var name = _session.Players.GetPlayerName(slot);
-        if (name.IsNullOrWhiteSpace())
+        if (string.IsNullOrWhiteSpace(name))
         {
             name = "Server";
         }
 
         return name;
+    }
+
+    public string GetPlayerGame(int slot)
+    {
+        return _session.Players.Players[_session.ConnectionInfo.Team].FirstOrDefault((p) => p.Slot == slot)?.Game;
     }
 
     public int GetCurrentPlayer()

@@ -186,7 +186,7 @@ public static class Data
 
     public static readonly Dictionary<int, string> BlueKeyMap = new()
     {
-        { 432, "Gorgon Tomb - Blue Key (Boneworms)" },
+        { 432, "Gorgon Tomb - Blue Key (Bonesnakes)" },
         { 2075, "Gorgon Tomb - Blue Key (Butt)" },
         { 6135, "Gorgon Tomb - Blue Key (Inside Wall)" },
         { 6374, "Mechanism - Blue Key (Void Charm)" },

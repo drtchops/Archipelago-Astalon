@@ -1,5 +1,4 @@
 ﻿using Astalon.Randomizer.Archipelago;
-using BepInEx;
 using HarmonyLib;
 using I2.Loc;
 using UnityEngine;
@@ -8,10 +7,12 @@ using UnityEngine;
 
 namespace Astalon.Randomizer;
 
-[HarmonyPatch(typeof(Item), nameof(Item.Collect))]
-internal class Item_Collect_Patch
+[HarmonyPatch(typeof(Item))]
+internal class Item_Patch
 {
-    public static void Prefix(Item __instance)
+    [HarmonyPatch(nameof(Item.Collect))]
+    [HarmonyPrefix]
+    public static void Collect(Item __instance)
     {
         Plugin.Logger.LogDebug($"Item.Collect({__instance}, {__instance.actorID})");
         if (Data.LocationMap.ContainsKey(__instance.itemProperties.itemID))
@@ -21,12 +22,22 @@ internal class Item_Collect_Patch
             __instance.collectedText = null;
         }
     }
+
+    [HarmonyPatch(nameof(Item.Activate))]
+    [HarmonyPostfix]
+    public static void Activate(Item __instance)
+    {
+        Plugin.Logger.LogDebug($"Item.Activate({__instance}, {__instance.actorID})");
+        Game.UpdateItem(__instance);
+    }
 }
 
-[HarmonyPatch(typeof(Item_PlayerHeart), nameof(Item_PlayerHeart.Collect))]
-internal class Item_PlayerHeart_Collect_Patch
+[HarmonyPatch(typeof(Item_PlayerHeart))]
+internal class Item_PlayerHeart_Patch
 {
-    public static void Prefix(Item_PlayerHeart __instance)
+    [HarmonyPatch(nameof(Item_PlayerHeart.Collect))]
+    [HarmonyPrefix]
+    public static void Collect(Item_PlayerHeart __instance)
     {
         Plugin.Logger.LogDebug(
             $"Item_PlayerHeart.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
@@ -39,12 +50,22 @@ internal class Item_PlayerHeart_Collect_Patch
             __instance.collectedText = null;
         }
     }
+
+    [HarmonyPatch(nameof(Item_PlayerHeart.Activate))]
+    [HarmonyPostfix]
+    public static void Activate(Item_PlayerHeart __instance)
+    {
+        Plugin.Logger.LogDebug($"Item_PlayerHeart.Activate({__instance}, {__instance.actorID})");
+        Game.UpdateEntity(__instance.sprite.gameObject, __instance.actorID);
+    }
 }
 
-[HarmonyPatch(typeof(Item_PlayerStrength), nameof(Item_PlayerStrength.Collect))]
-internal class Item_PlayerStrength_Collect_Patch
+[HarmonyPatch(typeof(Item_PlayerStrength))]
+internal class Item_PlayerStrength_Patch
 {
-    public static void Prefix(Item_PlayerStrength __instance)
+    [HarmonyPatch(nameof(Item_PlayerStrength.Collect))]
+    [HarmonyPrefix]
+    public static void Collect(Item_PlayerStrength __instance)
     {
         Plugin.Logger.LogDebug(
             $"Item_PlayerStrength.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
@@ -57,12 +78,42 @@ internal class Item_PlayerStrength_Collect_Patch
             __instance.collectedText = null;
         }
     }
+
+    [HarmonyPatch(nameof(Item_PlayerStrength.Activate))]
+    [HarmonyPostfix]
+    public static void Activate(Item_PlayerStrength __instance)
+    {
+        Plugin.Logger.LogDebug($"Item_PlayerStrength.Activate({__instance}, {__instance.actorID})");
+        Game.UpdateEntity(__instance.sprite.gameObject, __instance.actorID);
+    }
 }
 
-[HarmonyPatch(typeof(Key), nameof(Key.Collect))]
-internal class Key_Collect_Patch
+[HarmonyPatch(typeof(ItemGorgonHeart))]
+internal class ItemGorgonHeart_Patch
 {
-    public static void Prefix(Key __instance)
+    [HarmonyPatch(nameof(ItemGorgonHeart.Activate))]
+    [HarmonyPostfix]
+    public static void Activate(ItemGorgonHeart __instance)
+    {
+        Plugin.Logger.LogDebug($"ItemGorgonHeart.Activate({__instance}, {__instance.actorID})");
+        Game.UpdateItem(__instance);
+    }
+
+    [HarmonyPatch(nameof(ItemGorgonHeart.OnDamaged))]
+    [HarmonyPostfix]
+    public static void OnDamaged(ItemGorgonHeart __instance)
+    {
+        Plugin.Logger.LogDebug($"ItemGorgonHeart.OnDamaged({__instance}, {__instance.actorID})");
+        Game.UpdateItem(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(Key))]
+internal class Key_Patch
+{
+    [HarmonyPatch(nameof(Key.Collect))]
+    [HarmonyPrefix]
+    public static void Collect(Key __instance)
     {
         Plugin.Logger.LogDebug($"Key.Collect({__instance}, {__instance.actorID}, {__instance.room.roomID})");
         switch (__instance.keyType)
@@ -79,12 +130,22 @@ internal class Key_Collect_Patch
                 break;
         }
     }
+
+    [HarmonyPatch(nameof(Key.LateActivate))]
+    [HarmonyPostfix]
+    public static void LateActivate(Key __instance)
+    {
+        Plugin.Logger.LogDebug($"Key.LateActivate({__instance}, {__instance.actorID})");
+        Game.UpdateEntity(__instance.gameObject, __instance.actorID);
+    }
 }
 
-[HarmonyPatch(typeof(KeyPickable), nameof(KeyPickable.Collect))]
+[HarmonyPatch(typeof(KeyPickable))]
 internal class KeyPickable_Collect_Patch
 {
-    public static void Prefix(KeyPickable __instance)
+    [HarmonyPatch(nameof(KeyPickable.Collect))]
+    [HarmonyPrefix]
+    public static void Collect(KeyPickable __instance)
     {
         Plugin.Logger.LogDebug(
             $"KeyPickable.Collect({__instance}, {__instance.actorID}, {__instance.room?.roomID}, {__instance.keyType}, {__instance.poolName})");
@@ -259,10 +320,12 @@ internal class Player_Patch
     }
 }
 
-[HarmonyPatch(typeof(EnemyEntity), nameof(EnemyEntity.Damage))]
+[HarmonyPatch(typeof(EnemyEntity))]
 internal class EnemyEntity_Damage_Patch
 {
-    public static void Prefix(ref int damageAmount)
+    [HarmonyPatch(nameof(EnemyEntity.Damage))]
+    [HarmonyPrefix]
+    public static void Damage(ref int damageAmount)
     {
         if (Settings.MaxDamage)
         {
@@ -323,7 +386,7 @@ internal class GameplayUIManager_Patch
     public static bool DisplayItemBox(string _itemIcon, ref string _itemText)
     {
         Plugin.Logger.LogDebug($"GameplayUIManager.DisplayItemBox({_itemIcon}, {_itemText})");
-        if (_itemText.IsNullOrWhiteSpace())
+        if (string.IsNullOrWhiteSpace(_itemText))
         {
             return false;
         }
@@ -337,10 +400,12 @@ internal class GameplayUIManager_Patch
     }
 }
 
-[HarmonyPatch(typeof(Cutscene), nameof(Cutscene.PlayCutscene))]
+[HarmonyPatch(typeof(Cutscene))]
 internal class Cutscene_PlayCutscene_Patch
 {
-    public static void Prefix(Cutscene __instance)
+    [HarmonyPatch(nameof(Cutscene.PlayCutscene))]
+    [HarmonyPrefix]
+    public static void PlayCutscene(Cutscene __instance)
     {
         Plugin.Logger.LogDebug($"Cutscene.PlayCutscene({__instance.cutsceneID})");
     }
@@ -383,10 +448,12 @@ internal class CutsceneController_Patch
     }
 }
 
-[HarmonyPatch(typeof(CutsceneObject), nameof(CutsceneObject.LoadData))]
+[HarmonyPatch(typeof(CutsceneObject))]
 internal class CutsceneObject_LoadData_Patch
 {
-    public static void Postfix(CutsceneObject __instance)
+    [HarmonyPatch(nameof(CutsceneObject.LoadData))]
+    [HarmonyPostfix]
+    public static void LoadData(CutsceneObject __instance)
     {
         Plugin.Logger.LogDebug($"CutsceneObject.LoadData({__instance.sceneID})");
     }
@@ -403,19 +470,12 @@ internal class CS_Scene_Patch
     }
 }
 
-[HarmonyPatch(typeof(CreditsManager), nameof(CreditsManager.Open))]
-internal class CreditsManager_Open_Patch
-{
-    public static void Prefix()
-    {
-        Plugin.Logger.LogDebug($"CreditsManager.Open()");
-    }
-}
-
-[HarmonyPatch(typeof(LocalizationManager), nameof(LocalizationManager.TryGetTranslation))]
+[HarmonyPatch(typeof(LocalizationManager))]
 internal class LocalizationManager_TryGetTranslation_Patch
 {
-    public static void Postfix(string Term, ref string Translation, bool __result)
+    [HarmonyPatch(nameof(LocalizationManager.TryGetTranslation))]
+    [HarmonyPostfix]
+    public static void TryGetTranslation(string Term, ref string Translation, bool __result)
     {
         // Main.Log.LogDebug($"LocalizationManager.TryGetTranslation({Term})");
         if (Term.StartsWith("ARCHIPELAGO:"))
@@ -506,17 +566,31 @@ internal class Boss_BlackKnightFinal_Patch
 internal class Debug_Patch
 {
     [HarmonyPatch(nameof(AstalonDebug.Update))]
-    public static void Prefix()
+    [HarmonyPrefix]
+    public static void Update()
     {
         Game.Update();
     }
 }
 
-[HarmonyPatch(typeof(InputListener), nameof(InputListener.Update))]
+[HarmonyPatch(typeof(InputListener))]
 internal class InputListener_Patch
 {
-    public static bool Prefix()
+    [HarmonyPatch(nameof(InputListener.Update))]
+    [HarmonyPrefix]
+    public static bool Update()
     {
         return ArchipelagoConsole.Hidden || !Settings.ShowConsole;
+    }
+}
+
+[HarmonyPatch(typeof(Room))]
+internal class Room_Patch
+{
+    [HarmonyPatch(nameof(Room.ActivateInisde))]
+    [HarmonyPostfix]
+    public static void ActivateInisde(Room __instance)
+    {
+        Plugin.Logger.LogDebug("Room.ActivateInisde()");
     }
 }
