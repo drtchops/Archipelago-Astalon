@@ -218,13 +218,6 @@ public static class Data
         { 8009, "Serpent Path - Blue Key (Arias)" },
     };
 
-    public static readonly Dictionary<int, string> PotKeyMap = new()
-    {
-        { 27, "Gorgon Tomb - Blue Key (Pot)" },
-        { 1216, "Mechanism - Blue Key (Pot)" },
-        { 3273, "Ruins of Ash - Blue Key (Pot)" },
-    };
-
     public static readonly Dictionary<int, string> RedKeyMap = new()
     {
         { 9941, "Gorgon Tomb - Red Key" },
@@ -232,6 +225,18 @@ public static class Data
         { 3090, "Hall of the Phantoms - Red Key" },
         { 7176, "Ruins of Ash - Red Key" },
         { 7273, "Tower Roots - Red Key" },
+    };
+
+    public static readonly Dictionary<int, string> SpawnedKeyMap = new()
+    {
+        { 20, "Gorgon Tomb - Blue Key (Bonesnakes)" },
+        { 892, "Gorgon Tomb - Blue Key (Butt)" },
+        { 27, "Gorgon Tomb - Blue Key (Pot)" },
+        { 1177, "Mechanism - Blue Key (Snake Head)" },
+        { 1388, "Mechanism - White Key (Enemy Arena)" },
+        { 1216, "Mechanism - Blue Key (Pot)" },
+        { 3273, "Ruins of Ash - Blue Key (Pot)" },
+        { 2671, "Catacombs - Blue Key (Eyeballs)" },
     };
 
     public static readonly Dictionary<string, (int, int)> WhiteDoorMap = new()

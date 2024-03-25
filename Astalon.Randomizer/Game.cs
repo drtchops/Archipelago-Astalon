@@ -21,7 +21,6 @@ public class ItemBox
 public static class Game
 {
     public const string Name = "Astalon";
-    public const string DefaultIcon = "BlueOrb_1";
 
     public static Queue<ItemInfo> IncomingItems { get; } = new();
     public static Queue<ItemInfo> IncomingMessages { get; } = new();
@@ -157,10 +156,15 @@ public static class Game
             location = blueLocation;
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys && actorId == 0 &&
-            Data.PotKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var potLocation))
+        if (actorId == 0 &&
+            Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedLocation))
         {
-            location = potLocation;
+            if ((spawnedLocation.Contains("White Key") && ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys) ||
+                (spawnedLocation.Contains("Blue Key") && ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys) ||
+                (spawnedLocation.Contains("Red Key") && ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys))
+            {
+                location = spawnedLocation;
+            }
         }
 
         if (ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
@@ -179,13 +183,17 @@ public static class Game
     {
         var itemInfo = Plugin.ArchipelagoClient.ScoutLocation(location);
         var itemName = itemInfo != null && itemInfo.IsAstalon ? itemInfo.Name : "";
-        var icon = GetIcon(itemName);
+        var itemFlags = itemInfo?.Flags ?? ItemFlags.None;
+        var icon = GetIcon(itemName, itemFlags);
         var animationName = icon switch
         {
             "WhiteKey_1" => "WhiteKey",
             "BlueKey_1" => "BlueKey",
             "RedKey_1" => "RedKey",
+            "RedOrb_1" => "DeathOrb",
             "BlueOrb_1" => "TrapOrb",
+            "SoulOrb_Big" => "Orb_Big_UI",
+            "Orb_Idle_1" => "SecretsOrb_Idle",
             _ => icon,
         };
 
@@ -253,6 +261,36 @@ public static class Game
                 UpdateObjectData(6722, 6672, "wasActivated", "True");
                 UpdateObjectData(454, 6673, "wasActivated", "True");
             }
+
+            // Tauros cutscenes
+            UpdateObjectData(383, 64, "triggeredOnce", "True");
+            UpdateObjectData(383, 64, "talkAlgus", "True");
+            UpdateObjectData(383, 64, "talkArias", "True");
+            UpdateObjectData(383, 64, "talkKyuli", "True");
+
+            // Volantis cutscenes
+            UpdateObjectData(1914, 802, "triggeredOnce", "True");
+            UpdateObjectData(1914, 802, "talkAlgus", "True");
+            UpdateObjectData(1914, 802, "talkArias", "True");
+            UpdateObjectData(1914, 802, "talkKyuli", "True");
+            UpdateObjectData(1914, 802, "talkBram", "True");
+            UpdateObjectData(1914, 802, "talkZeek", "True");
+
+            // Solaria cutscenes
+            UpdateObjectData(10018, 10015, "triggeredOnce", "True");
+            UpdateObjectData(10018, 10015, "talkAlgus", "True");
+            UpdateObjectData(10018, 10015, "talkArias", "True");
+            UpdateObjectData(10018, 10015, "talkKyuli", "True");
+            UpdateObjectData(10018, 10015, "talkBram", "True");
+            UpdateObjectData(10018, 10015, "talkZeek", "True");
+
+            // Gemini cutscenes
+            UpdateObjectData(9114, 985, "triggeredOnce", "True");
+            UpdateObjectData(9114, 985, "talkAlgus", "True");
+            UpdateObjectData(9114, 985, "talkArias", "True");
+            UpdateObjectData(9114, 985, "talkKyuli", "True");
+            UpdateObjectData(9114, 985, "talkBram", "True");
+            UpdateObjectData(9114, 985, "talkZeek", "True");
         }
 
         if (ArchipelagoClient.ServerData.SlotData.StartWithZeek)
@@ -406,14 +444,14 @@ public static class Game
         return true;
     }
 
-    public static string GetIcon(string itemName)
+    public static string GetIcon(string itemName, ItemFlags flags = ItemFlags.None)
     {
-        if (itemName.StartsWith("White Door"))
+        if (itemName.Contains("White Door"))
         {
             return "WhiteKey_1";
         }
 
-        if (itemName.StartsWith("Blue Door"))
+        if (itemName.Contains("Blue Door"))
         {
             return "BlueKey_1";
         }
@@ -430,7 +468,7 @@ public static class Game
 
         if (itemName.EndsWith("Orbs"))
         {
-            return "Deal_OrbReaper";
+            return "SoulOrb_Big";
         }
 
         if (Data.IconMap.TryGetValue(itemName, out var icon))
@@ -438,7 +476,7 @@ public static class Game
             return icon;
         }
 
-        return DefaultIcon;
+        return flags == ItemFlags.Advancement ? "BlueOrb_1" : "Orb_Idle_1";
     }
 
     public static ItemBox FormatItemBox(ItemInfo itemInfo)
@@ -455,6 +493,8 @@ public static class Game
             message = itemInfo.Receiving ? $"{message} from {playerName}" : $"{playerName}'s {message}";
         }
 
+        var icon = GetIcon(itemInfo.Name, itemInfo.Flags);
+
         var sound = itemInfo.Flags switch
         {
             //ItemFlags.Advancement => "applause",
@@ -467,7 +507,7 @@ public static class Game
         return new()
         {
             Message = message,
-            Icon = GetIcon(itemInfo.Name),
+            Icon = icon,
             Sound = sound,
         };
     }
@@ -663,11 +703,17 @@ public static class Game
             return true;
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys && entityId == 0 &&
-            Data.PotKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var potKeyLocation))
+        if (entityId == 0 &&
+            Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedKeyLocation))
         {
-            Plugin.ArchipelagoClient.SendLocation(potKeyLocation);
-            return true;
+            if ((spawnedKeyLocation.Contains("White Key") &&
+                 ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys) ||
+                (spawnedKeyLocation.Contains("Blue Key") && ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys) ||
+                (spawnedKeyLocation.Contains("Red Key") && ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys))
+            {
+                Plugin.ArchipelagoClient.SendLocation(spawnedKeyLocation);
+                return true;
+            }
         }
 
         if (ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&

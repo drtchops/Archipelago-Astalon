@@ -92,6 +92,8 @@ public class Il2CppBase : MonoBehaviour
     public const string ModDisplayInfo = $"Astalon-{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION}";
     private const string ArchipelagoDisplayInfo = $"Archipelago v{ArchipelagoClient.ArchipelagoVersion}";
 
+    public static bool ConnectionFocused { get; private set; }
+
     public static void Initialize(Plugin plugin)
     {
         var addComponent = plugin.AddComponent<Il2CppBase>();
@@ -117,6 +119,8 @@ public class Il2CppBase : MonoBehaviour
 
         if (ArchipelagoClient.Connected)
         {
+            ConnectionFocused = false;
+
             if (!Settings.ShowConnection)
             {
                 return;
@@ -144,6 +148,8 @@ public class Il2CppBase : MonoBehaviour
         var control = GUI.GetNameOfFocusedControl();
         var pressedEnter = e.type == EventType.KeyUp && control is "uri" or "slotName" or "password" &&
                            e.keyCode is KeyCode.KeypadEnter or KeyCode.Return;
+
+        ConnectionFocused = control is "uri" or "slotName" or "password";
 
         GUI.SetNextControlName("uri");
         var uri = GUI.TextField(new(134, 40, 150, 20), ArchipelagoClient.ServerData.Uri);

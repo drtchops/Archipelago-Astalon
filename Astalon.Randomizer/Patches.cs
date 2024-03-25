@@ -7,6 +7,18 @@ using UnityEngine;
 
 namespace Astalon.Randomizer;
 
+[HarmonyPatch(typeof(Collectable))]
+internal class Collectable_Patch
+{
+    [HarmonyPatch(nameof(Collectable.Activate))]
+    [HarmonyPostfix]
+    public static void Activate(Collectable __instance)
+    {
+        Plugin.Logger.LogDebug($"Collectable.Activate({__instance.actorID})");
+        Game.UpdateEntity(__instance.gameObject, __instance.actorID);
+    }
+}
+
 [HarmonyPatch(typeof(Item))]
 internal class Item_Patch
 {
@@ -130,14 +142,6 @@ internal class Key_Patch
                 break;
         }
     }
-
-    [HarmonyPatch(nameof(Key.LateActivate))]
-    [HarmonyPostfix]
-    public static void LateActivate(Key __instance)
-    {
-        Plugin.Logger.LogDebug($"Key.LateActivate({__instance}, {__instance.actorID})");
-        Game.UpdateEntity(__instance.gameObject, __instance.actorID);
-    }
 }
 
 [HarmonyPatch(typeof(KeyPickable))]
@@ -149,9 +153,15 @@ internal class KeyPickable_Collect_Patch
     {
         Plugin.Logger.LogDebug(
             $"KeyPickable.Collect({__instance}, {__instance.actorID}, {__instance.room?.roomID}, {__instance.keyType}, {__instance.poolName})");
-        if (__instance.keyType == Key.KeyType.Blue && ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
-            (Data.BlueKeyMap.ContainsKey(__instance.actorID) ||
-             (__instance.actorID == 0 && Data.PotKeyMap.ContainsKey(Player.PlayerDataLocal.currentRoomID))))
+
+        var isSpawnedKey = __instance.actorID == 0 &&
+                           Data.SpawnedKeyMap.ContainsKey(Player.PlayerDataLocal.currentRoomID);
+        if ((__instance.keyType == Key.KeyType.White && ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys &&
+             (Data.WhiteKeyMap.ContainsKey(__instance.actorID) || isSpawnedKey)) ||
+            (__instance.keyType == Key.KeyType.Blue && ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
+             (Data.BlueKeyMap.ContainsKey(__instance.actorID) || isSpawnedKey)) ||
+            (__instance.keyType == Key.KeyType.Red && ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
+             (Data.RedKeyMap.ContainsKey(__instance.actorID) || isSpawnedKey)))
         {
             __instance.useItemBox = false;
             __instance.collectedSound = null;
@@ -227,15 +237,44 @@ internal class PlayerData_Patch
 
     [HarmonyPatch(nameof(PlayerData.AddKeys))]
     [HarmonyPrefix]
-    public static void AddKeys(Key.KeyType keyType, int amount)
+    public static bool AddKeys(Key.KeyType keyType, int amount)
     {
         Plugin.Logger.LogDebug($"PlayerData.AddKeys({keyType}, {amount})");
+
+        switch (keyType)
+        {
+            case Key.KeyType.White when ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys:
+            case Key.KeyType.Blue when ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys:
+            case Key.KeyType.Red when ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys:
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    [HarmonyPatch(nameof(PlayerData.UseKey))]
+    [HarmonyPrefix]
+    public static bool UseKeyPrefix(Key.KeyType keyType)
+    {
+        Plugin.Logger.LogDebug($"PlayerData.UseKeyPrefix({keyType})");
+
+        switch (keyType)
+        {
+            case Key.KeyType.White when ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys:
+            case Key.KeyType.Blue when ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys:
+            case Key.KeyType.Red when ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys:
+                return false;
+            default:
+                return true;
+        }
     }
 
     [HarmonyPatch(nameof(PlayerData.UseKey))]
     [HarmonyPostfix]
-    public static void UseKey(Key.KeyType keyType)
+    public static void UseKeyPostfix(Key.KeyType keyType)
     {
+        Plugin.Logger.LogDebug($"PlayerData.UseKeyPostfix({keyType})");
+
         if (!Settings.FreeKeys)
         {
             return;
@@ -243,13 +282,13 @@ internal class PlayerData_Patch
 
         switch (keyType)
         {
-            case Key.KeyType.White:
+            case Key.KeyType.White when !ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys:
                 Player.PlayerDataLocal.whiteKeys += 1;
                 break;
-            case Key.KeyType.Blue:
+            case Key.KeyType.Blue when !ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys:
                 Player.PlayerDataLocal.blueKeys += 1;
                 break;
-            case Key.KeyType.Red:
+            case Key.KeyType.Red when !ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys:
                 Player.PlayerDataLocal.redKeys += 1;
                 break;
         }
@@ -334,9 +373,35 @@ internal class EnemyEntity_Damage_Patch
     }
 }
 
-[HarmonyPatch(typeof(Boss_Worm))]
-internal class Boss_Worm_DamageBody_Patch
+[HarmonyPatch(typeof(Boss_Tauros))]
+internal class Boss_Tauros_Patch
 {
+    [HarmonyPatch(nameof(Boss_Tauros.Death))]
+    [HarmonyPrefix]
+    public static void Death(Boss_Tauros __instance)
+    {
+        Plugin.Logger.LogDebug($"Boss_Tauros.Death()");
+        if (__instance.taurosEye.gameObject.TryGetComponent<Item>(out var item))
+        {
+            Game.UpdateItem(item);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Boss_Worm))]
+internal class Boss_Worm_Patch
+{
+    [HarmonyPatch(nameof(Boss_Worm.Death))]
+    [HarmonyPrefix]
+    public static void Death(Boss_Worm __instance)
+    {
+        Plugin.Logger.LogDebug($"Boss_Worm.Death()");
+        if (__instance.gorgonEye.gameObject.TryGetComponent<Item>(out var item))
+        {
+            Game.UpdateItem(item);
+        }
+    }
+
     [HarmonyPatch(nameof(Boss_Worm.DamageBody))]
     [HarmonyPrefix]
     public static void DamageBody(ref int damageAmount)
@@ -374,6 +439,21 @@ internal class Boss_Worm_DamageBody_Patch
         if (Settings.MaxDamage)
         {
             damageAmount = 999;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Boss_Maw))]
+internal class Boss_Maw_Patch
+{
+    [HarmonyPatch(nameof(Boss_Maw.Death))]
+    [HarmonyPrefix]
+    public static void Death(Boss_Maw __instance)
+    {
+        Plugin.Logger.LogDebug($"Boss_Maw.Death()");
+        if (__instance.gorgonEye.gameObject.TryGetComponent<Item>(out var item))
+        {
+            Game.UpdateItem(item);
         }
     }
 }
@@ -580,7 +660,7 @@ internal class InputListener_Patch
     [HarmonyPrefix]
     public static bool Update()
     {
-        return ArchipelagoConsole.Hidden || !Settings.ShowConsole;
+        return (ArchipelagoConsole.Hidden || !Settings.ShowConsole) && !Il2CppBase.ConnectionFocused;
     }
 }
 
