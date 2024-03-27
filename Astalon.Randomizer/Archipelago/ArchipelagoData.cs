@@ -6,87 +6,75 @@ namespace Astalon.Randomizer.Archipelago;
 
 public class ArchipelagoSlotData
 {
-    public readonly bool RandomizeAttackPickups = true;
-    public readonly bool RandomizeHealthPickups = true;
+    public readonly bool RandomizeAttackPickups;
+    public readonly bool RandomizeHealthPickups;
     public readonly bool RandomizeWhiteKeys;
     public readonly bool RandomizeBlueKeys;
     public readonly bool RandomizeRedKeys;
     public readonly bool RandomizeFamiliars;
-    public readonly bool SkipCutscenes = true;
+    public readonly bool SkipCutscenes;
     public readonly bool StartWithZeek;
     public readonly bool StartWithBram;
-    public readonly bool StartWithQoL = true;
-    public readonly bool FreeApexElevator = true;
-    public readonly int CostMultiplier = 100;
+    public readonly bool StartWithQoL;
+    public readonly bool FreeApexElevator;
+    public readonly int CostMultiplier;
+    public readonly bool FastBloodChalice;
+    public readonly bool CampfireWarp;
     public readonly bool DeathLink;
 
     public ArchipelagoSlotData(IReadOnlyDictionary<string, object> slotData)
     {
         var settings = (JObject)slotData["settings"];
-        if (settings.TryGetValue("randomize_attack_pickups", out var randomizeAttackPickups))
+
+        RandomizeAttackPickups = ParseBool(settings, "randomize_attack_pickups", true);
+        RandomizeHealthPickups = ParseBool(settings, "randomize_health_pickups", true);
+        RandomizeWhiteKeys = ParseBool(settings, "randomize_white_keys");
+        RandomizeBlueKeys = ParseBool(settings, "randomize_blue_keys");
+        RandomizeRedKeys = ParseBool(settings, "randomize_red_keys");
+        RandomizeFamiliars = ParseBool(settings, "randomize_familiars");
+        SkipCutscenes = ParseBool(settings, "skip_cutscenes", true);
+        StartWithZeek = ParseBool(settings, "start_with_zeek");
+        StartWithBram = ParseBool(settings, "start_with_bram");
+        StartWithQoL = ParseBool(settings, "start_with_qol", true);
+        FreeApexElevator = ParseBool(settings, "free_apex_elevator", true);
+        CostMultiplier = ParseInt(settings, "cost_multiplier", 100);
+        FastBloodChalice = ParseBool(settings, "fast_blood_chalice", true);
+        CampfireWarp = ParseBool(settings, "campfire_warp", true);
+        DeathLink = ParseBool(settings, "death_link");
+    }
+
+    public static bool ParseBool(JObject settings, string key, bool defaultValue = false)
+    {
+        if (settings.TryGetValue(key, out var value))
         {
-            RandomizeAttackPickups = int.Parse(randomizeAttackPickups.ToString()) == 1;
+            try
+            {
+                return int.Parse(value.ToString()) == 1;
+            }
+            catch
+            {
+                return defaultValue;
+            }
         }
 
-        if (settings.TryGetValue("randomize_health_pickups", out var randomizeHealthPickups))
+        return defaultValue;
+    }
+
+    public static int ParseInt(JObject settings, string key, int defaultValue = 0)
+    {
+        if (settings.TryGetValue(key, out var value))
         {
-            RandomizeHealthPickups = int.Parse(randomizeHealthPickups.ToString()) == 1;
+            try
+            {
+                return int.Parse(value.ToString());
+            }
+            catch
+            {
+                return defaultValue;
+            }
         }
 
-        if (settings.TryGetValue("randomize_white_keys", out var randomizeWhiteKeys))
-        {
-            RandomizeWhiteKeys = int.Parse(randomizeWhiteKeys.ToString()) == 1;
-        }
-
-        if (settings.TryGetValue("randomize_blue_keys", out var randomizeBlueKeys))
-        {
-            RandomizeBlueKeys = int.Parse(randomizeBlueKeys.ToString()) == 1;
-        }
-
-        if (settings.TryGetValue("randomize_red_keys", out var randomizeRedKeys))
-        {
-            RandomizeRedKeys = int.Parse(randomizeRedKeys.ToString()) == 1;
-        }
-
-        if (settings.TryGetValue("randomize_familiars", out var randomizeFamiliars))
-        {
-            RandomizeFamiliars = int.Parse(randomizeFamiliars.ToString()) == 1;
-        }
-
-        if (settings.TryGetValue("skip_cutscenes", out var skipCutscenes))
-        {
-            SkipCutscenes = int.Parse(skipCutscenes.ToString()) == 1;
-        }
-
-        if (settings.TryGetValue("start_with_zeek", out var startWithZeek))
-        {
-            StartWithZeek = int.Parse(startWithZeek.ToString()) == 1;
-        }
-
-        if (settings.TryGetValue("start_with_bram", out var startWithBram))
-        {
-            StartWithBram = int.Parse(startWithBram.ToString()) == 1;
-        }
-
-        if (settings.TryGetValue("start_with_qol", out var startWithQoL))
-        {
-            StartWithQoL = int.Parse(startWithQoL.ToString()) == 1;
-        }
-
-        if (settings.TryGetValue("free_apex_elevator", out var freeApexElevator))
-        {
-            FreeApexElevator = int.Parse(freeApexElevator.ToString()) == 1;
-        }
-
-        if (settings.TryGetValue("cost_multiplier", out var costMultiplier))
-        {
-            CostMultiplier = int.Parse(costMultiplier.ToString());
-        }
-
-        if (settings.TryGetValue("death_link", out var deathLink))
-        {
-            DeathLink = int.Parse(deathLink.ToString()) == 1;
-        }
+        return defaultValue;
     }
 }
 

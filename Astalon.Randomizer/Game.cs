@@ -30,6 +30,7 @@ public static class Game
     public static bool TriggerDeath { get; set; }
     public static bool DumpRoom { get; set; }
     public static bool ReceivingItem { get; set; }
+    public static string WarpDestination { get; set; }
 
     private static readonly string DataDir = Path.GetFullPath("BepInEx/data/Archipelago");
     private static int _deathCounter = -1;
@@ -342,6 +343,11 @@ public static class Game
             }
         }
 
+        if (ArchipelagoClient.ServerData.SlotData.FastBloodChalice)
+        {
+            Player.Instance.regenInterval = 0.2f;
+        }
+
         var validated = ArchipelagoClient.ServerData.ValidateSave();
         if (!validated)
         {
@@ -575,6 +581,7 @@ public static class Game
         {
             ReceivingItem = true;
             Player.PlayerDataLocal.CollectItem(itemId);
+            Player.PlayerDataLocal.EnableItem(itemId);
             ReceivingItem = false;
 
             switch (itemId)
@@ -597,6 +604,7 @@ public static class Game
                     // TODO: figure out why this item doesn't work
                     Player.PlayerDataLocal.zeekItem = true;
                     Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.CyclopsIdol);
+                    Player.PlayerDataLocal.EnableItem(ItemProperties.ItemID.CyclopsIdol);
                     Player.PlayerDataLocal.AddKey(Key.KeyType.Cyclops);
                     Player.PlayerDataLocal.zeekQuestStatus = Room_Zeek.ZeekQuestStatus.QuestStarted;
                     Player.PlayerDataLocal.zeekSeen = true;
@@ -733,6 +741,12 @@ public static class Game
         return match.Success ? match.Groups[1].Value : "";
     }
 
+    public static string GetObjectValue(int objectId, string property)
+    {
+        var data = SaveManager.CurrentSave.GetObjectData(objectId);
+        return GetValue(data, property);
+    }
+
     public static string SetValue(string data, string property, string value)
     {
         var newValue = $"_{property}{value}{property}_";
@@ -832,6 +846,8 @@ public static class Game
 
         if (DumpRoom && Player.PlayerDataLocal?.currentRoomID != null)
         {
+            DumpRoom = false;
+
             Plugin.Logger.LogDebug($"Data for room={Player.PlayerDataLocal.currentRoomID}");
             foreach (var data in SaveManager.CurrentSave.objectsData)
             {
@@ -841,7 +857,46 @@ public static class Game
                 }
             }
 
-            DumpRoom = false;
+            var cp = Player.PlayerDataLocal.lastCheckpointData;
+            Plugin.Logger.LogDebug(
+                $"last cp id={cp.checkpointID} room={cp.checkpointRoomID} pos=({Player.PlayerDataLocal.lastCheckpointX}, {Player.PlayerDataLocal.lastCheckpointY})");
+            var room = GameManager.GetRoomFromID(cp.checkpointRoomID);
+            if (room)
+            {
+                Plugin.Logger.LogDebug($"room pos={room.roomInitialPosition}");
+            }
+        }
+
+        if (WarpDestination != null && Player.PlayerDataLocal != null)
+        {
+            Plugin.Logger.LogDebug($"Warping to: {WarpDestination}");
+
+            if (WarpDestination == "Last Checkpoint")
+            {
+                var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID);
+                Player.Instance.transform.position = new(Player.PlayerDataLocal.lastCheckpointX,
+                    Player.PlayerDataLocal.lastCheckpointY, 0);
+                CameraManager.MoveCameraTo(room.roomInitialPosition);
+            }
+            else if (Data.Checkpoints.TryGetValue(WarpDestination, out var checkpoint))
+            {
+                if (Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId) &&
+                    (checkpoint.Id != 2669 || GetObjectValue(4338, "wasActivated").ToLower() == "true"))
+                {
+                    Player.Instance.transform.position = checkpoint.PlayerPos;
+                    CameraManager.MoveCameraTo(checkpoint.CameraPos);
+                }
+                else
+                {
+                    Plugin.Logger.LogWarning("You don't have that checkpoint unlocked...");
+                }
+            }
+            else
+            {
+                Plugin.Logger.LogWarning("cannot find warp");
+            }
+
+            WarpDestination = null;
         }
     }
 }

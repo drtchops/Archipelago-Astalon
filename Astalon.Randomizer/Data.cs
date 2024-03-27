@@ -1,6 +1,15 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Astalon.Randomizer;
+
+public class Checkpoint
+{
+    public int Id;
+    public int RoomId;
+    public Vector3 PlayerPos;
+    public Vector2 CameraPos;
+}
 
 public static class Data
 {
@@ -299,6 +308,334 @@ public static class Data
         { "Red Door (Serpent Path)", (5804, 7335) },
         { "Red Door (Tower Roots)", (2706, 8812) },
         { "Red Door (Dev Room)", (2598, 3276) },
+    };
+
+    public static readonly Dictionary<string, Checkpoint> Checkpoints = new()
+    {
+        {
+            "Entrance", new()
+            {
+                Id = -1,
+                RoomId = 5,
+                PlayerPos = new(4584, -26901, 0),
+                CameraPos = new(4584, -26840),
+            }
+        },
+        {
+            "Tutorial", new()
+            {
+                Id = 6696,
+                RoomId = 6670,
+                PlayerPos = new(5024, -27381, 0),
+                CameraPos = new(5016, -27320),
+            }
+        },
+        {
+            "GT Bottom", new()
+            {
+                Id = 18,
+                RoomId = 15,
+                PlayerPos = new(6744, -26853, 0),
+                CameraPos = new(6744, -26840),
+            }
+        },
+        {
+            "GT Left", new()
+            {
+                Id = 292,
+                RoomId = 38,
+                PlayerPos = new(5080, -26181, 0),
+                CameraPos = new(5016, -26120),
+            }
+        },
+        {
+            "GT Boss", new()
+            {
+                Id = 293,
+                RoomId = 63,
+                PlayerPos = new(5880, -25429, 0),
+                CameraPos = new(5880, -25400),
+            }
+        },
+        {
+            "Mechanism Start", new()
+            {
+                Id = 1140,
+                RoomId = 304,
+                PlayerPos = new(7544, -25493, 0),
+                CameraPos = new(7608, -25400),
+            }
+        },
+        {
+            "Mechanism Sword", new()
+            {
+                Id = 1556,
+                RoomId = 333,
+                PlayerPos = new(8088, -25877, 0),
+                CameraPos = new(8040, -25880),
+            }
+        },
+        {
+            "Mechanism Bottom", new()
+            {
+                Id = 813,
+                RoomId = 1282,
+                PlayerPos = new(8904, -26437, 0),
+                CameraPos = new(8904, -26360),
+            }
+        },
+        {
+            "Mechanism Shortcut", new()
+            {
+                Id = 712,
+                RoomId = 711,
+                PlayerPos = new(7608, -24981, 0),
+                CameraPos = new(7608, -24920),
+            }
+        },
+        {
+            "Mechanism Right", new()
+            {
+                Id = 3547,
+                RoomId = 3546,
+                PlayerPos = new(10136, -24005, 0),
+                CameraPos = new(10200, -23960),
+            }
+        },
+        {
+            "Mechanism Top", new()
+            {
+                Id = 1634,
+                RoomId = 1633,
+                PlayerPos = new(9304, -23093, 0),
+                CameraPos = new(9336, -23000),
+            }
+        },
+        {
+            "Mechanism Boss", new()
+            {
+                Id = 819,
+                RoomId = 801,
+                PlayerPos = new(7560, -23797, 0),
+                CameraPos = new(7608, -23720),
+            }
+        },
+        {
+            "CD 1", new()
+            {
+                Id = 7507,
+                RoomId = 7360,
+                PlayerPos = new(11064, -22837, 0),
+                CameraPos = new(11064, -22760),
+            }
+        },
+        {
+            "CD 2", new()
+            {
+                Id = 7577,
+                RoomId = 7368,
+                PlayerPos = new(10200, -22085, 0),
+                CameraPos = new(10200, -22040),
+            }
+        },
+        {
+            "CD 3", new()
+            {
+                Id = 7703,
+                RoomId = 7371,
+                PlayerPos = new(10200, -21589, 0),
+                CameraPos = new(10200, -21560),
+            }
+        },
+        {
+            "CD 4", new()
+            {
+                Id = 7774,
+                RoomId = 7772,
+                PlayerPos = new(9416, -20917, 0),
+                CameraPos = new(9336, -20840),
+            }
+        },
+        {
+            "HotP Epimetheus", new()
+            {
+                Id = 5019,
+                RoomId = 5018,
+                PlayerPos = new(6312, -24517, 0),
+                CameraPos = new(6312, -24440),
+            }
+        },
+        {
+            "HotP Bell", new()
+            {
+                Id = 6421,
+                RoomId = 6417,
+                PlayerPos = new(4152, -24453, 0),
+                CameraPos = new(4152, -24440),
+            }
+        },
+        {
+            "HotP Claw", new()
+            {
+                Id = 3207,
+                RoomId = 2901,
+                PlayerPos = new(5880, -22757, 0),
+                CameraPos = new(5880, -22760),
+            }
+        },
+        {
+            "HotP Boss", new()
+            {
+                Id = 2904,
+                RoomId = 2889,
+                PlayerPos = new(6312, -21813, 0),
+                CameraPos = new(6312, -21800),
+            }
+        },
+        {
+            "Cathedral 1", new()
+            {
+                Id = 10203,
+                RoomId = 7266,
+                PlayerPos = new(2008, -23477, 0),
+                CameraPos = new(1992, -23480),
+            }
+        },
+        {
+            "Cathedral 2", new()
+            {
+                Id = 10260,
+                RoomId = 7271,
+                PlayerPos = new(1992, -22613, 0),
+                CameraPos = new(1992, -22520),
+            }
+        },
+        {
+            "RoA Start", new()
+            {
+                Id = 3726,
+                RoomId = 3266,
+                PlayerPos = new(8040, -21845, 0),
+                CameraPos = new(8040, -21800),
+            }
+        },
+        {
+            "RoA Left", new()
+            {
+                Id = 7088,
+                RoomId = 7087,
+                PlayerPos = new(5832, -20885, 0),
+                CameraPos = new(5880, -20840),
+            }
+        },
+        {
+            "RoA Middle", new()
+            {
+                Id = 7086,
+                RoomId = 4080,
+                PlayerPos = new(7592, -20437, 0),
+                CameraPos = new(7608, -20360),
+            }
+        },
+        {
+            "RoA Elevator", new()
+            {
+                Id = 4685,
+                RoomId = 4104,
+                PlayerPos = new(7576, -18197, 0),
+                CameraPos = new(7608, -18200),
+            }
+        },
+        {
+            "RoA Boss", new()
+            {
+                Id = 10026,
+                RoomId = 10016,
+                PlayerPos = new(5848, -17557, 0),
+                CameraPos = new(5880, -17480),
+            }
+        },
+        {
+            "SP 1", new()
+            {
+                Id = 7436,
+                RoomId = 7386,
+                PlayerPos = new(3720, -19925, 0),
+                CameraPos = new(3720, -19880),
+            }
+        },
+        {
+            "SP 2", new()
+            {
+                Id = 8243,
+                RoomId = 7396,
+                PlayerPos = new(4184, -21157, 0),
+                CameraPos = new(4152, -21080),
+            }
+        },
+        {
+            "The Apex", new()
+            {
+                Id = 4635,
+                RoomId = 4246,
+                PlayerPos = new(8056, -17317, 0),
+                CameraPos = new(8040, -17240),
+            }
+        },
+        {
+            "Catacombs Upper", new()
+            {
+                Id = 7109,
+                RoomId = 7042,
+                PlayerPos = new(8536, -27877, 0),
+                CameraPos = new(8472, -27800),
+            }
+        },
+        {
+            "Catacombs Bow", new()
+            {
+                Id = 2524,
+                RoomId = 978,
+                PlayerPos = new(7208, -28357, 0),
+                CameraPos = new(7176, -28280),
+            }
+        },
+        {
+            "Catacombs Roots", new()
+            {
+                Id = 2610,
+                RoomId = 982,
+                PlayerPos = new(7608, -29029, 0),
+                CameraPos = new(7608, -29000),
+            }
+        },
+        {
+            "Catacombs Boss", new()
+            {
+                Id = 2669,
+                RoomId = 2655,
+                PlayerPos = new(6696, -29781, 0),
+                CameraPos = new(6744, -29720),
+            }
+        },
+        {
+            "Tower Roots", new()
+            {
+                Id = 9056,
+                RoomId = 2704,
+                PlayerPos = new(5880, -30997, 0),
+                CameraPos = new(5880, -30920),
+            }
+        },
+        {
+            "Dev Room", new()
+            {
+                Id = 9161,
+                RoomId = 2779,
+                PlayerPos = new(11968, -28341, 0),
+                CameraPos = new(11928, -28280),
+            }
+        },
     };
 
     // elevator rooms
