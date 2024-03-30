@@ -9,4 +9,5 @@ public static class Settings
     public static bool MaxDamage { get; set; }
     public static bool FreeKeys { get; set; }
     public static bool FreePurchases { get; set; }
+    public static bool InfiniteJumps { get; set; }
 }

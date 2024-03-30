@@ -36,7 +36,6 @@ public class ArchipelagoClient
     public static ArchipelagoData ServerData { get; } = new();
     private DeathLinkHandler _deathLinkHandler;
     private ArchipelagoSession _session;
-    private int _receivedIndex;
     private bool _ignoreLocations;
     private readonly Dictionary<long, ItemInfo> _locationCache = new();
 
@@ -85,7 +84,6 @@ public class ArchipelagoClient
     {
         LoginResult loginResult;
         _attemptingConnection = true;
-        _receivedIndex = 0;
         _ignoreLocations = true;
 
         try
@@ -254,9 +252,10 @@ public class ArchipelagoClient
 
     public void Session_ItemReceived(ReceivedItemsHelper helper)
     {
+        var index = helper.Index - 1;
         var itemName = helper.PeekItemName();
         var item = helper.DequeueItem();
-        Plugin.Logger.LogInfo($"Received item: {item.Item} - {itemName}");
+        Plugin.Logger.LogInfo($"Received item #{index}: {item.Item} - {itemName}");
         var player = item.Player;
         Game.IncomingItems.Enqueue(new()
         {
@@ -268,10 +267,9 @@ public class ArchipelagoClient
             IsLocal = player == GetCurrentPlayer(),
             LocationId = item.Location,
             Receiving = true,
-            Index = _receivedIndex,
+            Index = index,
             IsAstalon = true,
         });
-        _receivedIndex++;
     }
 
     public void Session_CheckedLocationsUpdated(ReadOnlyCollection<long> newCheckedLocations)

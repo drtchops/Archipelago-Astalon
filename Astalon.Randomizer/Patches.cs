@@ -1,6 +1,5 @@
 ﻿using Astalon.Randomizer.Archipelago;
 using HarmonyLib;
-using I2.Loc;
 using UnityEngine;
 
 // ReSharper disable InconsistentNaming
@@ -49,7 +48,7 @@ internal class Item_PlayerHeart_Patch
 {
     [HarmonyPatch(nameof(Item_PlayerHeart.Collect))]
     [HarmonyPrefix]
-    public static void Collect(Item_PlayerHeart __instance)
+    public static void CollectPre(Item_PlayerHeart __instance)
     {
         Plugin.Logger.LogDebug(
             $"Item_PlayerHeart.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
@@ -315,6 +314,21 @@ internal class PlayerData_Patch
     {
         Plugin.Logger.LogDebug($"PlayerData.UnlockCharacter({_character})");
     }
+
+    //[HarmonyPatch(nameof(PlayerData.IsDealPurchased))]
+    //[HarmonyPostfix]
+    //public static void IsDealPurchased(DealProperties.DealID dealID, ref bool __result)
+    //{
+    //    Plugin.Logger.LogDebug($"PlayerData.IsDealPurchased({dealID})");
+    //    __result = false;
+    //}
+
+    //[HarmonyPatch(nameof(PlayerData.GetAvailableDeals))]
+    //[HarmonyPostfix]
+    //public static void GetAvailableDeals()
+    //{
+    //    Plugin.Logger.LogDebug("PlayerData.GetAvailableDeals()");
+    //}
 }
 
 [HarmonyPatch(typeof(Player))]
@@ -466,17 +480,7 @@ internal class GameplayUIManager_Patch
     public static bool DisplayItemBox(string _itemIcon, ref string _itemText)
     {
         Plugin.Logger.LogDebug($"GameplayUIManager.DisplayItemBox({_itemIcon}, {_itemText})");
-        if (string.IsNullOrWhiteSpace(_itemText))
-        {
-            return false;
-        }
-
-        if (_itemText.StartsWith("ARCHIPELAGO:"))
-        {
-            _itemText = _itemText[12..];
-        }
-
-        return true;
+        return !string.IsNullOrWhiteSpace(_itemText);
     }
 }
 
@@ -547,22 +551,6 @@ internal class CS_Scene_Patch
     public static void Prefix(object __instance)
     {
         Plugin.Logger.LogDebug($"{__instance.GetType()}.PlayScene()");
-    }
-}
-
-[HarmonyPatch(typeof(LocalizationManager))]
-internal class LocalizationManager_TryGetTranslation_Patch
-{
-    [HarmonyPatch(nameof(LocalizationManager.TryGetTranslation))]
-    [HarmonyPostfix]
-    public static void TryGetTranslation(string Term, ref string Translation, bool __result)
-    {
-        // Main.Log.LogDebug($"LocalizationManager.TryGetTranslation({Term})");
-        if (Term.StartsWith("ARCHIPELAGO:"))
-        {
-            Translation = Term[12..];
-            __result = true;
-        }
     }
 }
 
@@ -672,5 +660,20 @@ internal class Room_Patch
     public static void ActivateInisde(Room __instance)
     {
         Plugin.Logger.LogDebug("Room.ActivateInisde()");
+    }
+}
+
+[HarmonyPatch(typeof(PlayerPhysics))]
+internal class PlayerPhysics_Patch
+{
+    [HarmonyPatch(nameof(PlayerPhysics.Jump))]
+    [HarmonyPrefix]
+    public static void JumpPre(PlayerPhysics __instance)
+    {
+        //Plugin.Logger.LogDebug("PlayerPhysics.Jump()");
+        if (Settings.InfiniteJumps)
+        {
+            __instance.grounded = true;
+        }
     }
 }

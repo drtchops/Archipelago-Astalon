@@ -39,6 +39,7 @@ public static class Game
     private static tk2dSpriteCollectionData _spriteCollectionData;
     private static tk2dSpriteAnimationClip _spriteAnimationClip;
     private static bool _injectedAnimation;
+    private static int _warpCooldown;
 
     public static void Awake()
     {
@@ -603,6 +604,7 @@ public static class Game
                 case ItemProperties.ItemID.ZeekItem:
                     // TODO: figure out why this item doesn't work
                     Player.PlayerDataLocal.zeekItem = true;
+                    Player.PlayerDataLocal.cyclopsDenKey = true;
                     Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.CyclopsIdol);
                     Player.PlayerDataLocal.EnableItem(ItemProperties.ItemID.CyclopsIdol);
                     Player.PlayerDataLocal.AddKey(Key.KeyType.Cyclops);
@@ -770,10 +772,24 @@ public static class Game
 
     public static bool OpenDoor((int roomId, int objectId) ids)
     {
-        var data = SaveManager.CurrentSave.GetObjectData(ids.objectId);
-        if (GetValue(data, "wasOpened").ToLower() == "true")
+        if (GetObjectValue(ids.objectId, "wasOpened").ToLower() == "true")
         {
             return false;
+        }
+
+        if (ids.roomId == Player.PlayerDataLocal?.currentRoomID)
+        {
+            var room = GameManager.GetRoomFromID(ids.roomId);
+            var actors = room.GetActorsWithID(ids.objectId);
+            if (actors != null && actors.Length > 0)
+            {
+                var actor = actors[0];
+                var door = actor.gameObject.GetComponent<Door>();
+                if (door != null)
+                {
+                    door.OpenDoor();
+                }
+            }
         }
 
         UpdateObjectData(ids.objectId, ids.roomId, "wasOpened", "True");
@@ -867,36 +883,72 @@ public static class Game
             }
         }
 
-        if (WarpDestination != null && Player.PlayerDataLocal != null)
+        if (_warpCooldown > 0)
         {
-            Plugin.Logger.LogDebug($"Warping to: {WarpDestination}");
+            _warpCooldown--;
+        }
 
-            if (WarpDestination == "Last Checkpoint")
+        CheckWarp();
+    }
+
+    private static void CheckWarp()
+    {
+        if (WarpDestination == null)
+        {
+            return;
+        }
+
+        var destination = WarpDestination;
+        WarpDestination = null;
+
+        if (Player.Instance == null || Player.PlayerDataLocal == null || Player.Instance.isInElevator ||
+            _warpCooldown > 0)
+        {
+            return;
+        }
+
+        Vector3 playerPos;
+        Vector2 cameraPos;
+        var skipCheck = false;
+#if DEBUG
+        skipCheck = true;
+#endif
+
+        if (destination == "Last Checkpoint")
+        {
+            var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID);
+            playerPos = new(Player.PlayerDataLocal.lastCheckpointX, Player.PlayerDataLocal.lastCheckpointY, 0);
+            cameraPos = room.roomInitialPosition;
+        }
+        else if (Data.Checkpoints.TryGetValue(destination, out var checkpoint))
+        {
+            if (checkpoint.RoomId == Player.PlayerDataLocal.currentRoomID)
             {
-                var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID);
-                Player.Instance.transform.position = new(Player.PlayerDataLocal.lastCheckpointX,
-                    Player.PlayerDataLocal.lastCheckpointY, 0);
-                CameraManager.MoveCameraTo(room.roomInitialPosition);
+                return;
             }
-            else if (Data.Checkpoints.TryGetValue(WarpDestination, out var checkpoint))
+            else if (skipCheck || Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId) &&
+                     (checkpoint.Id != 2669 || GetObjectValue(4338, "wasActivated").ToLower() == "true"))
             {
-                if (Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId) &&
-                    (checkpoint.Id != 2669 || GetObjectValue(4338, "wasActivated").ToLower() == "true"))
-                {
-                    Player.Instance.transform.position = checkpoint.PlayerPos;
-                    CameraManager.MoveCameraTo(checkpoint.CameraPos);
-                }
-                else
-                {
-                    Plugin.Logger.LogWarning("You don't have that checkpoint unlocked...");
-                }
+                playerPos = checkpoint.PlayerPos;
+                cameraPos = checkpoint.CameraPos;
             }
             else
             {
-                Plugin.Logger.LogWarning("cannot find warp");
+                Plugin.Logger.LogWarning("You don't have that checkpoint unlocked...");
+                return;
             }
-
-            WarpDestination = null;
         }
+        else
+        {
+            Plugin.Logger.LogWarning($"Cannot find warp: {destination}");
+            return;
+        }
+
+        Plugin.Logger.LogDebug($"Warping to: {destination}");
+        Player.Instance.transform.position = playerPos;
+        CameraManager.MoveCameraTo(cameraPos);
+        AudioManager.Play("thunder");
+        AudioManager.Play("wall-gem");
+        _warpCooldown = 60;
     }
 }

@@ -75,12 +75,11 @@ public static class Debug
             Plugin.ToggleConsole();
         }
 
-#if DEBUG
-        if (GUI.Button(new(0, 100, width, height), "Dump Room Data"))
+        if (GUI.Button(new(0, 100, width, height),
+                Settings.InfiniteJumps ? "Disable Infinite Jumps" : "Enable Infinite Jumps"))
         {
-            Game.DumpRoom = true;
+            Settings.InfiniteJumps = !Settings.InfiniteJumps;
         }
-#endif
 
         GUI.EndGroup();
 
@@ -147,5 +146,12 @@ public static class Debug
         }
 
         GUI.EndGroup();
+
+#if DEBUG
+        if (GUI.Button(new(8, bottom - 25, width, height), "Dump Room Data"))
+        {
+            Game.DumpRoom = true;
+        }
+#endif
     }
 }
