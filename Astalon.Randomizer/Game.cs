@@ -29,6 +29,8 @@ public static class Game
     public static bool UnlockElevators { get; set; }
     public static bool TriggerDeath { get; set; }
     public static bool DumpRoom { get; set; }
+    public static bool ToggleSwitches { get; set; }
+    public static bool ToggleObjects { get; set; }
     public static bool ReceivingItem { get; set; }
     public static string WarpDestination { get; set; }
 
@@ -864,7 +866,8 @@ public static class Game
         {
             DumpRoom = false;
 
-            Plugin.Logger.LogDebug($"Data for room={Player.PlayerDataLocal.currentRoomID}");
+            var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
+            Plugin.Logger.LogDebug($"Data for roomId={room.roomID} name={room.name}");
             foreach (var data in SaveManager.CurrentSave.objectsData)
             {
                 if (data.RoomID == Player.PlayerDataLocal.currentRoomID)
@@ -873,14 +876,14 @@ public static class Game
                 }
             }
 
-            var cp = Player.PlayerDataLocal.lastCheckpointData;
-            Plugin.Logger.LogDebug(
-                $"last cp id={cp.checkpointID} room={cp.checkpointRoomID} pos=({Player.PlayerDataLocal.lastCheckpointX}, {Player.PlayerDataLocal.lastCheckpointY})");
-            var room = GameManager.GetRoomFromID(cp.checkpointRoomID);
-            if (room)
-            {
-                Plugin.Logger.LogDebug($"room pos={room.roomInitialPosition}");
-            }
+            //var cp = Player.PlayerDataLocal.lastCheckpointData;
+            //Plugin.Logger.LogDebug(
+            //    $"last cp id={cp.checkpointID} room={cp.checkpointRoomID} pos=({Player.PlayerDataLocal.lastCheckpointX}, {Player.PlayerDataLocal.lastCheckpointY})");
+            //var room = GameManager.GetRoomFromID(cp.checkpointRoomID);
+            //if (room)
+            //{
+            //    Plugin.Logger.LogDebug($"room pos={room.roomInitialPosition}");
+            //}
         }
 
         if (_warpCooldown > 0)
@@ -889,6 +892,68 @@ public static class Game
         }
 
         CheckWarp();
+
+        if (ToggleSwitches)
+        {
+            ToggleSwitches = false;
+
+            if (Player.PlayerDataLocal != null)
+            {
+                var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
+                foreach (var obj in room.objectSwitches)
+                {
+                    if (obj.wasActivated)
+                    {
+                        obj.ResetObject();
+                    }
+                    else
+                    {
+                        obj.ActivateObject(Player.Instance.gameObject);
+                    }
+                }
+            }
+        }
+
+        if (ToggleObjects)
+        {
+            ToggleObjects = false;
+
+            if (Player.PlayerDataLocal != null)
+            {
+                var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
+                foreach (var obj in room.switchableObjects)
+                {
+                    obj.ToggleObject();
+                }
+            }
+        }
+    }
+
+    public static bool CanWarp(string destination)
+    {
+#if DEBUG
+        return true;
+#endif
+
+        if (destination == "Last Checkpoint")
+        {
+            return true;
+        }
+
+        if (Data.Checkpoints.TryGetValue(destination, out var checkpoint))
+        {
+            if (checkpoint.RoomId == Player.PlayerDataLocal.currentRoomID)
+            {
+                return false;
+            }
+            else if (Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId) &&
+                     (checkpoint.Id != 2669 || GetObjectValue(4338, "wasActivated").ToLower() == "true"))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void CheckWarp()
@@ -909,10 +974,6 @@ public static class Game
 
         Vector3 playerPos;
         Vector2 cameraPos;
-        var skipCheck = false;
-#if DEBUG
-        skipCheck = true;
-#endif
 
         if (destination == "Last Checkpoint")
         {
@@ -922,12 +983,7 @@ public static class Game
         }
         else if (Data.Checkpoints.TryGetValue(destination, out var checkpoint))
         {
-            if (checkpoint.RoomId == Player.PlayerDataLocal.currentRoomID)
-            {
-                return;
-            }
-            else if (skipCheck || Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId) &&
-                     (checkpoint.Id != 2669 || GetObjectValue(4338, "wasActivated").ToLower() == "true"))
+            if (CanWarp(destination))
             {
                 playerPos = checkpoint.PlayerPos;
                 cameraPos = checkpoint.CameraPos;

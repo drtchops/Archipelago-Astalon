@@ -134,7 +134,7 @@ public static class Debug
             {
                 var label = WarpButtons[i, j];
 
-                if (label != null && GUI.Button(new(x, y, width, height), label))
+                if (label != null && Game.CanWarp(label) && GUI.Button(new(x, y, width, height), label))
                 {
                     Game.WarpDestination = label;
                 }
@@ -151,6 +151,16 @@ public static class Debug
         if (GUI.Button(new(8, bottom - 25, width, height), "Dump Room Data"))
         {
             Game.DumpRoom = true;
+        }
+
+        if (GUI.Button(new(8, bottom - 50, width, height), "Toggle Switches"))
+        {
+            Game.ToggleSwitches = true;
+        }
+
+        if (GUI.Button(new(8, bottom - 75, width, height), "Toggle Objects"))
+        {
+            Game.ToggleObjects = true;
         }
 #endif
     }
