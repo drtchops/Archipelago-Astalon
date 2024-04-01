@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Astalon.Randomizer;
@@ -114,6 +115,15 @@ public static class Data
         { "Bram", "ElevatorMenu_Icon_Bram" },
         { "Kyuli", "ElevatorMenu_Icon_Kyuli" },
         { "Zeek", "ElevatorMenu_Icon_Zeek" },
+        { "Knowledge", "Deal_Knowledge" },
+        { "Orb Seeker", "Deal_OrbReaper" },
+        { "Titan's Ego", "Deal_TitanEgo" },
+        { "Map Reveal", "Deal_MapReveal" },
+        { "Gift", "Deal_Gift" },
+        { "Cartographer", "Deal_LockedDoors" },
+        { "Death Orb", "Deal_DeathOrb" },
+        { "Death Point", "Deal_MapDeath" },
+        { "Mercy", "Deal_Mercy" },
     };
 
     public static readonly Dictionary<int, string> AttackMap = new()
@@ -636,6 +646,35 @@ public static class Data
                 CameraPos = new(11928, -28280),
             }
         },
+    };
+
+    public static readonly Dictionary<DealProperties.DealID, string> DealToLocation = new()
+    {
+        { DealProperties.DealID.Deal_Knowledge, "Shop - Knowledge" },
+        { DealProperties.DealID.Deal_OrbReaper, "Shop - Orb Seeker" },
+        { DealProperties.DealID.Deal_TitanEgo, "Shop - Titan's Ego" },
+        { DealProperties.DealID.Deal_MapReveal, "Shop - Map Reveal" },
+        { DealProperties.DealID.Deal_Gift, "Shop - Gift" },
+        { DealProperties.DealID.Deal_LockedDoors, "Shop - Cartographer" },
+        { DealProperties.DealID.Deal_DeathOrb, "Shop - Death Orb" },
+        { DealProperties.DealID.Deal_MapDeath, "Shop - Death Point" },
+        { DealProperties.DealID.Deal_Mercy, "Shop - Mercy" },
+    };
+
+    public static readonly Dictionary<string, DealProperties.DealID> LocationToDeal =
+        DealToLocation.ToDictionary((kvp) => kvp.Value, (kvp) => kvp.Key);
+
+    public static readonly Dictionary<string, DealProperties.DealID> ItemToDeal = new()
+    {
+        { "Knowledge", DealProperties.DealID.Deal_Knowledge },
+        { "Orb Seeker", DealProperties.DealID.Deal_OrbReaper },
+        { "Titan's Ego", DealProperties.DealID.Deal_TitanEgo },
+        { "Map Reveal", DealProperties.DealID.Deal_MapReveal },
+        { "Gift", DealProperties.DealID.Deal_Gift },
+        { "Cartographer", DealProperties.DealID.Deal_LockedDoors },
+        { "Death Orb", DealProperties.DealID.Deal_DeathOrb },
+        { "Death Point", DealProperties.DealID.Deal_MapDeath },
+        { "Mercy", DealProperties.DealID.Deal_Mercy },
     };
 
     // elevator rooms

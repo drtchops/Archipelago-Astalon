@@ -118,12 +118,15 @@ public class ArchipelagoClient
 
     public void OnConnect(LoginSuccessful login)
     {
-        ServerData.SetupSession(login.SlotData, _session.RoomState.Seed);
+        if (!ServerData.SetupSession(login.SlotData, _session.RoomState.Seed))
+        {
+            Disconnect();
+            return;
+        }
+
         _ignoreLocations = false;
-        SyncLocations();
         _deathLinkHandler = new(_session.CreateDeathLinkService(), ServerData.SlotName, ServerData.SlotData.DeathLink);
         _attemptingConnection = false;
-        Game.InitializeSave();
     }
 
     public void Disconnect()
@@ -137,6 +140,8 @@ public class ArchipelagoClient
         _attemptingConnection = false;
         Task.Run(() => { _session.Socket.DisconnectAsync(); }).Wait();
         _session = null;
+        ServerData.Clear();
+        _locationCache.Clear();
     }
 
     public void Session_SocketClosed(string reason)
@@ -166,8 +171,7 @@ public class ArchipelagoClient
     {
         if (!Connected)
         {
-            Plugin.Logger.LogWarning($"No connection, saving location {location} for later");
-            ServerData.PendingLocations.Add(location);
+            Plugin.Logger.LogWarning($"Trying to send location {location} when there's no connection");
             return;
         }
 
@@ -175,22 +179,22 @@ public class ArchipelagoClient
         _session.Locations.CompleteLocationChecksAsync(id);
     }
 
-    public void SyncLocations()
+    public bool SyncLocations(List<string> locations)
     {
-        if (!Connected || ServerData.PendingLocations.Count == 0)
+        if (!Connected || locations == null || locations.Count == 0)
         {
-            return;
+            return false;
         }
 
         List<long> ids = new();
-        foreach (var location in ServerData.PendingLocations)
+        foreach (var location in locations)
         {
             ids.Add(_session.Locations.GetLocationIdFromName(Game.Name, location));
         }
 
-        Plugin.Logger.LogInfo($"Sending location checks: {string.Join(", ", ServerData.PendingLocations)}");
+        Plugin.Logger.LogInfo($"Sending location checks: {string.Join(", ", locations)}");
         _session.Locations.CompleteLocationChecksAsync(ids.ToArray());
-        ServerData.PendingLocations.Clear();
+        return true;
     }
 
     public ItemInfo ScoutLocation(string name)
@@ -252,6 +256,11 @@ public class ArchipelagoClient
 
     public void Session_ItemReceived(ReceivedItemsHelper helper)
     {
+        if (!Connected)
+        {
+            return;
+        }
+
         var index = helper.Index - 1;
         var itemName = helper.PeekItemName();
         var item = helper.DequeueItem();
@@ -274,7 +283,7 @@ public class ArchipelagoClient
 
     public void Session_CheckedLocationsUpdated(ReadOnlyCollection<long> newCheckedLocations)
     {
-        if (_ignoreLocations)
+        if (_ignoreLocations || !Connected)
         {
             return;
         }
@@ -299,6 +308,11 @@ public class ArchipelagoClient
 
     public string GetPlayerName(int slot)
     {
+        if (!Connected)
+        {
+            return "";
+        }
+
         var name = _session.Players.GetPlayerName(slot);
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -310,7 +324,13 @@ public class ArchipelagoClient
 
     public string GetPlayerGame(int slot)
     {
-        return _session.Players.Players[_session.ConnectionInfo.Team].FirstOrDefault((p) => p.Slot == slot)?.Game;
+        if (!Connected)
+        {
+            return "";
+        }
+
+        return _session.Players.Players[_session.ConnectionInfo.Team].FirstOrDefault((p) => p.Slot == slot)
+            ?.Game;
     }
 
     public int GetCurrentPlayer()
@@ -333,17 +353,25 @@ public class ArchipelagoClient
 
     public void ToggleDeathLink()
     {
-        _deathLinkHandler.ToggleDeathLink();
+        if (Connected)
+        {
+            _deathLinkHandler.ToggleDeathLink();
+        }
     }
 
     public bool DeathLinkEnabled()
     {
+        if (!Connected)
+        {
+            return false;
+        }
+
         return _deathLinkHandler.IsEnabled();
     }
 
     public void CheckForDeath()
     {
-        if (Game.CanBeKilled())
+        if (Connected && Game.CanBeKilled())
         {
             _deathLinkHandler.KillPlayer();
         }

@@ -1,5 +1,6 @@
 ﻿using Astalon.Randomizer.Archipelago;
 using HarmonyLib;
+using I2.Loc;
 using UnityEngine;
 
 // ReSharper disable InconsistentNaming
@@ -26,7 +27,7 @@ internal class Item_Patch
     public static void Collect(Item __instance)
     {
         Plugin.Logger.LogDebug($"Item.Collect({__instance}, {__instance.actorID})");
-        if (Data.LocationMap.ContainsKey(__instance.itemProperties.itemID))
+        if (Game.TryGetItemLocation(__instance.itemProperties.itemID, out _))
         {
             __instance.useItemBox = false;
             __instance.collectedSound = null;
@@ -52,8 +53,7 @@ internal class Item_PlayerHeart_Patch
     {
         Plugin.Logger.LogDebug(
             $"Item_PlayerHeart.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeHealthPickups &&
-            Data.HealthMap.ContainsKey(__instance.actorID))
+        if (Game.TryGetEntityLocation(__instance.actorID, out _))
         {
             __instance.heartGain = 0;
             __instance.useItemBox = false;
@@ -80,8 +80,7 @@ internal class Item_PlayerStrength_Patch
     {
         Plugin.Logger.LogDebug(
             $"Item_PlayerStrength.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeAttackPickups &&
-            Data.AttackMap.ContainsKey(__instance.actorID))
+        if (Game.TryGetEntityLocation(__instance.actorID, out _))
         {
             __instance.strengthGain = 0;
             __instance.useItemBox = false;
@@ -127,18 +126,11 @@ internal class Key_Patch
     public static void Collect(Key __instance)
     {
         Plugin.Logger.LogDebug($"Key.Collect({__instance}, {__instance.actorID}, {__instance.room.roomID})");
-        switch (__instance.keyType)
+        if (Game.TryGetEntityLocation(__instance.actorID, out _))
         {
-            case Key.KeyType.White when ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys &&
-                                        Data.WhiteKeyMap.ContainsKey(__instance.actorID):
-            case Key.KeyType.Blue when ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
-                                       Data.BlueKeyMap.ContainsKey(__instance.actorID):
-            case Key.KeyType.Red when ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
-                                      Data.RedKeyMap.ContainsKey(__instance.actorID):
-                __instance.useItemBox = false;
-                __instance.collectedSound = null;
-                __instance.collectedText = null;
-                break;
+            __instance.useItemBox = false;
+            __instance.collectedSound = null;
+            __instance.collectedText = null;
         }
     }
 }
@@ -152,15 +144,7 @@ internal class KeyPickable_Collect_Patch
     {
         Plugin.Logger.LogDebug(
             $"KeyPickable.Collect({__instance}, {__instance.actorID}, {__instance.room?.roomID}, {__instance.keyType}, {__instance.poolName})");
-
-        var isSpawnedKey = __instance.actorID == 0 &&
-                           Data.SpawnedKeyMap.ContainsKey(Player.PlayerDataLocal.currentRoomID);
-        if ((__instance.keyType == Key.KeyType.White && ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys &&
-             (Data.WhiteKeyMap.ContainsKey(__instance.actorID) || isSpawnedKey)) ||
-            (__instance.keyType == Key.KeyType.Blue && ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
-             (Data.BlueKeyMap.ContainsKey(__instance.actorID) || isSpawnedKey)) ||
-            (__instance.keyType == Key.KeyType.Red && ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
-             (Data.RedKeyMap.ContainsKey(__instance.actorID) || isSpawnedKey)))
+        if (Game.TryGetEntityLocation(__instance.actorID, out _))
         {
             __instance.useItemBox = false;
             __instance.collectedSound = null;
@@ -222,16 +206,7 @@ internal class PlayerData_Patch
     public static bool AddKey(Key.KeyType keyType)
     {
         Plugin.Logger.LogDebug($"PlayerData.AddKey({keyType})");
-
-        switch (keyType)
-        {
-            case Key.KeyType.White when ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys:
-            case Key.KeyType.Blue when ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys:
-            case Key.KeyType.Red when ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys:
-                return false;
-            default:
-                return true;
-        }
+        return Game.CanDoorOpen(keyType);
     }
 
     [HarmonyPatch(nameof(PlayerData.AddKeys))]
@@ -239,16 +214,7 @@ internal class PlayerData_Patch
     public static bool AddKeys(Key.KeyType keyType, int amount)
     {
         Plugin.Logger.LogDebug($"PlayerData.AddKeys({keyType}, {amount})");
-
-        switch (keyType)
-        {
-            case Key.KeyType.White when ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys:
-            case Key.KeyType.Blue when ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys:
-            case Key.KeyType.Red when ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys:
-                return false;
-            default:
-                return true;
-        }
+        return Game.CanDoorOpen(keyType);
     }
 
     [HarmonyPatch(nameof(PlayerData.UseKey))]
@@ -256,16 +222,7 @@ internal class PlayerData_Patch
     public static bool UseKeyPrefix(Key.KeyType keyType)
     {
         Plugin.Logger.LogDebug($"PlayerData.UseKeyPrefix({keyType})");
-
-        switch (keyType)
-        {
-            case Key.KeyType.White when ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys:
-            case Key.KeyType.Blue when ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys:
-            case Key.KeyType.Red when ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys:
-                return false;
-            default:
-                return true;
-        }
+        return Game.CanDoorOpen(keyType);
     }
 
     [HarmonyPatch(nameof(PlayerData.UseKey))]
@@ -315,20 +272,27 @@ internal class PlayerData_Patch
         Plugin.Logger.LogDebug($"PlayerData.UnlockCharacter({_character})");
     }
 
-    //[HarmonyPatch(nameof(PlayerData.IsDealPurchased))]
-    //[HarmonyPostfix]
-    //public static void IsDealPurchased(DealProperties.DealID dealID, ref bool __result)
-    //{
-    //    Plugin.Logger.LogDebug($"PlayerData.IsDealPurchased({dealID})");
-    //    __result = false;
-    //}
+    [HarmonyPatch(nameof(PlayerData.IsDealPurchased))]
+    [HarmonyPrefix]
+    public static bool IsDealPurchased(DealProperties.DealID dealID, ref bool __result)
+    {
+        //Plugin.Logger.LogDebug($"PlayerData.IsDealPurchased({dealID})");
+        if (!Game.IsInShop && Data.ItemToDeal.ContainsValue(dealID))
+        {
+            __result = Game.IsDealReceived(dealID);
+            return false;
+        }
 
-    //[HarmonyPatch(nameof(PlayerData.GetAvailableDeals))]
-    //[HarmonyPostfix]
-    //public static void GetAvailableDeals()
-    //{
-    //    Plugin.Logger.LogDebug("PlayerData.GetAvailableDeals()");
-    //}
+        return true;
+    }
+
+    [HarmonyPatch(nameof(PlayerData.PurchaseDeal))]
+    [HarmonyPrefix]
+    public static void PurchaseDealPre(DealProperties.DealID _dealID)
+    {
+        Plugin.Logger.LogDebug($"PlayerData.PurchaseDealPre({_dealID})");
+        Game.PurchaseDeal(_dealID);
+    }
 }
 
 [HarmonyPatch(typeof(Player))]
@@ -346,8 +310,7 @@ internal class Player_Patch
     public static void Activate()
     {
         Plugin.Logger.LogDebug("Player.Activate()");
-        Game.CanInitializeSave = true;
-        Game.InitializeSave();
+        Game.LoadSave();
     }
 
     [HarmonyPatch(nameof(Player.Deactivate))]
@@ -482,6 +445,29 @@ internal class GameplayUIManager_Patch
         Plugin.Logger.LogDebug($"GameplayUIManager.DisplayItemBox({_itemIcon}, {_itemText})");
         return !string.IsNullOrWhiteSpace(_itemText);
     }
+
+    [HarmonyPatch(nameof(GameplayUIManager.OpenEpimetheusShop))]
+    [HarmonyPrefix]
+    public static void OpenEpimetheusShop()
+    {
+        Plugin.Logger.LogDebug("GameplayUIManager.OpenEpimetheusShop()");
+        Game.IsInShop = true;
+    }
+
+    [HarmonyPatch(nameof(GameplayUIManager.InitializeEpimetheusShop))]
+    [HarmonyPrefix]
+    public static void InitializeEpimetheusShop()
+    {
+        Plugin.Logger.LogDebug("GameplayUIManager.InitializeEpimetheusShop()");
+    }
+
+    [HarmonyPatch(nameof(GameplayUIManager.CloseEpimetheusShop))]
+    [HarmonyPrefix]
+    public static void CloseEpimetheusShop()
+    {
+        Plugin.Logger.LogDebug("GameplayUIManager.CloseEpimetheusShop()");
+        Game.IsInShop = false;
+    }
 }
 
 [HarmonyPatch(typeof(Cutscene))]
@@ -569,6 +555,7 @@ internal class GameLoader_Patch
     public static void LoadNewGame(int slot)
     {
         Plugin.Logger.LogDebug($"GameLoader.LoadNewGame({slot})");
+        Game.SetupNewSave();
     }
 
     [HarmonyPatch(nameof(GameLoader.RestartGame))]
@@ -576,10 +563,8 @@ internal class GameLoader_Patch
     public static void RestartGame()
     {
         Plugin.Logger.LogDebug($"GameLoader.RestartGame()");
-        Game.CanInitializeSave = false;
         Game.ExitSave();
         Plugin.ArchipelagoClient.Disconnect();
-        ArchipelagoClient.ServerData.Clear();
     }
 
     [HarmonyPatch(nameof(GameLoader.PlayIntro))]
@@ -605,9 +590,7 @@ internal class SaveManager_Patch
     public static void ApplyCurrentSave(bool showIcon)
     {
         Plugin.Logger.LogDebug($"SaveManager.ApplyCurrentSave({showIcon})");
-        Game.CanInitializeSave = true;
-        Game.InitializeSave();
-        ArchipelagoClient.ServerData.UpdateSave();
+        Game.UpdateSaveData();
     }
 
     [HarmonyPatch(nameof(SaveManager.InitializeFirstSave))]
@@ -615,6 +598,17 @@ internal class SaveManager_Patch
     public static void InitializeFirstSave()
     {
         Plugin.Logger.LogDebug("SaveManager.InitializeFirstSave()");
+    }
+}
+
+[HarmonyPatch(typeof(LoadingScreen))]
+internal class LoadingScreen_Patch
+{
+    [HarmonyPatch(nameof(LoadingScreen.Hide))]
+    [HarmonyPrefix]
+    public static void Hide()
+    {
+        Plugin.Logger.LogDebug("LoadingScreen.Hide()");
     }
 }
 
@@ -674,6 +668,21 @@ internal class PlayerPhysics_Patch
         if (Settings.InfiniteJumps)
         {
             __instance.grounded = true;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(LocalizationManager))]
+internal class LocalizationManager_Patch
+{
+    [HarmonyPatch(nameof(LocalizationManager.TryGetTranslation))]
+    [HarmonyPostfix]
+    public static void TryGetTranslation(string Term, ref string Translation, ref bool __result)
+    {
+        if (Term.StartsWith("ARCHIPELAGO:"))
+        {
+            Translation = Term[12..];
+            __result = true;
         }
     }
 }

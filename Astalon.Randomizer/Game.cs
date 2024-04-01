@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Archipelago.MultiClient.Net.Enums;
 using Astalon.Randomizer.Archipelago;
-using Il2CppSystem;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Astalon.Randomizer;
@@ -18,30 +19,48 @@ public class ItemBox
     public bool DisableController { get; set; } = false;
 }
 
+public struct SaveData
+{
+    public string Seed { get; set; }
+    public int ItemIndex { get; set; }
+    public ArchipelagoSlotData SlotData { get; set; }
+    public List<string> PendingLocations { get; set; }
+    public List<DealProperties.DealID> ReceivedDeals { get; set; }
+}
+
 public static class Game
 {
     public const string Name = "Astalon";
+    public const int SaveObjectId = 333000;
+    public const int SaveRoomId = -1;
 
     public static Queue<ItemInfo> IncomingItems { get; } = new();
     public static Queue<ItemInfo> IncomingMessages { get; } = new();
     public static string DeathSource { get; private set; }
-    public static bool CanInitializeSave { get; set; }
+    public static bool ReceivingItem { get; set; }
+    public static bool IsInShop { get; set; }
+
     public static bool UnlockElevators { get; set; }
     public static bool TriggerDeath { get; set; }
     public static bool DumpRoom { get; set; }
     public static bool ToggleSwitches { get; set; }
     public static bool ToggleObjects { get; set; }
-    public static bool ReceivingItem { get; set; }
     public static string WarpDestination { get; set; }
 
     private static readonly string DataDir = Path.GetFullPath("BepInEx/data/Archipelago");
+    private static bool _saveNew;
+    private static bool _saveLoaded;
+    private static bool _saveValid;
+    private static bool _saveDataFilled;
+    private static SaveData _saveData;
     private static int _deathCounter = -1;
-    private static bool _saveInitialized;
     private static tk2dBaseSprite _baseSprite;
     private static tk2dSpriteCollectionData _spriteCollectionData;
     private static tk2dSpriteAnimationClip _spriteAnimationClip;
     private static bool _injectedAnimation;
     private static int _warpCooldown;
+
+    #region AnimationExperiments
 
     public static void Awake()
     {
@@ -119,8 +138,17 @@ public static class Game
         animator.Play("AP_ITEM");
     }
 
+    #endregion
+
+    #region Visuals
+
     public static void UpdateItem(Item item)
     {
+        if (!_saveDataFilled)
+        {
+            return;
+        }
+
         if (item.itemProperties?.itemID == null)
         {
             return;
@@ -134,27 +162,32 @@ public static class Game
 
     public static void UpdateEntity(GameObject gameObject, int actorId)
     {
+        if (!_saveDataFilled)
+        {
+            return;
+        }
+
         string location = null;
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeHealthPickups &&
+        if (_saveData.SlotData.RandomizeHealthPickups &&
             Data.HealthMap.TryGetValue(actorId, out var healthLocation))
         {
             location = healthLocation;
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeAttackPickups &&
+        if (_saveData.SlotData.RandomizeAttackPickups &&
             Data.AttackMap.TryGetValue(actorId, out var attackLocation))
         {
             location = attackLocation;
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys &&
+        if (_saveData.SlotData.RandomizeWhiteKeys &&
             Data.WhiteKeyMap.TryGetValue(actorId, out var whiteLocation))
         {
             location = whiteLocation;
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
+        if (_saveData.SlotData.RandomizeBlueKeys &&
             Data.BlueKeyMap.TryGetValue(actorId, out var blueLocation))
         {
             location = blueLocation;
@@ -163,15 +196,15 @@ public static class Game
         if (actorId == 0 &&
             Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedLocation))
         {
-            if ((spawnedLocation.Contains("White Key") && ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys) ||
-                (spawnedLocation.Contains("Blue Key") && ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys) ||
-                (spawnedLocation.Contains("Red Key") && ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys))
+            if ((spawnedLocation.Contains("White Key") && _saveData.SlotData.RandomizeWhiteKeys) ||
+                (spawnedLocation.Contains("Blue Key") && _saveData.SlotData.RandomizeBlueKeys) ||
+                (spawnedLocation.Contains("Red Key") && _saveData.SlotData.RandomizeRedKeys))
             {
                 location = spawnedLocation;
             }
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
+        if (_saveData.SlotData.RandomizeRedKeys &&
             Data.RedKeyMap.TryGetValue(actorId, out var redLocation))
         {
             location = redLocation;
@@ -216,19 +249,116 @@ public static class Game
         }
     }
 
-    public static void InitializeSave()
+    #endregion
+
+    #region SaveData
+
+    public static void LoadSave()
     {
-        if (_saveInitialized || !CanInitializeSave || !ArchipelagoClient.Connected)
+        if (_saveLoaded)
         {
             return;
         }
 
+        _saveNew = false;
+        _saveLoaded = true;
+        _saveValid = false;
+        _saveDataFilled = false;
+
+        var serializedData = SaveManager.CurrentSave.GetObjectData(SaveObjectId);
+        Plugin.Logger.LogDebug(serializedData);
+        if (string.IsNullOrWhiteSpace(serializedData))
+        {
+            Plugin.Logger.LogError("Did not find AP save data. Did you load a casual save?");
+            Plugin.ArchipelagoClient.Disconnect();
+            return;
+        }
+
+        try
+        {
+            _saveData = JsonConvert.DeserializeObject<SaveData>(serializedData);
+            Plugin.Logger.LogDebug(_saveData);
+        }
+        catch (Exception e)
+        {
+            Plugin.Logger.LogError($"Invalid AP save data: {e.Message}");
+            Plugin.Logger.LogError(e);
+            Plugin.ArchipelagoClient.Disconnect();
+            return;
+        }
+
+        _saveValid = true;
+        _saveDataFilled = true;
+
+        if (ArchipelagoClient.Connected)
+        {
+            if (!ConnectSave(ArchipelagoClient.ServerData.Seed, ArchipelagoClient.ServerData.SlotData))
+            {
+                Plugin.ArchipelagoClient.Disconnect();
+            }
+        }
+    }
+
+    public static void SetupNewSave()
+    {
+        _saveNew = true;
+        _saveLoaded = true;
+        _saveValid = true;
+        _saveDataFilled = false;
+        _saveData = new()
+        {
+            PendingLocations = new(),
+            ReceivedDeals = new(),
+        };
+    }
+
+    public static bool ConnectSave(string seed, ArchipelagoSlotData slotData)
+    {
+        if (!_saveLoaded)
+        {
+            return true;
+        }
+
+        if (!_saveValid)
+        {
+            return false;
+        }
+
+        if (_saveNew)
+        {
+            _saveNew = false;
+            _saveData.Seed = seed;
+            _saveData.SlotData = slotData;
+            _saveDataFilled = true;
+            UpdateSaveData();
+        }
+        else if (seed != _saveData.Seed)
+        {
+            Plugin.Logger.LogError("Mismatched seed detected. Did you load the right save?");
+            return false;
+        }
+
+        // TODO: move earlier when loading save
+        SyncLocations();
+        InitializeSave();
+
+        return true;
+    }
+
+    public static void UpdateSaveData()
+    {
+        var data = JsonConvert.SerializeObject(_saveData);
+        SaveManager.SaveObject(SaveObjectId, data, SaveRoomId);
+    }
+
+    public static void InitializeSave()
+    {
         Plugin.Logger.LogDebug("Initializing Save");
 
         Player.PlayerDataLocal.elevatorsFound ??= new();
         Player.PlayerDataLocal.purchasedDeals ??= new();
 
-        if (ArchipelagoClient.ServerData.SlotData.SkipCutscenes)
+        if (_saveData.SlotData.SkipCutscenes)
         {
             Player.PlayerDataLocal.cs_bkbossfinal1 = true;
             Player.PlayerDataLocal.cs_bkbossintro1 = true;
@@ -297,99 +427,62 @@ public static class Game
             UpdateObjectData(9114, 985, "talkZeek", "True");
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.StartWithZeek)
-        {
-            Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Zeek);
-            var deal = GameManager.Instance.itemManager.GetDealProperties(DealProperties.DealID.Deal_SubMenu_Zeek);
-            deal.availableOnStart = true;
-        }
-
-        if (ArchipelagoClient.ServerData.SlotData.StartWithBram)
-        {
-            Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
-            // TODO: check if I need to do these
-            Player.PlayerDataLocal.bramFreed = true;
-            Player.PlayerDataLocal.bramSeen = true;
-            var deal = GameManager.Instance.itemManager.GetDealProperties(DealProperties.DealID.Deal_SubMenu_Bram);
-            deal.availableOnStart = true;
-        }
-
-        if (ArchipelagoClient.ServerData.SlotData.StartWithQoL)
-        {
-            var deals = new[]
-            {
-                DealProperties.DealID.Deal_Knowledge,
-                DealProperties.DealID.Deal_OrbReaper,
-                DealProperties.DealID.Deal_TitanEgo,
-                DealProperties.DealID.Deal_MapReveal,
-                DealProperties.DealID.Deal_Gift,
-                DealProperties.DealID.Deal_LockedDoors,
-            };
-            foreach (var deal in deals)
-            {
-                if (!Player.PlayerDataLocal.purchasedDeals.Contains(deal))
-                {
-                    Player.PlayerDataLocal.purchasedDeals.Add(deal);
-                }
-            }
-
-            Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.MarkOfEpimetheus);
-        }
-
-        if (ArchipelagoClient.ServerData.SlotData.CostMultiplier != 100 && GameManager.Instance.itemManager
+        if (_saveData.SlotData.CostMultiplier != 100 && GameManager.Instance.itemManager
                 .GetDealProperties(DealProperties.DealID.Deal_Gift).DealPrice == 666)
         {
-            var mul = ArchipelagoClient.ServerData.SlotData.CostMultiplier / 100f;
+            var mul = _saveData.SlotData.CostMultiplier / 100f;
             foreach (var deal in GameManager.Instance.itemManager.gameDeals)
             {
                 deal.dealPrice = (int)Math.Round(deal.dealPrice * mul);
             }
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.FastBloodChalice)
+        if (_saveData.SlotData.FastBloodChalice)
         {
             Player.Instance.regenInterval = 0.2f;
         }
 
-        var validated = ArchipelagoClient.ServerData.ValidateSave();
-        if (!validated)
+        if (_saveData.SlotData.RandomizeShop)
         {
-            Plugin.ArchipelagoClient.Disconnect();
+            foreach (var (location, item) in _saveData.SlotData.ShopItems)
+            {
+                var dealId = Data.LocationToDeal[location];
+                var deal = GameManager.Instance.itemManager.GetDealProperties(dealId);
+                var icon = GetIcon(item.name);
+                Plugin.Logger.LogDebug($"updating {dealId}, name={item.name} icon={icon}");
+                deal.dealName = $"ARCHIPELAGO:{item.name}";
+                deal.dealIcon = icon;
+            }
         }
-
-        Plugin.ArchipelagoClient.SyncLocations();
-        _saveInitialized = true;
     }
 
     public static void ExitSave()
     {
-        _saveInitialized = false;
+        _saveNew = false;
+        _saveLoaded = false;
+        _saveValid = false;
+        _saveDataFilled = false;
+        _saveData = new();
     }
+
+    #endregion
 
     public static bool CanGetItem()
     {
-        if (!_saveInitialized)
+        if (!_saveDataFilled)
         {
             return false;
         }
 
         if (GameManager.Instance?.player?.playerData == null)
         {
-            //Main.Log.LogWarning("Cannot get item: PlayerData == null");
             return false;
         }
 
         if (Player.Instance == null || !Player.Instance.playerDataLoaded)
         {
-            //Main.Log.LogWarning("Cannot get item: PlayerData is not loaded");
             return false;
         }
-
-        //if (GameLoader.Instance.gameIsLoading)
-        //{
-        //    //Main.Log.LogWarning("Cannot get item: loading");
-        //    return false;
-        //}
 
         return true;
     }
@@ -403,27 +496,13 @@ public static class Game
 
         if (GameplayUIManager.Instance == null)
         {
-            //Main.Log.LogWarning("Cannot display message: GameplayUIManager == null");
             return false;
         }
 
         if (GameplayUIManager.Instance.itemBox == null || GameplayUIManager.Instance.itemBox.active)
         {
-            //Main.Log.LogWarning("Cannot display message: itemBox null or displayed");
             return false;
         }
-
-        //if (GameLoader.Instance.gameIsLoading)
-        //{
-        //    //Main.Log.LogWarning("Cannot get item: loading");
-        //    return false;
-        //}
-
-        //if (GameplayUIManager.Instance.dialogueRunning)
-        //{
-        //    //Main.Log.LogWarning("Cannot display message: dialogue running");
-        //    return false;
-        //}
 
         return true;
     }
@@ -597,7 +676,7 @@ public static class Game
                     }
 
                     Player.PlayerDataLocal.UnlockElevator(6629);
-                    if (ArchipelagoClient.ServerData.SlotData.FreeApexElevator)
+                    if (_saveData.SlotData.FreeApexElevator)
                     {
                         Player.PlayerDataLocal.UnlockElevator(4109);
                     }
@@ -612,6 +691,9 @@ public static class Game
                     Player.PlayerDataLocal.AddKey(Key.KeyType.Cyclops);
                     Player.PlayerDataLocal.zeekQuestStatus = Room_Zeek.ZeekQuestStatus.QuestStarted;
                     Player.PlayerDataLocal.zeekSeen = true;
+                    break;
+                case ItemProperties.ItemID.AthenasBell:
+                    Player.Instance.SetCanChangeCharacterTo(true);
                     break;
             }
         }
@@ -642,18 +724,59 @@ public static class Game
         {
             return OpenDoor(redIds);
         }
-        else
+        else if (Data.ItemToDeal.TryGetValue(itemName, out var dealId))
         {
-            Plugin.Logger.LogWarning($"Item {itemInfo.Id} - {itemName} not found");
-            return false;
+            if (_saveData.SlotData.RandomizeShop)
+            {
+                _saveData.ReceivedDeals.Add(dealId);
+            }
+            else
+            {
+                Player.PlayerDataLocal.PurchaseDeal_Immediate(dealId);
+            }
+
+            if (dealId == DealProperties.DealID.Deal_Gift)
+            {
+                Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.MarkOfEpimetheus);
+                Player.PlayerDataLocal.EnableItem(ItemProperties.ItemID.MarkOfEpimetheus);
+            }
         }
+        else
+            switch (itemName)
+            {
+                case "Algus":
+                    Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Algus);
+                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Algus, false);
+                    break;
+                case "Arias":
+                    Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Arias);
+                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Arias, false);
+                    break;
+                case "Kyuli":
+                    Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Kyuli);
+                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Kyuli, false);
+                    break;
+                case "Zeek":
+                    Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Zeek);
+                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Zeek, false);
+                    break;
+                case "Bram":
+                    Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
+                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Bram, false);
+                    Player.PlayerDataLocal.bramFreed = true;
+                    Player.PlayerDataLocal.bramSeen = true;
+                    break;
+                default:
+                    Plugin.Logger.LogWarning($"Item {itemInfo.Id} - {itemName} not found");
+                    return false;
+            }
 
         return true;
     }
 
     public static void RemoveFreeElevator()
     {
-        if (ArchipelagoClient.Connected && !ArchipelagoClient.ServerData.SlotData.FreeApexElevator &&
+        if (_saveDataFilled && !_saveData.SlotData.FreeApexElevator &&
             Player.PlayerDataLocal.elevatorsFound.Contains(4109) &&
             !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
         {
@@ -674,11 +797,87 @@ public static class Game
         DeathSource = source;
     }
 
+    public static bool TryGetItemLocation(ItemProperties.ItemID itemId, out string location)
+    {
+        if (!_saveValid)
+        {
+            location = null;
+            return false;
+        }
+
+        return Data.LocationMap.TryGetValue(itemId, out location);
+    }
+
+    public static bool TryGetEntityLocation(int entityId, out string location)
+    {
+        if (!_saveDataFilled)
+        {
+            location = null;
+            return false;
+        }
+
+        if (_saveData.SlotData.RandomizeHealthPickups &&
+            Data.HealthMap.TryGetValue(entityId, out var healthLocation))
+        {
+            location = healthLocation;
+            return true;
+        }
+
+        if (_saveData.SlotData.RandomizeAttackPickups &&
+            Data.AttackMap.TryGetValue(entityId, out var attackLocation))
+        {
+            location = attackLocation;
+            return true;
+        }
+
+        if (_saveData.SlotData.RandomizeWhiteKeys &&
+            Data.WhiteKeyMap.TryGetValue(entityId, out var whiteKeyLocation))
+        {
+            location = whiteKeyLocation;
+            return true;
+        }
+
+        if (_saveData.SlotData.RandomizeBlueKeys &&
+            Data.BlueKeyMap.TryGetValue(entityId, out var blueKeyLocation))
+        {
+            location = blueKeyLocation;
+            return true;
+        }
+
+        if (entityId == 0 &&
+            Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedKeyLocation))
+        {
+            if ((spawnedKeyLocation.Contains("White Key") &&
+                 _saveData.SlotData.RandomizeWhiteKeys) ||
+                (spawnedKeyLocation.Contains("Blue Key") && _saveData.SlotData.RandomizeBlueKeys) ||
+                (spawnedKeyLocation.Contains("Red Key") && _saveData.SlotData.RandomizeRedKeys))
+            {
+                location = spawnedKeyLocation;
+                return true;
+            }
+        }
+
+        if (_saveData.SlotData.RandomizeRedKeys &&
+            Data.RedKeyMap.TryGetValue(entityId, out var redKeyLocation))
+        {
+            location = redKeyLocation;
+            return true;
+        }
+
+        location = null;
+        return false;
+    }
+
     public static bool CollectItem(ItemProperties.ItemID itemId)
     {
-        if (Data.LocationMap.TryGetValue(itemId, out var location))
+        if (!_saveDataFilled)
         {
-            Plugin.ArchipelagoClient.SendLocation(location);
+            return false;
+        }
+
+        if (TryGetItemLocation(itemId, out var location))
+        {
+            SendLocation(location);
             return true;
         }
 
@@ -687,51 +886,54 @@ public static class Game
 
     public static bool CollectEntity(int entityId)
     {
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeHealthPickups &&
-            Data.HealthMap.TryGetValue(entityId, out var healthLocation))
+        if (!_saveDataFilled)
         {
-            Plugin.ArchipelagoClient.SendLocation(healthLocation);
+            return false;
+        }
+
+        if (TryGetEntityLocation(entityId, out var location))
+        {
+            SendLocation(location);
             return true;
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeAttackPickups &&
-            Data.AttackMap.TryGetValue(entityId, out var attackLocation))
+        return false;
+    }
+
+    public static bool CanDoorOpen(Key.KeyType keyType)
+    {
+        if (!_saveDataFilled)
         {
-            Plugin.ArchipelagoClient.SendLocation(attackLocation);
             return true;
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys &&
-            Data.WhiteKeyMap.TryGetValue(entityId, out var whiteKeyLocation))
+        switch (keyType)
         {
-            Plugin.ArchipelagoClient.SendLocation(whiteKeyLocation);
-            return true;
-        }
-
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys &&
-            Data.BlueKeyMap.TryGetValue(entityId, out var blueKeyLocation))
-        {
-            Plugin.ArchipelagoClient.SendLocation(blueKeyLocation);
-            return true;
-        }
-
-        if (entityId == 0 &&
-            Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedKeyLocation))
-        {
-            if ((spawnedKeyLocation.Contains("White Key") &&
-                 ArchipelagoClient.ServerData.SlotData.RandomizeWhiteKeys) ||
-                (spawnedKeyLocation.Contains("Blue Key") && ArchipelagoClient.ServerData.SlotData.RandomizeBlueKeys) ||
-                (spawnedKeyLocation.Contains("Red Key") && ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys))
-            {
-                Plugin.ArchipelagoClient.SendLocation(spawnedKeyLocation);
+            case Key.KeyType.White when _saveData.SlotData.RandomizeWhiteKeys:
+            case Key.KeyType.Blue when _saveData.SlotData.RandomizeBlueKeys:
+            case Key.KeyType.Red when _saveData.SlotData.RandomizeRedKeys:
+                return false;
+            default:
                 return true;
-            }
+        }
+    }
+
+    public static bool IsDealReceived(DealProperties.DealID dealId)
+    {
+        if (!_saveDataFilled)
+        {
+            return Player.PlayerDataLocal?.purchasedDeals?.Contains(dealId) ?? false;
         }
 
-        if (ArchipelagoClient.ServerData.SlotData.RandomizeRedKeys &&
-            Data.RedKeyMap.TryGetValue(entityId, out var redKeyLocation))
+        return _saveData.ReceivedDeals != null && _saveData.ReceivedDeals.Contains(dealId);
+    }
+
+    public static bool PurchaseDeal(DealProperties.DealID dealId)
+    {
+        if (_saveDataFilled && _saveData.SlotData.RandomizeShop &&
+            Data.DealToLocation.TryGetValue(dealId, out var location))
         {
-            Plugin.ArchipelagoClient.SendLocation(redKeyLocation);
+            SendLocation(location);
             return true;
         }
 
@@ -798,6 +1000,31 @@ public static class Game
         return true;
     }
 
+    public static void SendLocation(string location)
+    {
+        if (ArchipelagoClient.Connected)
+        {
+            Plugin.ArchipelagoClient.SendLocation(location);
+        }
+        else if (!_saveLoaded)
+        {
+            Plugin.Logger.LogWarning($"Trying to send location {location} but save hasn't loaded?");
+        }
+        else
+        {
+            Plugin.Logger.LogWarning($"No connection, saving location {location} for later");
+            _saveData.PendingLocations.Add(location);
+        }
+    }
+
+    public static void SyncLocations()
+    {
+        if (Plugin.ArchipelagoClient.SyncLocations(_saveData.PendingLocations))
+        {
+            _saveData.PendingLocations.Clear();
+        }
+    }
+
     public static void Update()
     {
         if (DeathSource != null && _deathCounter == -1 && CanBeKilled())
@@ -836,13 +1063,13 @@ public static class Game
 
         if (CanGetItem() && IncomingItems.TryDequeue(out var item))
         {
-            if (item.Index < ArchipelagoClient.ServerData.ItemIndex)
+            if (item.Index < _saveData.ItemIndex)
             {
                 Plugin.Logger.LogDebug($"Ignoring previously obtained item {item.Id}");
             }
             else
             {
-                ArchipelagoClient.ServerData.ItemIndex++;
+                _saveData.ItemIndex++;
                 var display = GiveItem(item);
                 if (display)
                 {
@@ -875,15 +1102,6 @@ public static class Game
                     Plugin.Logger.LogDebug($"Id={data.ID} Data='{data.Data}'");
                 }
             }
-
-            //var cp = Player.PlayerDataLocal.lastCheckpointData;
-            //Plugin.Logger.LogDebug(
-            //    $"last cp id={cp.checkpointID} room={cp.checkpointRoomID} pos=({Player.PlayerDataLocal.lastCheckpointX}, {Player.PlayerDataLocal.lastCheckpointY})");
-            //var room = GameManager.GetRoomFromID(cp.checkpointRoomID);
-            //if (room)
-            //{
-            //    Plugin.Logger.LogDebug($"room pos={room.roomInitialPosition}");
-            //}
         }
 
         if (_warpCooldown > 0)
