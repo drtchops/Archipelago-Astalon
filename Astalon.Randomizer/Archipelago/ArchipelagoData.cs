@@ -1,15 +1,21 @@
 using System;
 using System.Collections.Generic;
+using Archipelago.MultiClient.Net.Enums;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Astalon.Randomizer.Archipelago;
 
+[JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
 public struct ShopItem
 {
-    public int id { get; set; }
-    public string name { get; set; }
-    public string game { get; set; }
-    public int flags { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string PlayerName { get; set; }
+    public string Game { get; set; }
+    public ItemFlags Flags { get; set; }
+    public bool IsLocal { get; set; }
 }
 
 public class ArchipelagoSlotData
@@ -137,7 +143,7 @@ public class ArchipelagoData
     {
         SlotData = new(roomSlotData);
         Seed = roomSeed;
-        return Game.ConnectSave(Seed, SlotData);
+        return Game.ConnectSave();
     }
 
     public void Clear()

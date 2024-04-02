@@ -120,7 +120,6 @@ public class ArchipelagoClient
     {
         if (!ServerData.SetupSession(login.SlotData, _session.RoomState.Seed))
         {
-            Disconnect();
             return;
         }
 
@@ -139,6 +138,7 @@ public class ArchipelagoClient
         Connected = false;
         _attemptingConnection = false;
         Task.Run(() => { _session.Socket.DisconnectAsync(); }).Wait();
+        _deathLinkHandler = null;
         _session = null;
         ServerData.Clear();
         _locationCache.Clear();
@@ -373,7 +373,7 @@ public class ArchipelagoClient
     {
         if (Connected && Game.CanBeKilled())
         {
-            _deathLinkHandler.KillPlayer();
+            _deathLinkHandler?.KillPlayer();
         }
     }
 

@@ -468,6 +468,38 @@ internal class GameplayUIManager_Patch
         Plugin.Logger.LogDebug("GameplayUIManager.CloseEpimetheusShop()");
         Game.IsInShop = false;
     }
+
+    [HarmonyPatch(nameof(GameplayUIManager.ReplaceVariable))]
+    [HarmonyPrefix]
+    public static bool ReplaceVariable(string _text, ref string __result)
+    {
+        Plugin.Logger.LogDebug($"GameplayUIManager.ReplaceVariable({_text})");
+        if (_text.StartsWith("ARCHIPELAGO:"))
+        {
+            __result = _text[12..];
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyPatch(nameof(GameplayUIManager.OpenConfirmPurchaseMenu))]
+    [HarmonyPostfix]
+    public static void OpenConfirmPurchaseMenu(DealProperties _confirmPurchaseDeal, GameplayUIManager __instance)
+    {
+        Plugin.Logger.LogDebug($"GameplayUIManager.OpenConfirmPurchaseMenu({_confirmPurchaseDeal.dealID})");
+        if (Game.TryUpdateDeal(_confirmPurchaseDeal.dealID, out _, out var name, out var playerName))
+        {
+            // TODO: make text box wider
+            var title = name;
+            if (playerName != null)
+            {
+                title = $"{playerName}'s {name}";
+            }
+
+            __instance.confirmPurchaseDealTitle.text = title;
+        }
+    }
 }
 
 [HarmonyPatch(typeof(Cutscene))]
@@ -497,35 +529,6 @@ internal class CutsceneManager_Patch
     public static void PlayCutscene2(string ID)
     {
         Plugin.Logger.LogDebug($"CutsceneManager.PlayCutscene2({ID})");
-    }
-}
-
-[HarmonyPatch(typeof(CutsceneController))]
-internal class CutsceneController_Patch
-{
-    [HarmonyPatch(nameof(CutsceneController.Play))]
-    [HarmonyPrefix]
-    public static void Play()
-    {
-        Plugin.Logger.LogDebug("CutsceneController.Play()");
-    }
-
-    [HarmonyPatch(nameof(CutsceneController.Stop))]
-    [HarmonyPrefix]
-    public static void Stop()
-    {
-        Plugin.Logger.LogDebug("CutsceneController.Stop()");
-    }
-}
-
-[HarmonyPatch(typeof(CutsceneObject))]
-internal class CutsceneObject_LoadData_Patch
-{
-    [HarmonyPatch(nameof(CutsceneObject.LoadData))]
-    [HarmonyPostfix]
-    public static void LoadData(CutsceneObject __instance)
-    {
-        Plugin.Logger.LogDebug($"CutsceneObject.LoadData({__instance.sceneID})");
     }
 }
 
@@ -590,6 +593,8 @@ internal class SaveManager_Patch
     public static void ApplyCurrentSave(bool showIcon)
     {
         Plugin.Logger.LogDebug($"SaveManager.ApplyCurrentSave({showIcon})");
+        Game.LoadSave();
+        Game.ConnectSave();
         Game.UpdateSaveData();
     }
 
@@ -683,6 +688,43 @@ internal class LocalizationManager_Patch
         {
             Translation = Term[12..];
             __result = true;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(ItemManager))]
+internal class ItemManager_Patch
+{
+    [HarmonyPatch(nameof(ItemManager.GetDealProperties))]
+    [HarmonyPostfix]
+    public static void GetDealProperties(ref DealProperties __result)
+    {
+        if (Game.TryUpdateDeal(__result.dealID, out var sprite, out var name, out _))
+        {
+            __result.dealIcon = sprite;
+            __result.dealName = "ARCHIPELAGO:" + name;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(ShopSubMenu))]
+internal class ShopSubMenu_Patch
+{
+    [HarmonyPatch(nameof(ShopSubMenu.UpdateDeal))]
+    [HarmonyPostfix]
+    public static void UpdateDeal(DealProperties _deal, int _dealIndex, ShopSubMenu __instance)
+    {
+        Plugin.Logger.LogDebug($"ShopSubMenu.UpdateDeal({_deal}, {_dealIndex})");
+        if (Game.TryUpdateDeal(_deal.dealID, out _, out var name, out var playerName))
+        {
+            var description = name;
+            if (playerName != null)
+            {
+                description = $"{playerName}'s {name}";
+            }
+
+            __instance.dealTitle.text = name;
+            __instance.dealDescription.text = description;
         }
     }
 }

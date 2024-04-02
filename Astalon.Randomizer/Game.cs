@@ -52,6 +52,7 @@ public static class Game
     private static bool _saveLoaded;
     private static bool _saveValid;
     private static bool _saveDataFilled;
+    private static bool _saveInitialized;
     private static SaveData _saveData;
     private static int _deathCounter = -1;
     private static tk2dBaseSprite _baseSprite;
@@ -222,24 +223,23 @@ public static class Game
         var itemName = itemInfo != null && itemInfo.IsAstalon ? itemInfo.Name : "";
         var itemFlags = itemInfo?.Flags ?? ItemFlags.None;
         var icon = GetIcon(itemName, itemFlags);
-        var animationName = icon switch
-        {
-            "WhiteKey_1" => "WhiteKey",
-            "BlueKey_1" => "BlueKey",
-            "RedKey_1" => "RedKey",
-            "RedOrb_1" => "DeathOrb",
-            "BlueOrb_1" => "TrapOrb",
-            "SoulOrb_Big" => "Orb_Big_UI",
-            "Orb_Idle_1" => "SecretsOrb_Idle",
-            _ => icon,
-        };
+        var animationName = GetClip(icon);
 
         var animator = gameObject.GetComponent<tk2dSpriteAnimator>();
         if (animator != null)
         {
-            var clipId = animator.GetClipIdByName(animationName);
-            animator.defaultClipId = clipId;
-            animator.Play(animationName);
+            if (animationName != null)
+            {
+                var clipId = animator.GetClipIdByName(animationName);
+                animator.defaultClipId = clipId;
+                animator.Play(animationName);
+            }
+            else
+            {
+                animator.StopAndResetFrame();
+                animator.playAutomatically = false;
+                animator.defaultClipId = -1;
+            }
         }
 
         var sprite = gameObject.GetComponent<tk2dBaseSprite>();
@@ -277,7 +277,6 @@ public static class Game
         try
         {
             _saveData = JsonConvert.DeserializeObject<SaveData>(serializedData);
-            Plugin.Logger.LogDebug(_saveData);
         }
         catch (Exception e)
         {
@@ -290,13 +289,8 @@ public static class Game
         _saveValid = true;
         _saveDataFilled = true;
 
-        if (ArchipelagoClient.Connected)
-        {
-            if (!ConnectSave(ArchipelagoClient.ServerData.Seed, ArchipelagoClient.ServerData.SlotData))
-            {
-                Plugin.ArchipelagoClient.Disconnect();
-            }
-        }
+        InitializeSave();
+        ConnectSave();
     }
 
     public static void SetupNewSave()
@@ -312,7 +306,7 @@ public static class Game
         };
     }
 
-    public static bool ConnectSave(string seed, ArchipelagoSlotData slotData)
+    public static bool ConnectSave()
     {
         if (!_saveLoaded)
         {
@@ -321,8 +315,17 @@ public static class Game
 
         if (!_saveValid)
         {
+            Plugin.ArchipelagoClient.Disconnect();
             return false;
         }
+
+        if (!ArchipelagoClient.Connected)
+        {
+            return true;
+        }
+
+        var seed = ArchipelagoClient.ServerData.Seed;
+        var slotData = ArchipelagoClient.ServerData.SlotData;
 
         if (_saveNew)
         {
@@ -335,10 +338,10 @@ public static class Game
         else if (seed != _saveData.Seed)
         {
             Plugin.Logger.LogError("Mismatched seed detected. Did you load the right save?");
+            Plugin.ArchipelagoClient.Disconnect();
             return false;
         }
 
-        // TODO: move earlier when loading save
         SyncLocations();
         InitializeSave();
 
@@ -353,10 +356,12 @@ public static class Game
 
     public static void InitializeSave()
     {
-        Plugin.Logger.LogDebug("Initializing Save");
+        if (_saveInitialized)
+        {
+            return;
+        }
 
-        Player.PlayerDataLocal.elevatorsFound ??= new();
-        Player.PlayerDataLocal.purchasedDeals ??= new();
+        Plugin.Logger.LogDebug("Initializing Save");
 
         if (_saveData.SlotData.SkipCutscenes)
         {
@@ -373,6 +378,8 @@ public static class Game
             if (!Player.PlayerDataLocal.firstElevatorLit)
             {
                 Player.PlayerDataLocal.firstElevatorLit = true;
+
+                Player.PlayerDataLocal.elevatorsFound ??= new();
                 if (!Player.PlayerDataLocal.elevatorsFound.Contains(6629))
                 {
                     Player.PlayerDataLocal.elevatorsFound.Add(6629);
@@ -442,18 +449,7 @@ public static class Game
             Player.Instance.regenInterval = 0.2f;
         }
 
-        if (_saveData.SlotData.RandomizeShop)
-        {
-            foreach (var (location, item) in _saveData.SlotData.ShopItems)
-            {
-                var dealId = Data.LocationToDeal[location];
-                var deal = GameManager.Instance.itemManager.GetDealProperties(dealId);
-                var icon = GetIcon(item.name);
-                Plugin.Logger.LogDebug($"updating {dealId}, name={item.name} icon={icon}");
-                deal.dealName = $"ARCHIPELAGO:{item.name}";
-                deal.dealIcon = icon;
-            }
-        }
+        _saveInitialized = true;
     }
 
     public static void ExitSave()
@@ -462,6 +458,7 @@ public static class Game
         _saveLoaded = false;
         _saveValid = false;
         _saveDataFilled = false;
+        _saveInitialized = false;
         _saveData = new();
     }
 
@@ -565,6 +562,26 @@ public static class Game
         }
 
         return flags == ItemFlags.Advancement ? "BlueOrb_1" : "Orb_Idle_1";
+    }
+
+    public static string GetClip(string icon)
+    {
+        if (icon.StartsWith("Deal_"))
+        {
+            return null;
+        }
+
+        return icon switch
+        {
+            "WhiteKey_1" => "WhiteKey",
+            "BlueKey_1" => "BlueKey",
+            "RedKey_1" => "RedKey",
+            "RedOrb_1" => "DeathOrb",
+            "BlueOrb_1" => "TrapOrb",
+            "SoulOrb_Big" => "Orb_Big_UI",
+            "Orb_Idle_1" => "SecretsOrb_Idle",
+            _ => icon,
+        };
     }
 
     public static ItemBox FormatItemBox(ItemInfo itemInfo)
@@ -865,6 +882,30 @@ public static class Game
         }
 
         location = null;
+        return false;
+    }
+
+    public static bool TryUpdateDeal(DealProperties.DealID dealId, out string sprite, out string name,
+        out string playerName)
+    {
+        sprite = null;
+        name = null;
+        playerName = null;
+
+        if (!_saveDataFilled)
+        {
+            return false;
+        }
+
+        if (_saveData.SlotData.RandomizeShop && Data.DealToLocation.TryGetValue(dealId, out var location) &&
+            _saveData.SlotData.ShopItems.TryGetValue(location, out var shopItem))
+        {
+            name = shopItem.Name;
+            playerName = shopItem.IsLocal ? null : shopItem.PlayerName;
+            sprite = GetIcon(name, shopItem.Flags);
+            return true;
+        }
+
         return false;
     }
 
