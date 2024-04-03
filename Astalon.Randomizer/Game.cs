@@ -319,7 +319,7 @@ public static class Game
             return false;
         }
 
-        if (!ArchipelagoClient.Connected)
+        if (!Plugin.ArchipelagoClient.Connected)
         {
             return true;
         }
@@ -1043,7 +1043,7 @@ public static class Game
 
     public static void SendLocation(string location)
     {
-        if (ArchipelagoClient.Connected)
+        if (Plugin.ArchipelagoClient.Connected)
         {
             Plugin.ArchipelagoClient.SendLocation(location);
         }

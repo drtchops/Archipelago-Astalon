@@ -117,7 +117,7 @@ public class Il2CppBase : MonoBehaviour
         var left = right - 300;
         var top = bottom - 120;
 
-        if (ArchipelagoClient.Connected)
+        if (Plugin.ArchipelagoClient.Connected)
         {
             ConnectionFocused = false;
 

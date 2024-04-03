@@ -83,7 +83,7 @@ public static class ArchipelagoConsole
         }
 
         // draw client/server commands entry
-        if (Hidden || !ArchipelagoClient.Connected)
+        if (Hidden || !Plugin.ArchipelagoClient.Connected)
         {
             return;
         }

@@ -25,7 +25,7 @@ public static class Debug
 
     public static void OnGUI()
     {
-        if (!ArchipelagoClient.Connected)
+        if (!Plugin.ArchipelagoClient.Connected)
         {
             return;
         }

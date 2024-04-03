@@ -30,7 +30,7 @@ public class ArchipelagoClient
 {
     public const string ArchipelagoVersion = "0.4.4";
 
-    public static bool Connected { get; private set; }
+    public bool Connected => _session?.Socket.Connected ?? false;
     private bool _attemptingConnection;
 
     public static ArchipelagoData ServerData { get; } = new();
@@ -103,7 +103,6 @@ public class ArchipelagoClient
 
         if (loginResult is LoginFailure loginFailure)
         {
-            Connected = false;
             _attemptingConnection = false;
             Plugin.Logger.LogError("AP connection failed: " + string.Join("\n", loginFailure.Errors));
             _session = null;
@@ -111,12 +110,11 @@ public class ArchipelagoClient
         }
 
         var login = loginResult as LoginSuccessful;
-        Connected = true;
         Plugin.Logger.LogInfo($"Successfully connected to {ServerData.Uri} as {ServerData.SlotName}");
         OnConnect(login);
     }
 
-    public void OnConnect(LoginSuccessful login)
+    private void OnConnect(LoginSuccessful login)
     {
         if (!ServerData.SetupSession(login.SlotData, _session.RoomState.Seed))
         {
@@ -135,7 +133,6 @@ public class ArchipelagoClient
             return;
         }
 
-        Connected = false;
         _attemptingConnection = false;
         Task.Run(() => { _session.Socket.DisconnectAsync(); }).Wait();
         _deathLinkHandler = null;
@@ -256,11 +253,6 @@ public class ArchipelagoClient
 
     public void Session_ItemReceived(ReceivedItemsHelper helper)
     {
-        if (!Connected)
-        {
-            return;
-        }
-
         var index = helper.Index - 1;
         var itemName = helper.PeekItemName();
         var item = helper.DequeueItem();
@@ -283,7 +275,7 @@ public class ArchipelagoClient
 
     public void Session_CheckedLocationsUpdated(ReadOnlyCollection<long> newCheckedLocations)
     {
-        if (_ignoreLocations || !Connected)
+        if (_ignoreLocations)
         {
             return;
         }
@@ -345,33 +337,22 @@ public class ArchipelagoClient
 
     public void SendDeath()
     {
-        if (Connected)
-        {
-            _deathLinkHandler.SendDeathLink();
-        }
+        _deathLinkHandler?.SendDeathLink();
     }
 
     public void ToggleDeathLink()
     {
-        if (Connected)
-        {
-            _deathLinkHandler.ToggleDeathLink();
-        }
+        _deathLinkHandler?.ToggleDeathLink();
     }
 
     public bool DeathLinkEnabled()
     {
-        if (!Connected)
-        {
-            return false;
-        }
-
-        return _deathLinkHandler.IsEnabled();
+        return _deathLinkHandler?.IsEnabled() ?? false;
     }
 
     public void CheckForDeath()
     {
-        if (Connected && Game.CanBeKilled())
+        if (Game.CanBeKilled())
         {
             _deathLinkHandler?.KillPlayer();
         }
@@ -379,9 +360,6 @@ public class ArchipelagoClient
 
     public void SendMessage(string message)
     {
-        if (Connected)
-        {
-            _session.Socket.SendPacketAsync(new SayPacket { Text = message });
-        }
+        _session?.Socket.SendPacketAsync(new SayPacket { Text = message });
     }
 }
