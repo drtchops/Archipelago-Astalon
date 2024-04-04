@@ -10,7 +10,7 @@ namespace Astalon.Randomizer.Archipelago;
 [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
 public struct ShopItem
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public string Name { get; set; }
     public string PlayerName { get; set; }
     public string Game { get; set; }
