@@ -90,7 +90,7 @@ public class Plugin : BasePlugin
 public class Il2CppBase : MonoBehaviour
 {
     public const string ModDisplayInfo = $"Astalon-{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION}";
-    private const string ArchipelagoDisplayInfo = $"Archipelago v{ArchipelagoClient.ArchipelagoVersion}";
+    private const string ArchipelagoDisplayInfo = "Archipelago";
 
     public static bool ConnectionFocused { get; private set; }
 

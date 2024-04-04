@@ -722,6 +722,18 @@ public static class Data
         { "Bram's Whiplash", DealProperties.DealID.Deal_Bram_Whiplash },
     };
 
+    public static readonly Dictionary<string, CharacterProperties.Character> ItemToCharacter = new()
+    {
+        { "Algus", CharacterProperties.Character.Algus },
+        { "Arias", CharacterProperties.Character.Arias },
+        { "Kyuli", CharacterProperties.Character.Kyuli },
+        { "Zeek", CharacterProperties.Character.Zeek },
+        { "Bram", CharacterProperties.Character.Bram },
+    };
+
+    public static readonly Dictionary<CharacterProperties.Character, string> CharacterToItem =
+        ItemToCharacter.ToDictionary((kvp) => kvp.Value, (kvp) => kvp.Key);
+
     // elevator rooms
     // 6629 - start elevator
     // 248 - gorgon tomb 2

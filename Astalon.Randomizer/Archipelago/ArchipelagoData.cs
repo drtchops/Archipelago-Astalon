@@ -7,6 +7,14 @@ using Newtonsoft.Json.Serialization;
 
 namespace Astalon.Randomizer.Archipelago;
 
+public enum RandomizeCharacters
+{
+    Vanilla = 0,
+    Trio = 1,
+    Solo = 2,
+    All = 3,
+}
+
 [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
 public struct ShopItem
 {
@@ -20,6 +28,7 @@ public struct ShopItem
 
 public class ArchipelagoSlotData
 {
+    public RandomizeCharacters RandomizeCharacters { get; set; }
     public bool RandomizeAttackPickups { get; set; }
     public bool RandomizeHealthPickups { get; set; }
     public bool RandomizeWhiteKeys { get; set; }
@@ -34,6 +43,7 @@ public class ArchipelagoSlotData
     public bool CampfireWarp { get; set; }
     public bool DeathLink { get; set; }
     public Dictionary<string, ShopItem> ShopItems { get; }
+    public List<string> StartingCharacters { get; }
 
     public ArchipelagoSlotData()
     {
@@ -44,6 +54,7 @@ public class ArchipelagoSlotData
     {
         var settings = (JObject)slotData["settings"];
 
+        RandomizeCharacters = ParseEnum<RandomizeCharacters>(settings, "randomize_characters");
         RandomizeAttackPickups = ParseBool(settings, "randomize_attack_pickups", true);
         RandomizeHealthPickups = ParseBool(settings, "randomize_health_pickups", true);
         RandomizeWhiteKeys = ParseBool(settings, "randomize_white_keys");
@@ -58,15 +69,26 @@ public class ArchipelagoSlotData
         CampfireWarp = ParseBool(settings, "campfire_warp", true);
         DeathLink = ParseBool(settings, "death_link");
 
-        var shopItems = (JObject)slotData["shop_items"];
         try
         {
+            var shopItems = (JObject)slotData["shop_items"];
             ShopItems = shopItems.ToObject<Dictionary<string, ShopItem>>();
         }
         catch (Exception e)
         {
             Plugin.Logger.LogError($"Error parsing slot_data.shop_items: {e.Message}");
             ShopItems = new();
+        }
+
+        try
+        {
+            var startingCharacters = (JArray)slotData["starting_characters"];
+            StartingCharacters = startingCharacters.ToObject<List<string>>();
+        }
+        catch (Exception e)
+        {
+            Plugin.Logger.LogError($"Error parsing slot_data.starting_characters: {e.Message}");
+            StartingCharacters = new();
         }
     }
 
@@ -95,6 +117,24 @@ public class ArchipelagoSlotData
             try
             {
                 return int.Parse(value.ToString());
+            }
+            catch (Exception e)
+            {
+                Plugin.Logger.LogError($"Error parsing slot_data.{key}: {e.Message}");
+                return defaultValue;
+            }
+        }
+
+        return defaultValue;
+    }
+
+    public static T ParseEnum<T>(JObject settings, string key, T defaultValue = default) where T : Enum
+    {
+        if (settings.TryGetValue(key, out var value))
+        {
+            try
+            {
+                return (T)Enum.Parse(typeof(T), value.ToString());
             }
             catch (Exception e)
             {

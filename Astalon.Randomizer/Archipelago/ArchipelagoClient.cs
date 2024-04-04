@@ -28,7 +28,7 @@ public class ItemInfo
 
 public class ArchipelagoClient
 {
-    public const string ArchipelagoVersion = "0.4.4";
+    private const string MinArchipelagoVersion = "0.4.4";
 
     public bool Connected => _session?.Socket.Connected ?? false;
     private bool _attemptingConnection;
@@ -92,7 +92,7 @@ public class ArchipelagoClient
                 Game.Name,
                 ServerData.SlotName,
                 ItemsHandlingFlags.AllItems,
-                new(ArchipelagoVersion),
+                new(MinArchipelagoVersion),
                 password: ServerData.Password,
                 requestSlotData: true);
         }

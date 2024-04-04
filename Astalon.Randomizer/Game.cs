@@ -324,6 +324,8 @@ public static class Game
             return true;
         }
 
+        Plugin.Logger.LogDebug($"ConnectSave({_saveNew})");
+
         var seed = ArchipelagoClient.ServerData.Seed;
         var slotData = ArchipelagoClient.ServerData.SlotData;
 
@@ -333,6 +335,49 @@ public static class Game
             _saveData.Seed = seed;
             _saveData.SlotData = slotData;
             _saveDataFilled = true;
+
+            Plugin.Logger.LogDebug(slotData.RandomizeCharacters);
+            Plugin.Logger.LogDebug(string.Join(", ", slotData.StartingCharacters));
+
+            if (slotData.RandomizeCharacters != RandomizeCharacters.Vanilla)
+            {
+                if (!slotData.StartingCharacters.Contains("Algus"))
+                {
+                    Player.PlayerDataLocal.LockCharacter(CharacterProperties.Character.Algus);
+                    Player.PlayerDataLocal.MakeDealNonAvailable(DealProperties.DealID.Deal_SubMenu_Algus);
+                }
+
+                if (!slotData.StartingCharacters.Contains("Arias"))
+                {
+                    Player.PlayerDataLocal.LockCharacter(CharacterProperties.Character.Arias);
+                    Player.PlayerDataLocal.MakeDealNonAvailable(DealProperties.DealID.Deal_SubMenu_Arias);
+                }
+
+                if (!slotData.StartingCharacters.Contains("Kyuli"))
+                {
+                    Player.PlayerDataLocal.LockCharacter(CharacterProperties.Character.Kyuli);
+                    Player.PlayerDataLocal.MakeDealNonAvailable(DealProperties.DealID.Deal_SubMenu_Kyuli);
+                }
+
+                if (slotData.StartingCharacters.Contains("Zeek"))
+                {
+                    Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Zeek);
+                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Zeek, false);
+                }
+
+                if (slotData.StartingCharacters.Contains("Bram"))
+                {
+                    Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
+                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Bram, false);
+                }
+
+                if (!slotData.StartingCharacters.Contains(
+                        Data.CharacterToItem[Player.PlayerDataLocal.currentCharacter]))
+                {
+                    Player.Instance.CycleCharacterTo(Data.ItemToCharacter[slotData.StartingCharacters[0]]);
+                }
+            }
+
             UpdateSaveData();
         }
         else if (seed != _saveData.Seed)
@@ -527,6 +572,21 @@ public static class Game
         }
 
         return true;
+    }
+
+    public static bool CanCycleCharacter()
+    {
+        if (!_saveValid)
+        {
+            return true;
+        }
+
+        if (!_saveDataFilled)
+        {
+            return false;
+        }
+
+        return Player.PlayerDataLocal.unlockedCharacters.Count > 1;
     }
 
     public static string GetIcon(string itemName, ItemFlags flags = ItemFlags.None)
