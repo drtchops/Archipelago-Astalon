@@ -473,7 +473,7 @@ internal class GameplayUIManager_Patch
     [HarmonyPrefix]
     public static bool ReplaceVariable(string _text, ref string __result)
     {
-        Plugin.Logger.LogDebug($"GameplayUIManager.ReplaceVariable({_text})");
+        //Plugin.Logger.LogDebug($"GameplayUIManager.ReplaceVariable({_text})");
         if (_text.StartsWith("ARCHIPELAGO:"))
         {
             __result = _text[12..];
