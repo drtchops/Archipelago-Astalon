@@ -621,7 +621,7 @@ public static class Game
 
     public static string GetClip(string icon)
     {
-        if (icon.StartsWith("Deal_"))
+        if (icon.StartsWith("Deal_") || icon.StartsWith("ElevatorMenu_"))
         {
             return null;
         }
