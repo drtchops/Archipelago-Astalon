@@ -7,12 +7,27 @@ using Newtonsoft.Json.Serialization;
 
 namespace Astalon.Randomizer.Archipelago;
 
+public enum Difficulty
+{
+    Easy = 0,
+    Hard = 1,
+}
+
+public enum Campaign
+{
+    TearsOfTheEarth = 0,
+    NewGamePlus = 1,
+    BlackKnight = 2,
+    MonsterMode = 3,
+}
+
 public enum RandomizeCharacters
 {
     Vanilla = 0,
     Trio = 1,
     Solo = 2,
     All = 3,
+    Random = 4,
 }
 
 [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
@@ -28,6 +43,8 @@ public struct ShopItem
 
 public class ArchipelagoSlotData
 {
+    public Difficulty Difficulty { get; set; }
+    public Campaign Campaign { get; set; }
     public RandomizeCharacters RandomizeCharacters { get; set; }
     public bool RandomizeAttackPickups { get; set; }
     public bool RandomizeHealthPickups { get; set; }
@@ -35,6 +52,8 @@ public class ArchipelagoSlotData
     public bool RandomizeBlueKeys { get; set; }
     public bool RandomizeRedKeys { get; set; }
     public bool RandomizeShop { get; set; }
+    public bool RandomizeSwitches { get; set; }
+    public bool RandomizeElevator { get; set; }
     public bool RandomizeFamiliars { get; set; }
     public bool SkipCutscenes { get; set; }
     public bool FreeApexElevator { get; set; }
@@ -42,18 +61,21 @@ public class ArchipelagoSlotData
     public bool FastBloodChalice { get; set; }
     public bool CampfireWarp { get; set; }
     public bool DeathLink { get; set; }
-    public Dictionary<string, ShopItem> ShopItems { get; }
-    public List<string> StartingCharacters { get; }
+    public Dictionary<string, ShopItem> ShopItems { get; set; }
+    public string[] StartingCharacters { get; set; }
 
     public ArchipelagoSlotData()
     {
-        ShopItems = new();
+        ShopItems = [];
+        StartingCharacters = [];
     }
 
     public ArchipelagoSlotData(IReadOnlyDictionary<string, object> slotData)
     {
         var settings = (JObject)slotData["settings"];
 
+        Difficulty = ParseEnum<Difficulty>(settings, "difficulty");
+        Campaign = ParseEnum<Campaign>(settings, "campaign");
         RandomizeCharacters = ParseEnum<RandomizeCharacters>(settings, "randomize_characters");
         RandomizeAttackPickups = ParseBool(settings, "randomize_attack_pickups", true);
         RandomizeHealthPickups = ParseBool(settings, "randomize_health_pickups", true);
@@ -61,6 +83,8 @@ public class ArchipelagoSlotData
         RandomizeBlueKeys = ParseBool(settings, "randomize_blue_keys");
         RandomizeRedKeys = ParseBool(settings, "randomize_red_keys");
         RandomizeShop = ParseBool(settings, "randomize_shop");
+        RandomizeSwitches = ParseBool(settings, "randomize_switches");
+        RandomizeElevator = ParseBool(settings, "randomize_elevator");
         RandomizeFamiliars = ParseBool(settings, "randomize_familiars");
         SkipCutscenes = ParseBool(settings, "skip_cutscenes", true);
         FreeApexElevator = ParseBool(settings, "free_apex_elevator", true);
@@ -77,18 +101,18 @@ public class ArchipelagoSlotData
         catch (Exception e)
         {
             Plugin.Logger.LogError($"Error parsing slot_data.shop_items: {e.Message}");
-            ShopItems = new();
+            ShopItems = [];
         }
 
         try
         {
             var startingCharacters = (JArray)slotData["starting_characters"];
-            StartingCharacters = startingCharacters.ToObject<List<string>>();
+            StartingCharacters = startingCharacters.ToObject<string[]>();
         }
         catch (Exception e)
         {
             Plugin.Logger.LogError($"Error parsing slot_data.starting_characters: {e.Message}");
-            StartingCharacters = new();
+            StartingCharacters = [];
         }
     }
 

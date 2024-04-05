@@ -37,7 +37,7 @@ public class ArchipelagoClient
     private DeathLinkHandler _deathLinkHandler;
     private ArchipelagoSession _session;
     private bool _ignoreLocations;
-    private readonly Dictionary<long, ItemInfo> _locationCache = new();
+    private readonly Dictionary<long, ItemInfo> _locationCache = [];
 
     public ArchipelagoClient(string uri, string slotName, string password)
     {
@@ -173,6 +173,12 @@ public class ArchipelagoClient
         }
 
         var id = _session.Locations.GetLocationIdFromName(Game.Name, location);
+        if (id == -1)
+        {
+            Plugin.Logger.LogError($"Cannot find location: {location}");
+            return;
+        }
+
         _session.Locations.CompleteLocationChecksAsync(id);
     }
 
@@ -183,7 +189,7 @@ public class ArchipelagoClient
             return false;
         }
 
-        List<long> ids = new();
+        List<long> ids = [];
         foreach (var location in locations)
         {
             ids.Add(_session.Locations.GetLocationIdFromName(Game.Name, location));

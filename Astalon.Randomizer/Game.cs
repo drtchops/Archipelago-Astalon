@@ -266,7 +266,6 @@ public static class Game
         _saveDataFilled = false;
 
         var serializedData = SaveManager.CurrentSave.GetObjectData(SaveObjectId);
-        Plugin.Logger.LogDebug(serializedData);
         if (string.IsNullOrWhiteSpace(serializedData))
         {
             Plugin.Logger.LogError("Did not find AP save data. Did you load a casual save?");
@@ -301,8 +300,8 @@ public static class Game
         _saveDataFilled = false;
         _saveData = new()
         {
-            PendingLocations = new(),
-            ReceivedDeals = new(),
+            PendingLocations = [],
+            ReceivedDeals = [],
         };
     }
 
@@ -324,8 +323,6 @@ public static class Game
             return true;
         }
 
-        Plugin.Logger.LogDebug($"ConnectSave({_saveNew})");
-
         var seed = ArchipelagoClient.ServerData.Seed;
         var slotData = ArchipelagoClient.ServerData.SlotData;
 
@@ -335,9 +332,6 @@ public static class Game
             _saveData.Seed = seed;
             _saveData.SlotData = slotData;
             _saveDataFilled = true;
-
-            Plugin.Logger.LogDebug(slotData.RandomizeCharacters);
-            Plugin.Logger.LogDebug(string.Join(", ", slotData.StartingCharacters));
 
             if (slotData.RandomizeCharacters != RandomizeCharacters.Vanilla)
             {
@@ -384,7 +378,10 @@ public static class Game
         {
             Plugin.Logger.LogError("Mismatched seed detected. Did you load the right save?");
             Plugin.ArchipelagoClient.Disconnect();
-            return false;
+        }
+        else
+        {
+            _saveData.SlotData = ArchipelagoClient.ServerData.SlotData;
         }
 
         SyncLocations();
@@ -405,8 +402,6 @@ public static class Game
         {
             return;
         }
-
-        Plugin.Logger.LogDebug("Initializing Save");
 
         if (_saveData.SlotData.SkipCutscenes)
         {
@@ -969,6 +964,65 @@ public static class Game
         return false;
     }
 
+    public static void MakeCharacterDealsUnavailable()
+    {
+        if (!_saveValid)
+        {
+            return;
+        }
+
+        if (!Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Algus))
+        {
+            Player.PlayerDataLocal.MakeDealNonAvailable(DealProperties.DealID.Deal_SubMenu_Algus);
+        }
+
+        if (!Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Arias))
+        {
+            Player.PlayerDataLocal.MakeDealNonAvailable(DealProperties.DealID.Deal_SubMenu_Arias);
+        }
+
+        if (!Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Kyuli))
+        {
+            Player.PlayerDataLocal.MakeDealNonAvailable(DealProperties.DealID.Deal_SubMenu_Kyuli);
+        }
+    }
+
+    public static void UpdateSaveCharacters(SavePoint savePoint)
+    {
+        if (!_saveValid)
+        {
+            return;
+        }
+
+        savePoint.algusSpriteAnimator.gameObject.SetActive(
+            Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Algus));
+        savePoint.ariasSpriteAnimator.gameObject.SetActive(
+            Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Arias));
+        savePoint.kyuliSpriteAnimator.gameObject.SetActive(
+            Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Kyuli));
+    }
+
+    public static void ExploreRoom(Room room)
+    {
+        if (!_saveValid || !_saveDataFilled || _saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
+        {
+            return;
+        }
+
+        switch (room.roomID)
+        {
+            case 6672 when !_saveData.SlotData.StartingCharacters.Contains("Algus"):
+                SendLocation("Gorgon Tomb - Algus");
+                break;
+            case 6673 when !_saveData.SlotData.StartingCharacters.Contains("Arias"):
+                SendLocation("Gorgon Tomb - Arias");
+                break;
+            case 6671 when !_saveData.SlotData.StartingCharacters.Contains("Kyuli"):
+                SendLocation("Gorgon Tomb - Kyuli");
+                break;
+        }
+    }
+
     public static bool CollectItem(ItemProperties.ItemID itemId)
     {
         if (!_saveDataFilled)
@@ -1319,7 +1373,6 @@ public static class Game
             return;
         }
 
-        Plugin.Logger.LogDebug($"Warping to: {destination}");
         Player.Instance.transform.position = playerPos;
         CameraManager.MoveCameraTo(cameraPos);
         AudioManager.Play("thunder");

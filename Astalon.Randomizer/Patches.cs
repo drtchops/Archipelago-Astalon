@@ -293,6 +293,14 @@ internal class PlayerData_Patch
         Plugin.Logger.LogDebug($"PlayerData.PurchaseDealPre({_dealID})");
         Game.PurchaseDeal(_dealID);
     }
+
+    [HarmonyPatch(nameof(PlayerData.AddDefaultDeals))]
+    [HarmonyPostfix]
+    public static void AddDefaultDeals()
+    {
+        Plugin.Logger.LogDebug("PlayerData.PurchaseDealPre()");
+        Game.MakeCharacterDealsUnavailable();
+    }
 }
 
 [HarmonyPatch(typeof(Player))]
@@ -333,6 +341,31 @@ internal class Player_Patch
     public static void AssignRoom(Room _room)
     {
         Plugin.Logger.LogDebug($"Player.AssignRoom({_room.roomID})");
+        Game.ExploreRoom(_room);
+    }
+
+    [HarmonyPatch(nameof(Player.ChangeCharacters))]
+    [HarmonyPrefix]
+    public static bool ChangeCharacters()
+    {
+        Plugin.Logger.LogDebug("Player.ChangeCharacters()");
+        return Game.CanCycleCharacter();
+    }
+
+    [HarmonyPatch(nameof(Player.CycleCharacters))]
+    [HarmonyPrefix]
+    public static bool CycleCharacters()
+    {
+        Plugin.Logger.LogDebug("Player.CycleCharacters()");
+        return Game.CanCycleCharacter();
+    }
+
+    [HarmonyPatch(nameof(Player.CycleCharacterTo))]
+    [HarmonyPrefix]
+    public static bool CycleCharacterTo()
+    {
+        Plugin.Logger.LogDebug("Player.CycleCharacterTo()");
+        return Game.CanCycleCharacter();
     }
 }
 
@@ -606,17 +639,6 @@ internal class SaveManager_Patch
     }
 }
 
-[HarmonyPatch(typeof(LoadingScreen))]
-internal class LoadingScreen_Patch
-{
-    [HarmonyPatch(nameof(LoadingScreen.Hide))]
-    [HarmonyPrefix]
-    public static void Hide()
-    {
-        Plugin.Logger.LogDebug("LoadingScreen.Hide()");
-    }
-}
-
 [HarmonyPatch(typeof(Boss_BlackKnightFinal))]
 internal class Boss_BlackKnightFinal_Patch
 {
@@ -648,17 +670,6 @@ internal class InputListener_Patch
     public static bool Update()
     {
         return (ArchipelagoConsole.Hidden || !Settings.ShowConsole) && !Il2CppBase.ConnectionFocused;
-    }
-}
-
-[HarmonyPatch(typeof(Room))]
-internal class Room_Patch
-{
-    [HarmonyPatch(nameof(Room.ActivateInisde))]
-    [HarmonyPostfix]
-    public static void ActivateInisde(Room __instance)
-    {
-        Plugin.Logger.LogDebug("Room.ActivateInisde()");
     }
 }
 
@@ -726,5 +737,25 @@ internal class ShopSubMenu_Patch
             __instance.dealTitle.text = name;
             __instance.dealDescription.text = description;
         }
+    }
+}
+
+[HarmonyPatch(typeof(SavePoint))]
+internal class SavePoint_Patch
+{
+    [HarmonyPatch(nameof(SavePoint.ChangeCharacters))]
+    [HarmonyPrefix]
+    public static bool ChangeCharacters()
+    {
+        Plugin.Logger.LogDebug("SavePoint.ChangeCharacters()");
+        return Game.CanCycleCharacter();
+    }
+
+    [HarmonyPatch(nameof(SavePoint.UpdateCharacters))]
+    [HarmonyPrefix]
+    public static void UpdateCharacters(SavePoint __instance)
+    {
+        Plugin.Logger.LogDebug("SavePoint.UpdateCharacters()");
+        Game.UpdateSaveCharacters(__instance);
     }
 }
