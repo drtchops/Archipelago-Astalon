@@ -351,22 +351,6 @@ internal class Player_Patch
         Plugin.Logger.LogDebug("Player.ChangeCharacters()");
         return Game.CanCycleCharacter();
     }
-
-    [HarmonyPatch(nameof(Player.CycleCharacters))]
-    [HarmonyPrefix]
-    public static bool CycleCharacters()
-    {
-        Plugin.Logger.LogDebug("Player.CycleCharacters()");
-        return Game.CanCycleCharacter();
-    }
-
-    [HarmonyPatch(nameof(Player.CycleCharacterTo))]
-    [HarmonyPrefix]
-    public static bool CycleCharacterTo()
-    {
-        Plugin.Logger.LogDebug("Player.CycleCharacterTo()");
-        return Game.CanCycleCharacter();
-    }
 }
 
 [HarmonyPatch(typeof(EnemyEntity))]
