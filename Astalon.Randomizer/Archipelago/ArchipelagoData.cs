@@ -55,6 +55,9 @@ public class ArchipelagoSlotData
     public bool RandomizeSwitches { get; set; }
     public bool RandomizeElevator { get; set; }
     public bool RandomizeFamiliars { get; set; }
+    public bool RandomizeOrbCrates { get; set; }
+    public bool RandomizeBossOrbRewards { get; set; }
+    public bool RandomizeMinibossOrbRewards { get; set; }
     public bool SkipCutscenes { get; set; }
     public bool FreeApexElevator { get; set; }
     public int CostMultiplier { get; set; }
@@ -86,6 +89,9 @@ public class ArchipelagoSlotData
         RandomizeSwitches = ParseBool(settings, "randomize_switches");
         RandomizeElevator = ParseBool(settings, "randomize_elevator");
         RandomizeFamiliars = ParseBool(settings, "randomize_familiars");
+        RandomizeOrbCrates = ParseBool(settings, "randomize_orb_crates");
+        RandomizeBossOrbRewards = ParseBool(settings, "randomize_boss_orb_rewards");
+        RandomizeMinibossOrbRewards = ParseBool(settings, "randomize_miniboss_orb_rewards");
         SkipCutscenes = ParseBool(settings, "skip_cutscenes", true);
         FreeApexElevator = ParseBool(settings, "free_apex_elevator", true);
         CostMultiplier = ParseInt(settings, "cost_multiplier", 100);

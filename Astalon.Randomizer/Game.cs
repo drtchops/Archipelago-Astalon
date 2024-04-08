@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Archipelago.MultiClient.Net.Enums;
 using Astalon.Randomizer.Archipelago;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
 namespace Astalon.Randomizer;
@@ -28,6 +29,24 @@ public struct SaveData
     public List<DealProperties.DealID> ReceivedDeals { get; set; }
 }
 
+[JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
+public struct RoomData
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Type { get; set; }
+    public int Area { get; set; }
+    public int Floor { get; set; }
+    public bool IsRocks { get; set; }
+    public bool PreventBellUse { get; set; }
+    public bool SavePoint { get; set; }
+    public bool TitanStatue { get; set; }
+    public bool VoidPortal { get; set; }
+    public string InitialPosition { get; set; }
+    public int[] Switches { get; set; }
+    public int[] Switchables { get; set; }
+}
+
 public static class Game
 {
     public const string Name = "Astalon";
@@ -45,6 +64,7 @@ public static class Game
     public static bool DumpRoom { get; set; }
     public static bool ToggleSwitches { get; set; }
     public static bool ToggleObjects { get; set; }
+    public static bool ResetDoors { get; set; }
     public static string WarpDestination { get; set; }
 
     private static readonly string DataDir = Path.GetFullPath("BepInEx/data/Archipelago");
@@ -264,6 +284,45 @@ public static class Game
         _saveLoaded = true;
         _saveValid = false;
         _saveDataFilled = false;
+
+        //List<RoomData> rooms = [];
+        //foreach (var room in GameManager.Instance.gameRooms)
+        //{
+        //    List<int> switches = [];
+        //    List<int> switchables = [];
+
+        //    foreach (var entityData in room.roomEntitiesData)
+        //    {
+        //        if (entityData.GetValue("wasActivated") != "")
+        //        {
+        //            switches.Add(entityData.ID);
+        //        }
+
+        //        if (entityData.GetValue("objectOn") != "")
+        //        {
+        //            switchables.Add(entityData.ID);
+        //        }
+        //    }
+
+        //    rooms.Add(new()
+        //    {
+        //        Id = room.roomID,
+        //        Name = room.name,
+        //        Type = room.roomType,
+        //        Area = room.GetRoomArea(),
+        //        Floor = room.GetCurrentRoomFloor(),
+        //        IsRocks = room.isRocks,
+        //        PreventBellUse = room.preventBellUse,
+        //        SavePoint = room.savePoint,
+        //        TitanStatue = room.titanStatue,
+        //        VoidPortal = room.voidPortal,
+        //        InitialPosition = room.roomInitialPosition.ToString(),
+        //        Switches = switches.ToArray(),
+        //        Switchables = switchables.ToArray(),
+        //    });
+        //}
+
+        //Plugin.Logger.LogMessage(JsonConvert.SerializeObject(rooms));
 
         var serializedData = SaveManager.CurrentSave.GetObjectData(SaveObjectId);
         if (string.IsNullOrWhiteSpace(serializedData))
@@ -813,7 +872,12 @@ public static class Game
                 Player.PlayerDataLocal.EnableItem(ItemProperties.ItemID.MarkOfEpimetheus);
             }
         }
+        else if (Data.ItemToLink.TryGetValue(itemName, out var switchData))
+        {
+            ToggleSwitchLink(switchData);
+        }
         else
+        {
             switch (itemName)
             {
                 case "Algus":
@@ -835,13 +899,14 @@ public static class Game
                 case "Bram":
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Bram, false);
-                    Player.PlayerDataLocal.bramFreed = true;
-                    Player.PlayerDataLocal.bramSeen = true;
+                    //Player.PlayerDataLocal.bramFreed = true;
+                    //Player.PlayerDataLocal.bramSeen = true;
                     break;
                 default:
                     Plugin.Logger.LogWarning($"Item {itemInfo.Id} - {itemName} not found");
                     return false;
             }
+        }
 
         return true;
     }
@@ -1002,6 +1067,32 @@ public static class Game
             Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Kyuli));
     }
 
+    public static bool IsSwitchRandomized(string linkId, out string location)
+    {
+        location = null;
+
+        if (!_saveValid)
+        {
+            return false;
+        }
+
+        if (_saveData.SlotData.RandomizeSwitches && Data.LinkToLocation.TryGetValue(linkId, out var switchLocation))
+        {
+            location = switchLocation;
+            return true;
+        }
+
+        return false;
+    }
+
+    public static void PressSwitch(string linkId)
+    {
+        if (IsSwitchRandomized(linkId, out var location))
+        {
+            SendLocation(location);
+        }
+    }
+
     public static void ExploreRoom(Room room)
     {
         if (!_saveValid || !_saveDataFilled || _saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
@@ -1155,6 +1246,19 @@ public static class Game
         return true;
     }
 
+    public static void ToggleSwitchLink(SwitchData data)
+    {
+        foreach (var objId in data.ObjectsToEnable)
+        {
+            UpdateObjectData(objId, data.RoomId, "objectOn", "True");
+        }
+
+        foreach (var objId in data.ObjectsToDisable)
+        {
+            UpdateObjectData(objId, data.RoomId, "objectOn", "False");
+        }
+    }
+
     public static void SendLocation(string location)
     {
         if (Plugin.ArchipelagoClient.Connected)
@@ -1297,6 +1401,36 @@ public static class Game
                 foreach (var obj in room.switchableObjects)
                 {
                     obj.ToggleObject();
+                }
+            }
+        }
+
+        if (ResetDoors)
+        {
+            ResetDoors = false;
+
+            if (Player.PlayerDataLocal != null)
+            {
+                var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
+                Plugin.Logger.LogDebug($"resetting doors for room {room.roomID}");
+                foreach (var data in room.GetRoomEntitiesData())
+                {
+                    Plugin.Logger.LogDebug(
+                        $"{data.ID} ({data.ObjectType}) - '{data.Data}'");
+                    if (!string.IsNullOrWhiteSpace(data.GetValue("wasOpened")))
+                    {
+                        UpdateObjectData(data.ID, data.RoomID, "wasOpened", "False");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(data.GetValue("wasActivated")))
+                    {
+                        UpdateObjectData(data.ID, data.RoomID, "wasActivated", "False");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(data.GetValue("objectOn")))
+                    {
+                        UpdateObjectData(data.ID, data.RoomID, "objectOn", "True");
+                    }
                 }
             }
         }

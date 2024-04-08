@@ -4,12 +4,22 @@ using UnityEngine;
 
 namespace Astalon.Randomizer;
 
-public class Checkpoint
+public struct Checkpoint
 {
     public int Id;
     public int RoomId;
     public Vector3 PlayerPos;
     public Vector2 CameraPos;
+}
+
+public struct SwitchData
+{
+    public string Id;
+    public int RoomId;
+    public string ItemName;
+    public string LocationName;
+    public int[] ObjectsToEnable;
+    public int[] ObjectsToDisable;
 }
 
 public static class Data
@@ -326,7 +336,7 @@ public static class Data
         { "SP Blue Door", (8088, 8809) },
     };
 
-    public static readonly Dictionary<string, (int, int)> RedDoorMap = new()
+    public static readonly Dictionary<string, (int roomId, int objectId)> RedDoorMap = new()
     {
         { "Red Door (Zeek)", (3227, 3288) },
         { "Red Door (Cathedral)", (7055, 7252) },
@@ -733,6 +743,24 @@ public static class Data
 
     public static readonly Dictionary<CharacterProperties.Character, string> CharacterToItem =
         ItemToCharacter.ToDictionary((kvp) => kvp.Value, (kvp) => kvp.Key);
+
+    public static readonly SwitchData[] Switches =
+    [
+        new()
+        {
+            Id = "1",
+            RoomId = 1,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [],
+            ItemName = "GT Switch 1st Room",
+            LocationName = "Gorgon Tomb - Switch (1st Room)",
+        },
+    ];
+
+    public static readonly Dictionary<string, string> LinkToLocation =
+        Switches.ToDictionary((data) => data.Id, (data) => data.LocationName);
+
+    public static readonly Dictionary<string, SwitchData> ItemToLink = Switches.ToDictionary((data) => data.ItemName);
 
     // elevator rooms
     // 6629 - start elevator

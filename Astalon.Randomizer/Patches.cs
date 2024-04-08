@@ -1,4 +1,5 @@
-﻿using Astalon.Randomizer.Archipelago;
+﻿using System.Collections.Generic;
+using Astalon.Randomizer.Archipelago;
 using HarmonyLib;
 using I2.Loc;
 using UnityEngine;
@@ -340,7 +341,7 @@ internal class Player_Patch
     [HarmonyPrefix]
     public static void AssignRoom(Room _room)
     {
-        Plugin.Logger.LogDebug($"Player.AssignRoom({_room.roomID})");
+        //Plugin.Logger.LogDebug($"Player.AssignRoom({_room.roomID})");
         Game.ExploreRoom(_room);
     }
 
@@ -741,5 +742,63 @@ internal class SavePoint_Patch
     {
         Plugin.Logger.LogDebug("SavePoint.UpdateCharacters()");
         Game.UpdateSaveCharacters(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(Room))]
+internal class Room_Patch
+{
+    [HarmonyPatch(nameof(Room.ActivateInisde))]
+    [HarmonyPostfix]
+    public static void ActivateInisde(Room __instance)
+    {
+        Plugin.Logger.LogDebug($"Room {__instance.RoomID} '{__instance.name}'");
+
+        if (__instance.objectSwitches.Count > 0)
+        {
+            List<int> ids = [];
+            foreach (var objSwitch in __instance.objectSwitches)
+            {
+                ids.Add(objSwitch.actorID);
+            }
+
+            Plugin.Logger.LogDebug($"Switches: {string.Join(", ", ids)}");
+        }
+
+        if (__instance.switchableObjects.Count > 0)
+        {
+            List<int> ids = [];
+            foreach (var switchObj in __instance.switchableObjects)
+            {
+                ids.Add(switchObj.actorID);
+            }
+
+            Plugin.Logger.LogDebug($"Switchables: {string.Join(", ", ids)}");
+        }
+    }
+}
+
+[HarmonyPatch(typeof(ObjectSwitch))]
+internal class ObjectSwitch_Patch
+{
+    [HarmonyPatch(nameof(ObjectSwitch.ActivateObject))]
+    [HarmonyPrefix]
+    public static void ActivateObject(ObjectSwitch __instance)
+    {
+        Plugin.Logger.LogDebug($"ObjectSwitch.ActivateObject({__instance.actorID}, {__instance.switchID})");
+        Game.PressSwitch(__instance.switchID);
+    }
+}
+
+[HarmonyPatch(typeof(SwitchableObject))]
+internal class SwitchableObject_Patch
+{
+    [HarmonyPatch(nameof(SwitchableObject.ToggleObject))]
+    [HarmonyPrefix]
+    public static bool ToggleObject(SwitchableObject __instance)
+    {
+        Plugin.Logger.LogDebug(
+            $"SwitchableObject.ToggleObject({__instance.actorID}, {__instance.objectType}, {__instance.linkID})");
+        return !Game.IsSwitchRandomized(__instance.linkID, out _);
     }
 }

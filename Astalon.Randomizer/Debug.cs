@@ -162,6 +162,11 @@ public static class Debug
         {
             Game.ToggleObjects = true;
         }
+
+        if (GUI.Button(new(8, bottom - 100, width, height), "Reset Doors"))
+        {
+            Game.ResetDoors = true;
+        }
 #endif
     }
 }
