@@ -27,6 +27,7 @@ public struct SaveData
     public ArchipelagoSlotData SlotData { get; set; }
     public List<string> PendingLocations { get; set; }
     public List<DealProperties.DealID> ReceivedDeals { get; set; }
+    public List<int> ReceivedElevators { get; set; }
 }
 
 [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
@@ -45,6 +46,16 @@ public struct RoomData
     public string InitialPosition { get; set; }
     public int[] Switches { get; set; }
     public int[] Switchables { get; set; }
+}
+
+public struct SwitchDump
+{
+    public string Id { get; set; }
+    public int RoomId { get; set; }
+    public int[] ObjectsToEnable { get; set; }
+    public int[] ObjectsToDisable { get; set; }
+    public string ItemName { get; set; }
+    public string LocationName { get; set; }
 }
 
 public static class Game
@@ -66,6 +77,8 @@ public static class Game
     public static bool ToggleObjects { get; set; }
     public static bool ResetDoors { get; set; }
     public static string WarpDestination { get; set; }
+    public static string MoveDirection { get; set; }
+    public static int RoomWarp { get; set; }
 
     private static readonly string DataDir = Path.GetFullPath("BepInEx/data/Archipelago");
     private static bool _saveNew;
@@ -285,6 +298,110 @@ public static class Game
         _saveValid = false;
         _saveDataFilled = false;
 
+        //List<SwitchDump> switchDumps = [];
+
+        //foreach (var room in GameManager.Instance.gameRooms)
+        //{
+        //    Dictionary<string, List<int>> objectsToEnable = [];
+        //    Dictionary<string, List<int>> objectsToDisable = [];
+        //    List<string> switches = [];
+
+        //    foreach (var entityData in room.roomEntitiesData)
+        //    {
+        //        var switchId = entityData.GetValue("switchID");
+        //        if (!string.IsNullOrWhiteSpace(switchId) && switchId != "-1")
+        //        {
+        //            switches.Add(switchId);
+        //            if (!objectsToEnable.ContainsKey(switchId))
+        //            {
+        //                objectsToEnable[switchId] = [];
+        //                objectsToDisable[switchId] = [];
+        //            }
+        //        }
+
+        //        var linkId = entityData.GetValue("linkID");
+        //        if (!string.IsNullOrWhiteSpace(linkId))
+        //        {
+        //            if (!objectsToEnable.ContainsKey(linkId))
+        //            {
+        //                objectsToEnable[linkId] = [];
+        //                objectsToDisable[linkId] = [];
+        //            }
+
+        //            var isOn = entityData.GetValue("objectOn");
+        //            if (isOn == "True")
+        //            {
+        //                objectsToDisable[linkId].Add(entityData.ID);
+        //            }
+        //            else if (isOn == "False")
+        //            {
+        //                objectsToEnable[linkId].Add(entityData.ID);
+        //            }
+        //        }
+        //    }
+
+        //    var itemName = "Switch";
+        //    var locationName = "Switch";
+        //    switch (room.GetRoomArea())
+        //    {
+        //        case 1:
+        //            itemName = "GT Switch";
+        //            locationName = "Gorgon Tomb - Switch";
+        //            break;
+        //        case 2:
+        //            itemName = "Mech Switch";
+        //            locationName = "Mechanism - Switch";
+        //            break;
+        //        case 11:
+        //            itemName = "CD Switch";
+        //            locationName = "Cyclops Den - Switch";
+        //            break;
+        //        case 3:
+        //            itemName = "HotP Switch";
+        //            locationName = "Hall of the Phantoms - Switch";
+        //            break;
+        //        case 7:
+        //            itemName = "Cath Switch";
+        //            locationName = "Cathedral - Switch";
+        //            break;
+        //        case 5:
+        //            itemName = "RoA Switch";
+        //            locationName = "Ruins of Ash - Switch";
+        //            break;
+        //        case 8:
+        //            itemName = "SP Switch";
+        //            locationName = "Serpent Path - Switch";
+        //            break;
+        //        case 21:
+        //            itemName = "Caves Switch";
+        //            locationName = "Caves - Switch";
+        //            break;
+        //        case 4:
+        //            itemName = "Cata Switch";
+        //            locationName = "Catacombs - Switch";
+        //            break;
+        //        case 19:
+        //            itemName = "TR Switch";
+        //            locationName = "Tower Roots - Switch";
+        //            break;
+        //    }
+
+        //    foreach (var switchId in switches)
+        //    {
+        //        switchDumps.Add(new()
+        //        {
+        //            Id = switchId,
+        //            RoomId = room.roomID,
+        //            ObjectsToEnable = objectsToEnable[switchId].ToArray(),
+        //            ObjectsToDisable = objectsToDisable[switchId].ToArray(),
+        //            ItemName = itemName,
+        //            LocationName = locationName,
+        //        });
+        //    }
+        //}
+
+        //Plugin.Logger.LogMessage(JsonConvert.SerializeObject(switchDumps.OrderBy((s) => int.Parse(s.Id)).ToArray()));
+
         //List<RoomData> rooms = [];
         //foreach (var room in GameManager.Instance.gameRooms)
         //{
@@ -361,6 +478,7 @@ public static class Game
         {
             PendingLocations = [],
             ReceivedDeals = [],
+            ReceivedElevators = [],
         };
     }
 
@@ -876,6 +994,17 @@ public static class Game
         {
             ToggleSwitchLink(switchData);
         }
+        else if (Data.ItemToElevator.TryGetValue(itemName, out var elevatorId))
+        {
+            if (_saveData.SlotData.RandomizeElevator)
+            {
+                _saveData.ReceivedElevators.Add(elevatorId);
+            }
+            else if (!Player.PlayerDataLocal.elevatorsFound.Contains(elevatorId))
+            {
+                Player.PlayerDataLocal.elevatorsFound.Add(elevatorId);
+            }
+        }
         else
         {
             switch (itemName)
@@ -911,11 +1040,46 @@ public static class Game
         return true;
     }
 
-    public static void RemoveFreeElevator()
+    public static void ElevatorUnlocked(int roomId)
     {
-        if (_saveDataFilled && !_saveData.SlotData.FreeApexElevator &&
-            Player.PlayerDataLocal.elevatorsFound.Contains(4109) &&
-            !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
+        if (!_saveDataFilled || !_saveData.SlotData.RandomizeElevator)
+        {
+            return;
+        }
+
+        if (Data.ElevatorToLocation.TryGetValue(roomId, out var location))
+        {
+            SendLocation(location);
+        }
+    }
+
+    public static void UpdateElevatorList()
+    {
+        if (!_saveDataFilled)
+        {
+            return;
+        }
+
+        if (_saveData.SlotData.RandomizeElevator)
+        {
+            foreach (var elevatorId in Player.PlayerDataLocal.elevatorsFound)
+            {
+                if (elevatorId != 6629 && (elevatorId != 4109 || !_saveData.SlotData.FreeApexElevator) &&
+                    !_saveData.ReceivedElevators.Contains(elevatorId))
+                {
+                    Player.PlayerDataLocal.elevatorsFound.Remove(elevatorId);
+                }
+            }
+
+            foreach (var elevatorId in _saveData.ReceivedElevators)
+            {
+                if (!Player.PlayerDataLocal.elevatorsFound.Contains(elevatorId))
+                {
+                    Player.PlayerDataLocal.elevatorsFound.Add(elevatorId);
+                }
+            }
+        }
+        else if (!_saveData.SlotData.FreeApexElevator && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
         {
             Player.PlayerDataLocal.elevatorsFound.Remove(4109);
         }
@@ -1067,7 +1231,7 @@ public static class Game
             Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Kyuli));
     }
 
-    public static bool IsSwitchRandomized(string linkId, out string location)
+    public static bool IsSwitchRandomized(int roomId, string linkId, out string location)
     {
         location = null;
 
@@ -1076,7 +1240,8 @@ public static class Game
             return false;
         }
 
-        if (_saveData.SlotData.RandomizeSwitches && Data.LinkToLocation.TryGetValue(linkId, out var switchLocation))
+        if (_saveData.SlotData.RandomizeSwitches &&
+            Data.LinkToLocation.TryGetValue((roomId, linkId), out var switchLocation))
         {
             location = switchLocation;
             return true;
@@ -1085,9 +1250,9 @@ public static class Game
         return false;
     }
 
-    public static void PressSwitch(string linkId)
+    public static void PressSwitch(int roomId, string linkId)
     {
-        if (IsSwitchRandomized(linkId, out var location))
+        if (IsSwitchRandomized(roomId, linkId, out var location))
         {
             SendLocation(location);
         }
@@ -1162,6 +1327,12 @@ public static class Game
             default:
                 return true;
         }
+    }
+
+    public static bool ShouldCheckDeal(DealProperties.DealID dealId)
+    {
+        return _saveDataFilled && _saveData.SlotData.RandomizeShop && !IsInShop &&
+               Data.ItemToDeal.ContainsValue(dealId);
     }
 
     public static bool IsDealReceived(DealProperties.DealID dealId)
@@ -1431,6 +1602,49 @@ public static class Game
                     {
                         UpdateObjectData(data.ID, data.RoomID, "objectOn", "True");
                     }
+                }
+            }
+        }
+
+        if (MoveDirection != null)
+        {
+            if (Player.PlayerDataLocal != null)
+            {
+                var pos = Player.Instance.transform.position;
+                switch (MoveDirection)
+                {
+                    case "up":
+                        pos.y += 20;
+                        break;
+                    case "down":
+                        pos.y -= 20;
+                        break;
+                    case "left":
+                        pos.x -= 20;
+                        break;
+                    case "right":
+                        pos.x += 20;
+                        break;
+                }
+
+                Player.Instance.transform.position = pos;
+            }
+
+            MoveDirection = null;
+        }
+
+        if (RoomWarp != -1)
+        {
+            var roomId = RoomWarp;
+            RoomWarp = -1;
+
+            if (Player.PlayerDataLocal != null)
+            {
+                var room = GameManager.GetRoomFromID(roomId);
+                if (room != null)
+                {
+                    Player.Instance.transform.position = room.roomInitialPosition + new Vector2(50, 50);
+                    CameraManager.MoveCameraTo(room.roomInitialPosition);
                 }
             }
         }

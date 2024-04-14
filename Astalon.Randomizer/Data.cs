@@ -4,22 +4,22 @@ using UnityEngine;
 
 namespace Astalon.Randomizer;
 
-public struct Checkpoint
+public readonly struct Checkpoint
 {
-    public int Id;
-    public int RoomId;
-    public Vector3 PlayerPos;
-    public Vector2 CameraPos;
+    public int Id { get; init; }
+    public int RoomId { get; init; }
+    public Vector3 PlayerPos { get; init; }
+    public Vector2 CameraPos { get; init; }
 }
 
-public struct SwitchData
+public readonly struct SwitchData
 {
-    public string Id;
-    public int RoomId;
-    public string ItemName;
-    public string LocationName;
-    public int[] ObjectsToEnable;
-    public int[] ObjectsToDisable;
+    public string Id { get; init; }
+    public int RoomId { get; init; }
+    public string ItemName { get; init; }
+    public string LocationName { get; init; }
+    public int[] ObjectsToEnable { get; init; }
+    public int[] ObjectsToDisable { get; init; }
 }
 
 public static class Data
@@ -283,7 +283,7 @@ public static class Data
         { 2671, "Catacombs - Blue Key (Eyeballs)" },
     };
 
-    public static readonly Dictionary<string, (int, int)> WhiteDoorMap = new()
+    public static readonly Dictionary<string, (int roomId, int objectId)> WhiteDoorMap = new()
     {
         { "GT White Door (1st Room)", (3, 9) },
         { "GT White Door (Linus' Map)", (268, 445) },
@@ -305,7 +305,7 @@ public static class Data
         { "Cata White Door (Prison)", (4336, 4615) },
     };
 
-    public static readonly Dictionary<string, (int, int)> BlueDoorMap = new()
+    public static readonly Dictionary<string, (int roomId, int objectId)> BlueDoorMap = new()
     {
         { "GT Blue Door (Bestiary)", (6628, 9467) },
         { "GT Blue Door (Ring of the Ancients)", (30, 6373) },
@@ -701,9 +701,6 @@ public static class Data
         { DealProperties.DealID.Deal_Bram_Whiplash, "Shop - Bram's Whiplash" },
     };
 
-    public static readonly Dictionary<string, DealProperties.DealID> LocationToDeal =
-        DealToLocation.ToDictionary((kvp) => kvp.Value, (kvp) => kvp.Key);
-
     public static readonly Dictionary<string, DealProperties.DealID> ItemToDeal = new()
     {
         { "Knowledge", DealProperties.DealID.Deal_Knowledge },
@@ -749,21 +746,1765 @@ public static class Data
         new()
         {
             Id = "1",
-            RoomId = 1,
+            RoomId = 3,
             ObjectsToEnable = [],
+            ObjectsToDisable = [12],
+            ItemName = "GT Switch 2nd Room",
+            LocationName = "Gorgon Tomb - Switch (2nd Room)",
+        },
+        new()
+        {
+            Id = "2",
+            RoomId = 32,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [246],
+            ItemName = "GT Switch 1st Cyclops",
+            LocationName = "Gorgon Tomb - Switch (1st Cyclops)",
+        },
+        new()
+        {
+            Id = "3",
+            RoomId = 47,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [349],
+            ItemName = "GT Switch Spike Tunnel",
+            LocationName = "Gorgon Tomb - Switch (Spike Tunnel Access)",
+        },
+        new()
+        {
+            Id = "4",
+            RoomId = 48,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [346],
+            ItemName = "GT Switch Butt Access",
+            LocationName = "Gorgon Tomb - Switch (Butt Access)",
+        },
+        new()
+        {
+            Id = "5",
+            RoomId = 35,
+            ObjectsToEnable = [431],
             ObjectsToDisable = [],
-            ItemName = "GT Switch 1st Room",
-            LocationName = "Gorgon Tomb - Switch (1st Room)",
+            ItemName = "GT Switch Gorgonheart",
+            LocationName = "Gorgon Tomb - Switch (Gorgonheart)",
+        },
+        new()
+        {
+            Id = "9",
+            RoomId = 303,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [486],
+            ItemName = "Mech Switch Watcher",
+            LocationName = "Mechanism - Switch (Watcher)",
+        },
+        new()
+        {
+            Id = "10",
+            RoomId = 335,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [535],
+            ItemName = "GT Crystal Ladder",
+            LocationName = "Gorgon Tomb - Magic Crystal (Ladder)",
+        },
+        new()
+        {
+            Id = "11",
+            RoomId = 302,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [538],
+            ItemName = "Mech Crystal Cannon",
+            LocationName = "Mechanism - Magic Crystal (Cannon)",
+        },
+        new()
+        {
+            Id = "12",
+            RoomId = 30,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [548],
+            ItemName = "GT Switch RotA",
+            LocationName = "Gorgon Tomb - Switch (Ring of the Ancients)",
+        },
+        new()
+        {
+            Id = "16",
+            RoomId = 74,
+            ObjectsToEnable = [895, 896],
+            ObjectsToDisable = [],
+            ItemName = "GT Switch Upper Path 1",
+            LocationName = "Gorgon Tomb - Switch (Upper Path 1)",
+        },
+        new()
+        {
+            Id = "17",
+            RoomId = 74,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [677],
+            ItemName = "GT Switch Upper Path 2",
+            LocationName = "Gorgon Tomb - Switch (Upper Path 2)",
+        },
+        new()
+        {
+            Id = "17",
+            RoomId = 343,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [830],
+            ItemName = "Mech Switch Chains",
+            LocationName = "Mechanism - Switch (Chains)",
+        },
+        new()
+        {
+            Id = "19",
+            RoomId = 65,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9204],
+            ItemName = "HotP Switch Rock",
+            LocationName = "Hall of the Phantoms - Switch (Rock)",
+        },
+        new()
+        {
+            Id = "20",
+            RoomId = 2812,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [889],
+            ItemName = "HotP Switch Eyeball",
+            LocationName = "Hall of the Phantoms - Switch (Eyeball)",
+        },
+        new()
+        {
+            Id = "21",
+            RoomId = 800,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [989],
+            ItemName = "Mech Switch Boss 1",
+            LocationName = "Mechanism - Switch (Boss Access 1)",
+        },
+        new()
+        {
+            Id = "22",
+            RoomId = 800,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [990],
+            ItemName = "Mech Switch Boss 2",
+            LocationName = "Mechanism - Switch (Boss Access 2)",
+        },
+        new()
+        {
+            Id = "23",
+            RoomId = 36,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1032],
+            ItemName = "GT Switch Crosses",
+            LocationName = "Gorgon Tomb - Switch (Crosses)",
+        },
+        new()
+        {
+            Id = "24",
+            RoomId = 806,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1050],
+            ItemName = "Mech Crystal Split Path",
+            LocationName = "Mechanism - Magic Crystal (Split Path)",
+        },
+        new()
+        {
+            Id = "25",
+            RoomId = 1,
+            ObjectsToEnable = [1066, 1067],
+            ObjectsToDisable = [],
+            ItemName = "GT Switch GH Shortcut",
+            LocationName = "Gorgon Tomb - Switch (Gorgonheart Shortcut)",
+        },
+        new()
+        {
+            Id = "25",
+            RoomId = 65,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [987],
+            ItemName = "HotP Switch Rock Access",
+            LocationName = "Hall of the Phantoms - Switch (Rock Access)",
+        },
+        new()
+        {
+            Id = "26",
+            RoomId = 46,
+            ObjectsToEnable = [1075, 6131],
+            ObjectsToDisable = [],
+            ItemName = "GT Switch Arias",
+            LocationName = "Gorgon Tomb - Switch (Arias's Path)",
+        },
+        new()
+        {
+            Id = "28",
+            RoomId = 328,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1113],
+            ItemName = "Mech Switch Snake 1",
+            LocationName = "Mechanism - Switch (Snake 1)",
+        },
+        new()
+        {
+            Id = "30",
+            RoomId = 331,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1185],
+            ItemName = "Mech Switch Boots",
+            LocationName = "Mechanism - Switch (Boots Access)",
+        },
+        new()
+        {
+            Id = "31",
+            RoomId = 871,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1198],
+            ItemName = "HotP Switch Left 2",
+            LocationName = "Hall of the Phantoms - Switch (Left 2)",
+        },
+        new()
+        {
+            Id = "32",
+            RoomId = 871,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1200],
+            ItemName = "HotP Switch Left 1",
+            LocationName = "Hall of the Phantoms - Switch (Left 1)",
+        },
+        new()
+        {
+            Id = "33",
+            RoomId = 667,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1283],
+            ItemName = "Mech Crystal Linus",
+            LocationName = "Mechanism - Magic Crystal (Linus)",
+        },
+        new()
+        {
+            Id = "34",
+            RoomId = 339,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1302, 5719],
+            ItemName = "Mech Switch to Upper GT",
+            LocationName = "Mechanism - Switch (Upper GT Access)",
+        },
+        new()
+        {
+            Id = "35",
+            RoomId = 1316,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1327, 1330, 1331, 1332],
+            ItemName = "Mech Switch Upper Void Drop",
+            LocationName = "Mechanism - Switch (Upper Void Drop)",
+        },
+        new()
+        {
+            Id = "37",
+            RoomId = 811,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1383],
+            ItemName = "Mech Switch Upper Void",
+            LocationName = "Mechanism - Switch (Upper Void)",
+        },
+        new()
+        {
+            Id = "38",
+            RoomId = 667,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1418],
+            ItemName = "Mech Switch Linus",
+            LocationName = "Mechanism - Switch (Linus)",
+        },
+        new()
+        {
+            Id = "40",
+            RoomId = 336,
+            ObjectsToEnable = [1441, 1442, 1443],
+            ObjectsToDisable = [],
+            ItemName = "Mech Switch Lower",
+            LocationName = "Mechanism - Switch (Lower)",
+        },
+        new()
+        {
+            Id = "43",
+            RoomId = 799,
+            ObjectsToEnable = [1527, 1528, 1525, 1526, 1523, 1524, 1529, 1532, 1521, 1522, 1530, 1531],
+            ObjectsToDisable = [],
+            ItemName = "Mech Switch To Boss 3",
+            LocationName = "Mechanism - Switch (To Boss 3)",
+        },
+        new()
+        {
+            Id = "44",
+            RoomId = 73,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1558],
+            ItemName = "GT Switch Sword Access",
+            LocationName = "Gorgon Tomb - Switch (Sword Access)",
+        },
+        new()
+        {
+            Id = "45",
+            RoomId = 73,
+            ObjectsToEnable = [1561, 2359],
+            ObjectsToDisable = [],
+            ItemName = "GT Switch Sword Backtrack",
+            LocationName = "Gorgon Tomb - Switch (Sword Backtrack)",
+        },
+        new()
+        {
+            Id = "46",
+            RoomId = 799,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1605],
+            ItemName = "Mech Switch To Boss 2",
+            LocationName = "Mechanism - Switch (To Boss 2)",
+        },
+        new()
+        {
+            Id = "47",
+            RoomId = 1216,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6380, 1619],
+            ItemName = "Mech Switch Pots",
+            LocationName = "Mechanism - Switch (Pots)",
+        },
+        new()
+        {
+            Id = "48",
+            RoomId = 1622,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1620],
+            ItemName = "HotP Switch Lower Shortcut",
+            LocationName = "Hall of the Phantoms - Switch (Lower Shortcut)",
+        },
+        new()
+        {
+            Id = "50",
+            RoomId = 1632,
+            ObjectsToEnable = [1642, 1640, 1638, 1637, 1639, 1641],
+            ObjectsToDisable = [],
+            ItemName = "Mech Switch Maze Backdoor",
+            LocationName = "Mechanism - Switch (Maze Backdoor)",
+        },
+        new()
+        {
+            Id = "51",
+            RoomId = 1630,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1714],
+            ItemName = "Mech Crystal Algus 1",
+            LocationName = "Mechanism - Magic Crystal 1",
+        },
+        new()
+        {
+            Id = "52",
+            RoomId = 1630,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1715],
+            ItemName = "Mech Crystal Algus 2",
+            LocationName = "Mechanism - Magic Crystal 2",
+        },
+        new()
+        {
+            Id = "53",
+            RoomId = 1630,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1716],
+            ItemName = "Mech Crystal Algus 3",
+            LocationName = "Mechanism - Magic Crystal 3",
+        },
+        new()
+        {
+            Id = "54",
+            RoomId = 799,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1722, 1723],
+            ItemName = "Mech Switch To Boss 1",
+            LocationName = "Mechanism - Switch (To Boss 1)",
+        },
+        new()
+        {
+            Id = "55",
+            RoomId = 1633,
+            ObjectsToEnable = [1743],
+            ObjectsToDisable = [],
+            ItemName = "Mech Crystal Top",
+            LocationName = "Mechanism - Magic Crystal (Top)",
+        },
+        new()
+        {
+            Id = "56",
+            RoomId = 34,
+            ObjectsToEnable = [1910, 1911, 2612, 2613],
+            ObjectsToDisable = [],
+            ItemName = "Caves Face 1st Room",
+            LocationName = "Caves - Face (1st Room)",
+        },
+        new()
+        {
+            Id = "57",
+            RoomId = 1353,
+            ObjectsToEnable = [1934, 6742, 6743, 6744],
+            ObjectsToDisable = [],
+            ItemName = "Mech Switch Eyeball",
+            LocationName = "Mechanism - Switch (Eyeball)",
+        },
+        new()
+        {
+            Id = "58",
+            RoomId = 53,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2050],
+            ItemName = "Caves Switch Skeletons",
+            LocationName = "Caves - Switch (Skeletons)",
+        },
+        new()
+        {
+            Id = "59",
+            RoomId = 54,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2059],
+            ItemName = "Caves Switch Catacombs 1",
+            LocationName = "Caves - Switch (Catacombs Access 1)",
+        },
+        new()
+        {
+            Id = "60",
+            RoomId = 54,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2061],
+            ItemName = "Caves Switch Catacombs 2",
+            LocationName = "Caves - Switch (Catacombs Access 2)",
+        },
+        new()
+        {
+            Id = "61",
+            RoomId = 54,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2063],
+            ItemName = "Caves Switch Catacombs 3",
+            LocationName = "Caves - Switch (Catacombs Access 3)",
+        },
+        new()
+        {
+            Id = "62",
+            RoomId = 66,
+            ObjectsToEnable = [2142],
+            ObjectsToDisable = [],
+            ItemName = "GT Switch Sword",
+            LocationName = "Gorgon Tomb - Switch (Sword)",
+        },
+        new()
+        {
+            Id = "65",
+            RoomId = 1631,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2278],
+            ItemName = "Mech Switch Arias Cyclops",
+            LocationName = "Mechanism - Switch (Arias Cyclops)",
+        },
+        new()
+        {
+            Id = "65",
+            RoomId = 713,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2367, 2688, 2362, 2363, 2364, 2365, 2366],
+            ItemName = "Mech Switch Boots Lower",
+            LocationName = "Mechanism - Switch (Boots Lower)",
+        },
+        new()
+        {
+            Id = "66",
+            RoomId = 797,
+            ObjectsToEnable = [1354, 1357, 1358],
+            ObjectsToDisable = [],
+            ItemName = "Mech Switch Chains Gap",
+            LocationName = "Mechanism - Switch (Chains Gap)",
+        },
+        new()
+        {
+            Id = "67",
+            RoomId = 338,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2378],
+            ItemName = "Mech Switch Lower Key",
+            LocationName = "Mechanism - Switch (Lower Key)",
+        },
+        new()
+        {
+            Id = "68",
+            RoomId = 58,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2415],
+            ItemName = "Cata Switch Elevator",
+            LocationName = "Catacombs - Switch (Elevator)",
+        },
+        new()
+        {
+            Id = "69",
+            RoomId = 979,
+            ObjectsToEnable = [2437, 2435, 2436, 2434],
+            ObjectsToDisable = [],
+            ItemName = "Cata Face After Bow",
+            LocationName = "Catacombs - Face (After Bow)",
+        },
+        new()
+        {
+            Id = "70",
+            RoomId = 2416,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2471],
+            ItemName = "Cata Switch Vertical Shortcut",
+            LocationName = "Catacombs - Switch (Vertical Shortcut)",
+        },
+        new()
+        {
+            Id = "71",
+            RoomId = 977,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2504, 2505, 7065],
+            ItemName = "Cata Switch Top",
+            LocationName = "Catacombs - Switch (Top)",
+        },
+        new()
+        {
+            Id = "72",
+            RoomId = 981,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2533],
+            ItemName = "Cata Switch Claw 1",
+            LocationName = "Catacombs - Switch (Claw 1)",
+        },
+        new()
+        {
+            Id = "73",
+            RoomId = 981,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2535],
+            ItemName = "Cata Switch Claw 2",
+            LocationName = "Catacombs - Switch (Claw 2)",
+        },
+        new()
+        {
+            Id = "74",
+            RoomId = 2531,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2537],
+            ItemName = "Cata Switch Water 1",
+            LocationName = "Catacombs - Switch (Water 1)",
+        },
+        new()
+        {
+            Id = "75",
+            RoomId = 2531,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2538],
+            ItemName = "Cata Switch Water 2",
+            LocationName = "Catacombs - Switch (Water 2)",
+        },
+        new()
+        {
+            Id = "76",
+            RoomId = 2573,
+            ObjectsToEnable = [2584],
+            ObjectsToDisable = [],
+            ItemName = "Cata Switch Dev Room",
+            LocationName = "Catacombs - Switch Dev Room",
+        },
+        new()
+        {
+            Id = "80",
+            RoomId = 828,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2847],
+            ItemName = "HotP Crystal Bottom",
+            LocationName = "Hall of the Phantoms - Magic Crystal (Bottom)",
+        },
+        new()
+        {
+            Id = "81",
+            RoomId = 1622,
+            ObjectsToEnable = [2855, 2857, 2853, 2856],
+            ObjectsToDisable = [],
+            ItemName = "HotP Crystal Lower",
+            LocationName = "Hall of the Phantoms - Magic Crystal (Lower)",
+        },
+        new()
+        {
+            Id = "82",
+            RoomId = 2802,
+            ObjectsToEnable = [2868, 2869, 2864, 2867],
+            ObjectsToDisable = [],
+            ItemName = "HotP Switch Bell",
+            LocationName = "Hall of the Phantoms - Switch (Bell)",
+        },
+        new()
+        {
+            Id = "84",
+            RoomId = 2892,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2907],
+            ItemName = "HotP Switch Eyeball",
+            LocationName = "Hall of the Phantoms - Switch (Eyeball)",
+        },
+        new()
+        {
+            Id = "88",
+            RoomId = 2891,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [3024],
+            ItemName = "HotP Switch Teleports",
+            LocationName = "Hall of the Phantoms - Switch (Teleports)",
+        },
+        new()
+        {
+            Id = "97",
+            RoomId = 2893,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [3072],
+            ItemName = "HotP Switch Worm Pillar",
+            LocationName = "Hall of the Phantoms - Switch (Worm Pillar)",
+        },
+        new()
+        {
+            Id = "101",
+            RoomId = 3216,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [3213],
+            ItemName = "HotP Crystal After Claw",
+            LocationName = "Hall of the Phantoms - Magic Crystal (After Claw)",
+        },
+        new()
+        {
+            Id = "102",
+            RoomId = 2905,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [3224],
+            ItemName = "Mech Switch Arias",
+            LocationName = "Mechanism - Switch (Arias)",
+        },
+        new()
+        {
+            Id = "104",
+            RoomId = 3091,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [3314],
+            ItemName = "Mech Crystal Cloak",
+            LocationName = "Mechanism - Magic Crystal (Cloak)",
+        },
+        new()
+        {
+            Id = "108",
+            RoomId = 1932,
+            ObjectsToEnable = [3543, 3542],
+            ObjectsToDisable = [],
+            ItemName = "Mech Crystal Slimes",
+            LocationName = "Mechanism - Magic Crystal (Slimes)",
+        },
+        new()
+        {
+            Id = "110",
+            RoomId = 3650,
+            ObjectsToEnable = [3655, 3653],
+            ObjectsToDisable = [],
+            ItemName = "GT Switch Old Man 1",
+            LocationName = "Gorgon Tomb - Switch (Old Man 1)",
+        },
+        new()
+        {
+            Id = "111",
+            RoomId = 3650,
+            ObjectsToEnable = [3654],
+            ObjectsToDisable = [],
+            ItemName = "GT Switch Old Man 2",
+            LocationName = "Gorgon Tomb - Switch (Old Man 2)",
+        },
+        new()
+        {
+            Id = "111",
+            RoomId = 3617,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [3670, 3671, 3672, 3673, 3674],
+            ItemName = "HotP Face Old Man",
+            LocationName = "Hall of the Phantoms - Face (Old Man)",
+        },
+        new()
+        {
+            Id = "117",
+            RoomId = 2472,
+            ObjectsToEnable = [9519, 9520, 9517, 9518, 9515, 9516, 9513, 9514],
+            ObjectsToDisable = [],
+            ItemName = "Cata Face Bow",
+            LocationName = "Catacombs - Face (Bow)",
+        },
+        new()
+        {
+            Id = "118",
+            RoomId = 1054,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4120],
+            ItemName = "RoA Crystal 1st Room",
+            LocationName = "Ruins of Ash - Magic Crystal (1st Room)",
+        },
+        new()
+        {
+            Id = "119",
+            RoomId = 3938,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4171],
+            ItemName = "RoA Crystal Baby Gorgon",
+            LocationName = "Ruins of Ash - Magic Crystal (Baby Gorgon)",
+        },
+        new()
+        {
+            Id = "121",
+            RoomId = 3273,
+            ObjectsToEnable = [4244],
+            ObjectsToDisable = [],
+            ItemName = "RoA Switch Ascend",
+            LocationName = "Ruins of Ash - Switch (Ascend)",
+        },
+        new()
+        {
+            Id = "124",
+            RoomId = 984,
+            ObjectsToEnable = [4319],
+            ObjectsToDisable = [],
+            ItemName = "Cata Switch After Blue Door",
+            LocationName = "Catacombs - Switch (After Blue Door)",
+        },
+        new()
+        {
+            Id = "125",
+            RoomId = 2672,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4331],
+            ItemName = "Cata Face x4",
+            LocationName = "Catacombs - Face (x4)",
+        },
+        new()
+        {
+            Id = "126",
+            RoomId = 2655,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4339, 4340, 4341, 4342],
+            ItemName = "Cata Face Campfire",
+            LocationName = "Catacombs - Face (Campfire)",
+        },
+        new()
+        {
+            Id = "127",
+            RoomId = 2674,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4384],
+            ItemName = "Cata Face Double Door",
+            LocationName = "Catacombs - Face (Double Door)",
+        },
+        new()
+        {
+            Id = "128",
+            RoomId = 3272,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4447, 4448],
+            ItemName = "RoA Switch After Worms",
+            LocationName = "Ruins of Ash - Switch (After Worms)",
+        },
+        new()
+        {
+            Id = "130",
+            RoomId = 4085,
+            ObjectsToEnable = [4466, 4467],
+            ObjectsToDisable = [],
+            ItemName = "RoA Crystal Ladder Right",
+            LocationName = "Ruins of Ash - Magic Crystal (Ladder Right)",
+        },
+        new()
+        {
+            Id = "131",
+            RoomId = 4085,
+            ObjectsToEnable = [4468, 4469],
+            ObjectsToDisable = [],
+            ItemName = "RoA Crystal Ladder Left",
+            LocationName = "Ruins of Ash - Magic Crystal (Ladder Left)",
+        },
+        new()
+        {
+            Id = "132",
+            RoomId = 4084,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4487, 4488],
+            ItemName = "RoA Switch Right Path",
+            LocationName = "Ruins of Ash - Switch (Right Path)",
+        },
+        new()
+        {
+            Id = "134",
+            RoomId = 2653,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4548],
+            ItemName = "Cata Switch Shortcut Access",
+            LocationName = "Catacombs - Switch (Shortcut Access)",
+        },
+        new()
+        {
+            Id = "135",
+            RoomId = 2653,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4549, 4552, 4553],
+            ItemName = "Cata Switch Ladder Blocks",
+            LocationName = "Catacombs - Switch (Ladder Blocks)",
+        },
+        new()
+        {
+            Id = "136",
+            RoomId = 4108,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4639, 10020, 10021, 10022],
+            ItemName = "RoA Switch Apex Access",
+            LocationName = "Ruins of Ash - Switch (Apex Access)",
+        },
+        new()
+        {
+            Id = "138",
+            RoomId = 4107,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4663, 4664, 4665, 4666, 4667, 4668, 4669, 4670],
+            ItemName = "RoA Crystal Centaur",
+            LocationName = "Ruins of Ash - Magic Crystal (Centaur)",
+        },
+        new()
+        {
+            Id = "139",
+            RoomId = 4101,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4677, 4682, 4681, 4683],
+            ItemName = "RoA Switch Icarus",
+            LocationName = "Ruins of Ash - Switch (Icarus Emblem)",
+        },
+        new()
+        {
+            Id = "140",
+            RoomId = 4093,
+            ObjectsToEnable = [4694],
+            ObjectsToDisable = [],
+            ItemName = "RoA Switch Shaft Left",
+            LocationName = "Ruins of Ash - Switch (Shaft Left)",
+        },
+        new()
+        {
+            Id = "141",
+            RoomId = 4093,
+            ObjectsToEnable = [4695],
+            ObjectsToDisable = [],
+            ItemName = "RoA Switch Shaft Right",
+            LocationName = "Ruins of Ash - Switch (Shaft Right)",
+        },
+        new()
+        {
+            Id = "144",
+            RoomId = 4105,
+            ObjectsToEnable = [4741],
+            ObjectsToDisable = [9465, 4761, 4759, 4760, 4758, 4757, 4756],
+            ItemName = "RoA Switch Elevator",
+            LocationName = "Ruins of Ash - Switch (Elevator)",
+        },
+        new()
+        {
+            Id = "145",
+            RoomId = 4096,
+            ObjectsToEnable = [4848, 4849, 4850, 4851, 4852, 4853, 4854],
+            ObjectsToDisable = [],
+            ItemName = "RoA Crystal Spike Balls",
+            LocationName = "Ruins of Ash - Magic Crystal (Spike Balls)",
+        },
+        new()
+        {
+            Id = "147",
+            RoomId = 4097,
+            ObjectsToEnable = [4889, 4890, 4891, 4892, 4893, 10476, 10477, 10478, 10479, 10480],
+            ObjectsToDisable = [],
+            ItemName = "RoA Switch Shaft Downwards",
+            LocationName = "Ruins of Ash - Switch (Shaft Downwards)",
+        },
+        new()
+        {
+            Id = "148",
+            RoomId = 4247,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4935, 4934, 4933],
+            ItemName = "RoA Switch Spiders Top",
+            LocationName = "Ruins of Ash - Switch (Spiders Top)",
+        },
+        new()
+        {
+            Id = "149",
+            RoomId = 4248,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [4943, 4944, 4945, 4946],
+            ItemName = "RoA Switch Spiders Bottom",
+            LocationName = "Ruins of Ash - Switch (Spiders Bottom)",
+        },
+        new()
+        {
+            Id = "156",
+            RoomId = 4305,
+            ObjectsToEnable = [9931, 5375, 9930],
+            ObjectsToDisable = [5376, 5372, 5374],
+            ItemName = "RoA Switch (Dark Room)",
+            LocationName = "Ruins of Ash - Switch (Dark Room)",
+        },
+        new()
+        {
+            Id = "160",
+            RoomId = 4620,
+            ObjectsToEnable = [4253, 4254, 4251, 4252],
+            ObjectsToDisable = [],
+            ItemName = "Apex Switch Epimetheus",
+            LocationName = "The Apex - Switch (Epimetheus)",
+        },
+        new()
+        {
+            Id = "161",
+            RoomId = 2896,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [5568],
+            ItemName = "HotP Switch To Claw 1",
+            LocationName = "Hall of the Phantoms - Switch (To Claw 1)",
+        },
+        new()
+        {
+            Id = "162",
+            RoomId = 2896,
+            ObjectsToEnable = [5573, 5574, 5575, 10461, 10460],
+            ObjectsToDisable = [],
+            ItemName = "HotP Switch To Claw 2",
+            LocationName = "Hall of the Phantoms - Switch (To Claw 2)",
+        },
+        new()
+        {
+            Id = "163",
+            RoomId = 3940,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10483, 10485, 10484, 10486, 5812, 8662, 8664, 8661, 8663, 8665],
+            ItemName = "RoA Switch Ascend Shortcut",
+            LocationName = "Ruins of Ash - Switch (Ascend Shortcut)",
+        },
+        new()
+        {
+            Id = "164",
+            RoomId = 3196,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [5834, 5835],
+            ItemName = "HotP Switch Claw Access",
+            LocationName = "Hall of the Phantoms - Switch (Claw Access)",
+        },
+        new()
+        {
+            Id = "165",
+            RoomId = 874,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [5853],
+            ItemName = "HotP Switch Ghosts",
+            LocationName = "Hall of the Phantoms - Switch (Ghosts)",
+        },
+        new()
+        {
+            Id = "171",
+            RoomId = 328,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6155],
+            ItemName = "Mech Switch Snake 2",
+            LocationName = "Mechanism - Switch (Snake 2)",
+        },
+        new()
+        {
+            Id = "173",
+            RoomId = 3727,
+            ObjectsToEnable = [3730, 3731, 3732, 3733],
+            ObjectsToDisable = [],
+            ItemName = "Mech Crystal To CD",
+            LocationName = "Mechanism - Magic Crystal (To CD)",
+        },
+        new()
+        {
+            Id = "175",
+            RoomId = 797,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6321, 6322, 6323, 6324, 6320, 6319, 6318],
+            ItemName = "Mech Switch Key Blocks",
+            LocationName = "Mechanism - Switch (Key Blocks)",
+        },
+        new()
+        {
+            Id = "176",
+            RoomId = 871,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6333, 6336, 6337, 6338, 6339, 6340],
+            ItemName = "HotP Switch Left 3",
+            LocationName = "Hall of the Phantoms - Switch (Left 3)",
+        },
+        new()
+        {
+            Id = "178",
+            RoomId = 302,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6404],
+            ItemName = "Mech Switch Cannon",
+            LocationName = "Mechanism - Switch (Cannon)",
+        },
+        new()
+        {
+            Id = "181",
+            RoomId = 3666,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6431],
+            ItemName = "HotP Switch Above Old Man",
+            LocationName = "Hall of the Phantoms - Switch (Above Old Man)",
+        },
+        new()
+        {
+            Id = "182",
+            RoomId = 3624,
+            ObjectsToEnable = [6445, 6447],
+            ObjectsToDisable = [],
+            ItemName = "HotP Crystal Maiden 1",
+            LocationName = "Hall of the Phantoms - Magic Crystal (Dead Maiden 1)",
+        },
+        new()
+        {
+            Id = "183",
+            RoomId = 3625,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6467],
+            ItemName = "HotP Crystal Maiden 2",
+            LocationName = "Hall of the Phantoms - Magic Crystal (Dead Maiden 2)",
+        },
+        new()
+        {
+            Id = "184",
+            RoomId = 2898,
+            ObjectsToEnable = [6529, 6527, 6528, 6530],
+            ObjectsToDisable = [],
+            ItemName = "HotP Switch Maiden Access",
+            LocationName = "Hall of the Phantoms - Switch (Dead Maiden Access)",
+        },
+        new()
+        {
+            Id = "186",
+            RoomId = 3256,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6548],
+            ItemName = "HotP Switch Maze Puzzle",
+            LocationName = "Hall of the Phantoms - Switch (Maze Puzzle)",
+        },
+        new()
+        {
+            Id = "190",
+            RoomId = 2874,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9801, 9432, 9800, 9431],
+            ItemName = "Mech Face Volantis",
+            LocationName = "Mechanism - Face (Above Volantis)",
+        },
+        new()
+        {
+            Id = "191",
+            RoomId = 2892,
+            ObjectsToEnable = [6695],
+            ObjectsToDisable = [6694, 6693, 6692, 6691],
+            ItemName = "HotP Switch Eyeball Shortcut",
+            LocationName = "Hall of the Phantoms - Switch (Eyeball Shortcut)",
+        },
+        new()
+        {
+            Id = "196",
+            RoomId = 3272,
+            ObjectsToEnable = [6790, 6791],
+            ObjectsToDisable = [],
+            ItemName = "RoA Switch 1st Shortcut",
+            LocationName = "Ruins of Ash - Switch (1st Shortcut)",
+        },
+        new()
+        {
+            Id = "197",
+            RoomId = 6785,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6792],
+            ItemName = "RoA Switch Spike Climb",
+            LocationName = "Ruins of Ash - Switch (Spike Climb)",
+        },
+        new()
+        {
+            Id = "198",
+            RoomId = 2800,
+            ObjectsToEnable = [6863, 6865, 6872],
+            ObjectsToDisable = [],
+            ItemName = "HotP Crystal Bell Access",
+            LocationName = "Hall of the Phantoms - Magic Crystal (Bell Access)",
+        },
+        new()
+        {
+            Id = "199",
+            RoomId = 3217,
+            ObjectsToEnable = [6882, 6883, 6884, 6885],
+            ObjectsToDisable = [],
+            ItemName = "HotP Crystal Heart",
+            LocationName = "Hall of the Phantoms - Magic Crystal (Heart)",
+        },
+        new()
+        {
+            Id = "199",
+            RoomId = 2801,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6870, 6871],
+            ItemName = "HotP Switch Bell Access",
+            LocationName = "Hall of the Phantoms - Switch (Bell Access)",
+        },
+        new()
+        {
+            Id = "200",
+            RoomId = 6787,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6903, 6904, 6905],
+            ItemName = "RoA Face Blue Key",
+            LocationName = "Ruins of Ash - Face (Blue Key)",
+        },
+        new()
+        {
+            Id = "201",
+            RoomId = 3588,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [6925, 6926],
+            ItemName = "RoA Crystal Left Ascend",
+            LocationName = "Ruins of Ash - Magic Crystal (Left Ascend)",
+        },
+        new()
+        {
+            Id = "202",
+            RoomId = 4095,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [8718],
+            ItemName = "RoA Crystal Shaft",
+            LocationName = "Ruins of Ash - Magic Crystal (Shaft)",
+        },
+        new()
+        {
+            Id = "204",
+            RoomId = 4083,
+            ObjectsToEnable = [6948, 6949],
+            ObjectsToDisable = [],
+            ItemName = "RoA Crystal Branch Right",
+            LocationName = "Ruins of Ash - Magic Crystal (Branch Right)",
+        },
+        new()
+        {
+            Id = "205",
+            RoomId = 4083,
+            ObjectsToEnable = [6950, 6951],
+            ObjectsToDisable = [],
+            ItemName = "RoA Crystal Branch Left",
+            LocationName = "Ruins of Ash - Magic Crystal (Branch Left)",
+        },
+        new()
+        {
+            Id = "207",
+            RoomId = 2473,
+            ObjectsToEnable = [6982],
+            ObjectsToDisable = [],
+            ItemName = "Cata Switch Mid Shortcut",
+            LocationName = "Catacombs - Switch (Mid Shortcut)",
+        },
+        new()
+        {
+            Id = "208",
+            RoomId = 334,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7120],
+            ItemName = "GT Switch Upper Arias",
+            LocationName = "Gorgon Tomb - Switch (Upper Arias)",
+        },
+        new()
+        {
+            Id = "209",
+            RoomId = 1215,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7132],
+            ItemName = "Mech Switch Eyeball",
+            LocationName = "Mechanism - Switch (Eyeball)",
+        },
+        new()
+        {
+            Id = "214",
+            RoomId = 341,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7208],
+            ItemName = "Mech Crystal Campfire",
+            LocationName = "Mechanism - Magic Crystal (Campfire)",
+        },
+        new()
+        {
+            Id = "215",
+            RoomId = 7256,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7285],
+            ItemName = "Cath Crystal (1st Room)",
+            LocationName = "Cathedral - Magic Crystal (1st Room)",
+        },
+        new()
+        {
+            Id = "216",
+            RoomId = 7260,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7317, 7318, 10184, 10187, 10188, 10185, 10186, 10189],
+            ItemName = "Cath Switch Bottom",
+            LocationName = "Cathedral - Switch (Bottom)",
+        },
+        new()
+        {
+            Id = "218",
+            RoomId = 7264,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7325],
+            ItemName = "Cath Switch",
+            LocationName = "Cathedral - Switch",
+        },
+        new()
+        {
+            Id = "219",
+            RoomId = 59,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [1101],
+            ItemName = "Cata Crystal Shaft",
+            LocationName = "Catacombs - Magic Crystal (Shaft)",
+        },
+        new()
+        {
+            Id = "220",
+            RoomId = 7361,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10474, 10475, 10471, 10473],
+            ItemName = "CD Crystal Backtrack",
+            LocationName = "Cyclops Den - Magic Crystal (Backtrack)",
+        },
+        new()
+        {
+            Id = "220",
+            RoomId = 187,
+            ObjectsToEnable = [2272],
+            ObjectsToDisable = [],
+            ItemName = "Mech Crystal 1st Room",
+            LocationName = "Mechanism - Magic Crystal (1st Room)",
+        },
+        new()
+        {
+            Id = "221",
+            RoomId = 6160,
+            ObjectsToEnable = [7351, 7352, 7353, 7349],
+            ObjectsToDisable = [],
+            ItemName = "Mech Crystal Old Man",
+            LocationName = "Mechanism - Magic Crystal (Old Man)",
+        },
+        new()
+        {
+            Id = "222",
+            RoomId = 7383,
+            ObjectsToEnable = [7430, 7429, 7431, 7432, 7433],
+            ObjectsToDisable = [7419, 7420, 7421, 7422, 7423, 7424, 7425, 7426, 7427, 7428],
+            ItemName = "SP Crystal Blocks",
+            LocationName = "Serpent Path - Magic Crystal (Blocks)",
+        },
+        new()
+        {
+            Id = "223",
+            RoomId = 7360,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7512],
+            ItemName = "CD Crystal 1",
+            LocationName = "Cyclops Den - Magic Crystal 1",
+        },
+        new()
+        {
+            Id = "225",
+            RoomId = 7361,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7536],
+            ItemName = "CD Switch 1",
+            LocationName = "Cyclops Den - Switch 1",
+        },
+        new()
+        {
+            Id = "226",
+            RoomId = 7362,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7547, 7548],
+            ItemName = "CD Switch 2",
+            LocationName = "Cyclops Den - Switch 2",
+        },
+        new()
+        {
+            Id = "227",
+            RoomId = 7364,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7557, 7556, 7555],
+            ItemName = "CD Switch 3",
+            LocationName = "Cyclops Den - Switch 3",
+        },
+        new()
+        {
+            Id = "228",
+            RoomId = 7368,
+            ObjectsToEnable = [7581],
+            ObjectsToDisable = [],
+            ItemName = "CD Switch Campfire",
+            LocationName = "Cyclops Den - Switch (Campfire)",
+        },
+        new()
+        {
+            Id = "229",
+            RoomId = 7371,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7707],
+            ItemName = "CD Crystal Campfire",
+            LocationName = "Cyclops Den - Magic Crystal (Campfire)",
+        },
+        new()
+        {
+            Id = "230",
+            RoomId = 7374,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7735],
+            ItemName = "CD Crystal Stairs",
+            LocationName = "Cyclops Den - Magic Crystal (Stairs)",
+        },
+        new()
+        {
+            Id = "231",
+            RoomId = 7377,
+            ObjectsToEnable = [7744, 7745],
+            ObjectsToDisable = [],
+            ItemName = "CD Switch Top",
+            LocationName = "Cyclops Den - Switch (Top)",
+        },
+        new()
+        {
+            Id = "233",
+            RoomId = 7393,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [7820, 10597],
+            ItemName = "SP Switch Double Doors",
+            LocationName = "Serpent Path - Switch (Double Doors)",
+        },
+        new()
+        {
+            Id = "234",
+            RoomId = 7387,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [8005],
+            ItemName = "SP Switch Bubbles",
+            LocationName = "Serpent Path - Switch (Bubbles)",
+        },
+        new()
+        {
+            Id = "235",
+            RoomId = 8090,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [8154, 8156],
+            ItemName = "SP Crystal Star",
+            LocationName = "Serpent Path - Magic Crystal (Star)",
+        },
+        new()
+        {
+            Id = "236",
+            RoomId = 7309,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [8242],
+            ItemName = "Cath Crystal Spike Pit",
+            LocationName = "Cathedral - Magic Crystal (Spike Pit)",
+        },
+        new()
+        {
+            Id = "237",
+            RoomId = 8219,
+            ObjectsToEnable = [8384],
+            ObjectsToDisable = [],
+            ItemName = "Cath Crystal Top Left",
+            LocationName = "Cathedral - Magic Crystal (Top Left)",
+        },
+        new()
+        {
+            Id = "238",
+            RoomId = 8219,
+            ObjectsToEnable = [8386, 8388],
+            ObjectsToDisable = [],
+            ItemName = "Cath Crystal Top Right",
+            LocationName = "Cathedral - Magic Crystal (Top Right)",
+        },
+        new()
+        {
+            Id = "239",
+            RoomId = 8427,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [8460],
+            ItemName = "Cath Crystal Shaft Access",
+            LocationName = "Cathedral - Magic Crystal (Shaft Access)",
+        },
+        new()
+        {
+            Id = "240",
+            RoomId = 8427,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [8467, 8466],
+            ItemName = "Cath Switch Beside Shaft",
+            LocationName = "Cathedral - Switch (Beside Shaft)",
+        },
+        new()
+        {
+            Id = "242",
+            RoomId = 3583,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [8656],
+            ItemName = "RoA Crystal 3 Reapers",
+            LocationName = "Ruins of Ash - Magic Crystal (3 Reapers)",
+        },
+        new()
+        {
+            Id = "244",
+            RoomId = 4098,
+            ObjectsToEnable = [8697, 9479, 9480, 9481, 9482, 9483, 9484, 9485, 9486, 9487, 9488, 9489, 9490],
+            ObjectsToDisable = [],
+            ItemName = "RoA Switch Above Centaur",
+            LocationName = "Ruins of Ash - Switch (Above Centaur)",
+        },
+        new()
+        {
+            Id = "245",
+            RoomId = 4106,
+            ObjectsToEnable = [8769, 8770],
+            ObjectsToDisable = [10684, 10682, 10683, 10685, 10686, 10687],
+            ItemName = "RoA Switch Blood Pot",
+            LocationName = "Ruins of Ash - Switch (Blood Pot)",
+        },
+        new()
+        {
+            Id = "255",
+            RoomId = 806,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9233, 9234, 9235],
+            ItemName = "Mech Crystal Top Chains",
+            LocationName = "Mechanism - Magic Crystal (Top Chains)",
+        },
+        new()
+        {
+            Id = "256",
+            RoomId = 820,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9241, 9242, 9243],
+            ItemName = "HotP Switch 1st Room",
+            LocationName = "Hall of the Phantoms - Switch (1st Room)",
+        },
+        new()
+        {
+            Id = "257",
+            RoomId = 875,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9270, 9269],
+            ItemName = "HotP Switch Left Backtrack",
+            LocationName = "Hall of the Phantoms - Switch (Left Backtrack)",
+        },
+        new()
+        {
+            Id = "260",
+            RoomId = 4139,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9411],
+            ItemName = "RoA Switch Worms",
+            LocationName = "Ruins of Ash - Switch (Worms)",
+        },
+        new()
+        {
+            Id = "262",
+            RoomId = 342,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2274, 2275],
+            ItemName = "Mech Crystal BK",
+            LocationName = "Mechanism - Magic Crystal (Black Knight)",
+        },
+        new()
+        {
+            Id = "264",
+            RoomId = 3941,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9497, 9498, 9499, 9500],
+            ItemName = "RoA Switch Triple 1",
+            LocationName = "Ruins of Ash - Switch (Triple 1)",
+        },
+        new()
+        {
+            Id = "265",
+            RoomId = 3941,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9502],
+            ItemName = "RoA Crystal (Triple 2)",
+            LocationName = "Ruins of Ash - Magic Crystal (Triple 2)",
+        },
+        new()
+        {
+            Id = "266",
+            RoomId = 3941,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9504],
+            ItemName = "RoA Switch Triple 3",
+            LocationName = "Ruins of Ash - Switch (Triple 3)",
+        },
+        new()
+        {
+            Id = "267",
+            RoomId = 4172,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10044, 10045],
+            ItemName = "RoA Switch Baby Gorgon",
+            LocationName = "Ruins of Ash - Switch (Baby Gorgon)",
+        },
+        new()
+        {
+            Id = "268",
+            RoomId = 9739,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9742],
+            ItemName = "TR Switch Adorned Left",
+            LocationName = "Tower Roots - Switch (Adorned Key Left)",
+        },
+        new()
+        {
+            Id = "269",
+            RoomId = 9739,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9744],
+            ItemName = "TR Switch Adorned Middle",
+            LocationName = "Tower Roots - Switch (Adorned Key Middle)",
+        },
+        new()
+        {
+            Id = "270",
+            RoomId = 9739,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9746],
+            ItemName = "TR Switch Adorned Right",
+            LocationName = "Tower Roots - Switch (Adorned Key Right)",
+        },
+        new()
+        {
+            Id = "272",
+            RoomId = 9719,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9769],
+            ItemName = "TR Crystal Gold",
+            LocationName = "Tower Roots - Magic Crystal (Gold)",
+        },
+        new()
+        {
+            Id = "273",
+            RoomId = 3257,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [9905, 9908, 9907, 9909],
+            ItemName = "HotP Crystal Below Puzzle",
+            LocationName = "Hall of the Phantoms - Magic Crystal (Below Puzzle)",
+        },
+        new()
+        {
+            Id = "276",
+            RoomId = 811,
+            ObjectsToEnable = [9933, 9932],
+            ObjectsToDisable = [9934],
+            ItemName = "Mech Switch Invisible",
+            LocationName = "Mechanism - Switch (Invisible)",
+        },
+        new()
+        {
+            Id = "278",
+            RoomId = 10014,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10028, 10029, 10030, 10031],
+            ItemName = "RoA Switch Boss Access",
+            LocationName = "Ruins of Ash - Switch (Boss Access)",
+        },
+        new()
+        {
+            Id = "280",
+            RoomId = 8860,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10067],
+            ItemName = "Darkness Switch",
+            LocationName = "Darkness - Switch",
+        },
+        new()
+        {
+            Id = "283",
+            RoomId = 2667,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10139, 10141, 10142],
+            ItemName = "Cata Switch Flames 2",
+            LocationName = "Catacombs - Switch (Flames 2)",
+        },
+        new()
+        {
+            Id = "284",
+            RoomId = 2667,
+            ObjectsToEnable = [10145, 10147, 10148, 10149],
+            ObjectsToDisable = [],
+            ItemName = "Cata Switch Flames 1",
+            LocationName = "Catacombs - Switch (Flames 1)",
+        },
+        new()
+        {
+            Id = "286",
+            RoomId = 7259,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10166, 10165, 10164, 10162, 10163, 10156, 10157, 10155],
+            ItemName = "Cath Face Left",
+            LocationName = "Cathedral - Face (Left)",
+        },
+        new()
+        {
+            Id = "287",
+            RoomId = 7259,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10161, 10160, 10159],
+            ItemName = "Cath Face Right",
+            LocationName = "Cathedral - Face (Right)",
+        },
+        new()
+        {
+            Id = "289",
+            RoomId = 8425,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10249],
+            ItemName = "Cath Crystal Orbs",
+            LocationName = "Cathedral - Magic Crystal (Orbs)",
+        },
+        new()
+        {
+            Id = "290",
+            RoomId = 7310,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10268],
+            ItemName = "Cath Switch Top Campfire",
+            LocationName = "Cathedral - Switch (Top Campfire)",
+        },
+        new()
+        {
+            Id = "292",
+            RoomId = 2696,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10288],
+            ItemName = "TR Switch Elevator",
+            LocationName = "Tower Roots - Switch (Elevator)",
+        },
+        new()
+        {
+            Id = "293",
+            RoomId = 9717,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10310, 10311],
+            ItemName = "TR Switch Bottom",
+            LocationName = "Tower Roots - Switch (Bottom)",
+        },
+        new()
+        {
+            Id = "294",
+            RoomId = 2608,
+            ObjectsToEnable = [10442],
+            ObjectsToDisable = [],
+            ItemName = "Cata Crystal Poison Roots",
+            LocationName = "Catacombs - Magic Crystal (Poison Roots)",
+        },
+        new()
+        {
+            Id = "298",
+            RoomId = 9718,
+            ObjectsToEnable = [10490, 10492],
+            ObjectsToDisable = [],
+            ItemName = "TR Crystal Dark Arias",
+            LocationName = "Tower Roots - Magic Crystal (Dark Arias)",
+        },
+        new()
+        {
+            Id = "300",
+            RoomId = 2793,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10579, 10578, 10577],
+            ItemName = "Cata Face Bottom",
+            LocationName = "Catacombs - Face (Bottom)",
+        },
+        new()
+        {
+            Id = "303",
+            RoomId = 8093,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10596],
+            ItemName = "SP Switch After Star",
+            LocationName = "Serpent Path - Switch (After Star)",
+        },
+        new()
+        {
+            Id = "305",
+            RoomId = 4116,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10678],
+            ItemName = "RoA Switch Blood Pot Left",
+            LocationName = "Ruins of Ash - Switch (Blood Pot Left)",
+        },
+        new()
+        {
+            Id = "306",
+            RoomId = 4116,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10680],
+            ItemName = "RoA Switch Blood Pot Right",
+            LocationName = "Ruins of Ash - Switch (Blood Pot Right)",
+        },
+        new()
+        {
+            Id = "309",
+            RoomId = 7437,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [10756],
+            ItemName = "RoA Switch Lower Void",
+            LocationName = "Ruins of Ash - Switch (Lower Void)",
         },
     ];
 
-    public static readonly Dictionary<string, string> LinkToLocation =
-        Switches.ToDictionary((data) => data.Id, (data) => data.LocationName);
+    public static readonly Dictionary<(int, string), string> LinkToLocation =
+        Switches.ToDictionary((data) => (data.RoomId, data.Id), (data) => data.LocationName);
 
     public static readonly Dictionary<string, SwitchData> ItemToLink = Switches.ToDictionary((data) => data.ItemName);
 
-    // elevator rooms
-    // 6629 - start elevator
-    // 248 - gorgon tomb 2
-    // 4109 - the apex
+    public static readonly Dictionary<int, string> ElevatorToLocation = new()
+    {
+        //{ 6629, "Gorgon Tomb - Elevator 1" },
+        { 248, "Gorgon Tomb - Elevator 2" },
+        { 3947, "Mechanism - Elevator 1" },
+        { 803, "Mechanism - Elevator 2" },
+        { 10535, "Hall of the Phantoms - Elevator" },
+        { 1080, "Ruins of Ash - Elevator 1" },
+        { 8771, "Ruins of Ash - Elevator 2" },
+        { 4109, "The Apex - Elevator" },
+        { 61, "Catacombs - Elevator 1" },
+        { 2574, "Catacombs - Elevator 2" },
+        { 2705, "Tower Roots - Elevator" },
+    };
+
+    public static readonly Dictionary<string, int> ItemToElevator = new()
+    {
+        //{ "GT 1 Elevator", 6629 },
+        { "GT 2 Elevator", 248 },
+        { "Mech 1 Elevator", 3947 },
+        { "Mech 2 Elevator", 803 },
+        { "HotP Elevator", 10535 },
+        { "RoA 1 Elevator", 1080 },
+        { "RoA 2 Elevator", 8771 },
+        { "Apex Elevator", 4109 },
+        { "Cata 1 Elevator", 61 },
+        { "Cata 2 Elevator", 2574 },
+        { "TR Elevator", 2705 },
+    };
 }

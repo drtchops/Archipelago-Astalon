@@ -259,11 +259,18 @@ internal class PlayerData_Patch
     }
 
     [HarmonyPatch(nameof(PlayerData.UnlockElevator))]
-    [HarmonyPostfix]
-    public static void UnlockElevatorPostfix()
+    [HarmonyPrefix]
+    public static void UnlockElevatorPre(int roomID)
     {
-        Plugin.Logger.LogDebug("PlayerData.UnlockElevatorPostfix()");
-        Game.RemoveFreeElevator();
+        Plugin.Logger.LogDebug($"PlayerData.UnlockElevatorPre({roomID})");
+        Game.ElevatorUnlocked(roomID);
+    }
+
+    [HarmonyPatch(nameof(PlayerData.UnlockElevator))]
+    [HarmonyPostfix]
+    public static void UnlockElevatorPost()
+    {
+        Game.UpdateElevatorList();
     }
 
     [HarmonyPatch(nameof(PlayerData.UnlockCharacter))]
@@ -278,7 +285,7 @@ internal class PlayerData_Patch
     public static bool IsDealPurchased(DealProperties.DealID dealID, ref bool __result)
     {
         //Plugin.Logger.LogDebug($"PlayerData.IsDealPurchased({dealID})");
-        if (!Game.IsInShop && Data.ItemToDeal.ContainsValue(dealID))
+        if (Game.ShouldCheckDeal(dealID))
         {
             __result = Game.IsDealReceived(dealID);
             return false;
@@ -299,7 +306,7 @@ internal class PlayerData_Patch
     [HarmonyPostfix]
     public static void AddDefaultDeals()
     {
-        Plugin.Logger.LogDebug("PlayerData.PurchaseDealPre()");
+        Plugin.Logger.LogDebug("PlayerData.AddDefaultDeals()");
         Game.MakeCharacterDealsUnavailable();
     }
 }
@@ -785,8 +792,10 @@ internal class ObjectSwitch_Patch
     [HarmonyPrefix]
     public static void ActivateObject(ObjectSwitch __instance)
     {
-        Plugin.Logger.LogDebug($"ObjectSwitch.ActivateObject({__instance.actorID}, {__instance.switchID})");
-        Game.PressSwitch(__instance.switchID);
+        Plugin.Logger.LogDebug(
+            $"ObjectSwitch.ActivateObject({__instance.actorID}, {__instance.room?.roomID}, {__instance.switchID})");
+        var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
+        Game.PressSwitch(roomId, __instance.switchID);
     }
 }
 
@@ -799,6 +808,7 @@ internal class SwitchableObject_Patch
     {
         Plugin.Logger.LogDebug(
             $"SwitchableObject.ToggleObject({__instance.actorID}, {__instance.objectType}, {__instance.linkID})");
-        return !Game.IsSwitchRandomized(__instance.linkID, out _);
+        var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
+        return !Game.IsSwitchRandomized(roomId, __instance.linkID, out _);
     }
 }

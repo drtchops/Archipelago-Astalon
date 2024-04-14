@@ -6,6 +6,7 @@ namespace Astalon.Randomizer;
 public static class Debug
 {
     public static bool Hidden { get; private set; } = true;
+    private static string _roomWarp = "";
 
     private static readonly string[,] WarpButtons =
     {
@@ -166,6 +167,40 @@ public static class Debug
         if (GUI.Button(new(8, bottom - 100, width, height), "Reset Doors"))
         {
             Game.ResetDoors = true;
+        }
+
+        if (GUI.Button(new(1000, 500, 50, 20), "Up"))
+        {
+            Game.MoveDirection = "up";
+        }
+
+        if (GUI.Button(new(1000, 520, 50, 20), "Down"))
+        {
+            Game.MoveDirection = "down";
+        }
+
+        if (GUI.Button(new(950, 520, 50, 20), "Left"))
+        {
+            Game.MoveDirection = "left";
+        }
+
+        if (GUI.Button(new(1050, 520, 50, 20), "Right"))
+        {
+            Game.MoveDirection = "right";
+        }
+
+        _roomWarp = GUI.TextField(new(950, 540, 50, 20), _roomWarp);
+        if (GUI.Button(new(1000, 540, 50, 20), "Warp"))
+        {
+            try
+            {
+                var roomId = int.Parse(_roomWarp);
+                Game.RoomWarp = roomId;
+            }
+            catch
+            {
+                // ignored
+            }
         }
 #endif
     }
