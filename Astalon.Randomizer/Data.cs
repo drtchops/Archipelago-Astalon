@@ -157,9 +157,9 @@ public static class Data
         { 6753, "Mechanism - Attack +1 (Above Volantis)" }, // above volantis, needs griffon claw
         { 9229, "Mechanism - Attack +1 (Morning Star Blocks)" }, // need bram & morning star
         { 8996, "Ruins of Ash - Attack +1" }, // needs morning star
-        { 6563, "Catacombs - Attack +1 (Item Chain Red)" }, // item chain, needs red
-        { 7105, "Catacombs - Attack +1 (Item Chain Blue)" }, // item chain, needs blue
-        { 7107, "Catacombs - Attack +1 (Item Chain Green)" }, // item chain, needs green
+        { 6563, "Caves - Attack +1 (Item Chain Red)" }, // item chain, needs red
+        { 7105, "Caves - Attack +1 (Item Chain Blue)" }, // item chain, needs blue
+        { 7107, "Caves - Attack +1 (Item Chain Green)" }, // item chain, needs green
         { 6594, "Catacombs - Attack +1 (Climbable Root)" }, // climb up root
         { 10042, "Catacombs - Attack +1 (Poison Roots)" }, // after poison roots
         { 8531, "Cyclops Den - Attack +1" },
@@ -186,15 +186,15 @@ public static class Data
         { 10070, "Darkness - Max HP +4" },
         { 8731, "The Apex - Max HP +1 (Blood Chalice)" }, // towards blood chalice
         { 6820, "The Apex - Max HP +5 (After Heart)" }, // after heart
-        { 6177, "Catacombs - Max HP +1 (First Room)" }, // first room of catacombs
-        { 10003, "Catacombs - Max HP +1 (Cyclops Arena)" }, // cyclops room, needs sword of mirrors
+        { 6177, "Caves - Max HP +1 (First Room)" }, // first room of catacombs
+        { 10003, "Caves - Max HP +1 (Cyclops Arena)" }, // cyclops room, needs sword of mirrors
+        { 10121, "Caves - Max HP +5 (Item Chain)" }, // item chain, needs morning star, griffon claw, bell
         { 10324, "Catacombs - Max HP +1 (Above Poison Roots)" }, // before poison roots
         { 10137, "Catacombs - Max HP +2 (Before Poison Roots)" }, // before poison roots
         { 10043, "Catacombs - Max HP +2 (After Poison Roots)" }, // after poison roots
         { 10581, "Catacombs - Max HP +2 (Before Gemini Bottom)" }, // before boss bottom
         { 10583, "Catacombs - Max HP +2 (Before Gemini Top)" }, // before boss top
         { 10138, "Catacombs - Max HP +2 (Above Gemini)" }, // above boss, need boreas gauntlet & griffon claw
-        { 10121, "Catacombs - Max HP +5 (Item Chain)" }, // item chain, needs morning star, griffon claw, bell
         { 9779, "Tower Roots - Max HP +1 (Bottom)" }, // bottom
         { 9778, "Tower Roots - Max HP +2 (Top)" }, // top
         { 8532, "Cyclops Den - Max HP +1" },
@@ -324,7 +324,7 @@ public static class Data
         { "RoA Blue Door (Flames)", (4173, 8652) },
         { "RoA Blue Door (Blood Pot)", (4106, 8763) },
         { "Apex Blue Door", (7071, 7100) },
-        { "Cata Blue Door (Start)", (34, 2037) },
+        { "Caves Blue Door", (34, 2037) },
         { "Cata Blue Door (Bonus Orbs)", (61, 6996) },
         { "Cata Blue Door (Checkpoint)", (978, 2073) },
         { "Cata Blue Door (Lunarian Bow)", (2416, 6997) },
@@ -804,7 +804,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [535],
             ItemName = "GT Crystal Ladder",
-            LocationName = "Gorgon Tomb - Magic Crystal (Ladder)",
+            LocationName = "Gorgon Tomb - Crystal (Ladder)",
         },
         new()
         {
@@ -813,7 +813,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [538],
             ItemName = "Mech Crystal Cannon",
-            LocationName = "Mechanism - Magic Crystal (Cannon)",
+            LocationName = "Mechanism - Crystal (Cannon)",
         },
         new()
         {
@@ -866,8 +866,8 @@ public static class Data
             RoomId = 2812,
             ObjectsToEnable = [],
             ObjectsToDisable = [889],
-            ItemName = "HotP Switch Eyeball",
-            LocationName = "Hall of the Phantoms - Switch (Eyeball)",
+            ItemName = "HotP Switch Below Start",
+            LocationName = "Hall of the Phantoms - Switch (Below Start)",
         },
         new()
         {
@@ -903,7 +903,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [1050],
             ItemName = "Mech Crystal Split Path",
-            LocationName = "Mechanism - Magic Crystal (Split Path)",
+            LocationName = "Mechanism - Crystal (Split Path)",
         },
         new()
         {
@@ -975,7 +975,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [1283],
             ItemName = "Mech Crystal Linus",
-            LocationName = "Mechanism - Magic Crystal (Linus)",
+            LocationName = "Mechanism - Crystal (Linus)",
         },
         new()
         {
@@ -1091,8 +1091,8 @@ public static class Data
             RoomId = 1630,
             ObjectsToEnable = [],
             ObjectsToDisable = [1714],
-            ItemName = "Mech Crystal Algus 1",
-            LocationName = "Mechanism - Magic Crystal 1",
+            ItemName = "Mech Crystal Triple 1",
+            LocationName = "Mechanism - Crystal (Triple 1)",
         },
         new()
         {
@@ -1100,8 +1100,8 @@ public static class Data
             RoomId = 1630,
             ObjectsToEnable = [],
             ObjectsToDisable = [1715],
-            ItemName = "Mech Crystal Algus 2",
-            LocationName = "Mechanism - Magic Crystal 2",
+            ItemName = "Mech Crystal Triple 2",
+            LocationName = "Mechanism - Crystal (Triple 2)",
         },
         new()
         {
@@ -1109,8 +1109,8 @@ public static class Data
             RoomId = 1630,
             ObjectsToEnable = [],
             ObjectsToDisable = [1716],
-            ItemName = "Mech Crystal Algus 3",
-            LocationName = "Mechanism - Magic Crystal 3",
+            ItemName = "Mech Crystal Triple 3",
+            LocationName = "Mechanism - Crystal (Triple 3)",
         },
         new()
         {
@@ -1128,7 +1128,7 @@ public static class Data
             ObjectsToEnable = [1743],
             ObjectsToDisable = [],
             ItemName = "Mech Crystal Top",
-            LocationName = "Mechanism - Magic Crystal (Top)",
+            LocationName = "Mechanism - Crystal (Top)",
         },
         new()
         {
@@ -1145,8 +1145,8 @@ public static class Data
             RoomId = 1353,
             ObjectsToEnable = [1934, 6742, 6743, 6744],
             ObjectsToDisable = [],
-            ItemName = "Mech Switch Eyeball",
-            LocationName = "Mechanism - Switch (Eyeball)",
+            ItemName = "Mech Switch Block Stairs",
+            LocationName = "Mechanism - Switch (Block Stairs)",
         },
         new()
         {
@@ -1163,7 +1163,7 @@ public static class Data
             RoomId = 54,
             ObjectsToEnable = [],
             ObjectsToDisable = [2059],
-            ItemName = "Caves Switch Catacombs 1",
+            ItemName = "Caves Switch Cata 1",
             LocationName = "Caves - Switch (Catacombs Access 1)",
         },
         new()
@@ -1172,7 +1172,7 @@ public static class Data
             RoomId = 54,
             ObjectsToEnable = [],
             ObjectsToDisable = [2061],
-            ItemName = "Caves Switch Catacombs 2",
+            ItemName = "Caves Switch Cata 2",
             LocationName = "Caves - Switch (Catacombs Access 2)",
         },
         new()
@@ -1181,7 +1181,7 @@ public static class Data
             RoomId = 54,
             ObjectsToEnable = [],
             ObjectsToDisable = [2063],
-            ItemName = "Caves Switch Catacombs 3",
+            ItemName = "Caves Switch Cata 3",
             LocationName = "Caves - Switch (Catacombs Access 3)",
         },
         new()
@@ -1308,7 +1308,7 @@ public static class Data
             ObjectsToEnable = [2584],
             ObjectsToDisable = [],
             ItemName = "Cata Switch Dev Room",
-            LocationName = "Catacombs - Switch Dev Room",
+            LocationName = "Catacombs - Switch (Dev Room)",
         },
         new()
         {
@@ -1317,7 +1317,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [2847],
             ItemName = "HotP Crystal Bottom",
-            LocationName = "Hall of the Phantoms - Magic Crystal (Bottom)",
+            LocationName = "Hall of the Phantoms - Crystal (Bottom)",
         },
         new()
         {
@@ -1326,7 +1326,7 @@ public static class Data
             ObjectsToEnable = [2855, 2857, 2853, 2856],
             ObjectsToDisable = [],
             ItemName = "HotP Crystal Lower",
-            LocationName = "Hall of the Phantoms - Magic Crystal (Lower)",
+            LocationName = "Hall of the Phantoms - Crystal (Lower)",
         },
         new()
         {
@@ -1343,8 +1343,8 @@ public static class Data
             RoomId = 2892,
             ObjectsToEnable = [],
             ObjectsToDisable = [2907],
-            ItemName = "HotP Switch Eyeball",
-            LocationName = "Hall of the Phantoms - Switch (Eyeball)",
+            ItemName = "HotP Switch Ghost Blood",
+            LocationName = "Hall of the Phantoms - Switch (Ghost Blood)",
         },
         new()
         {
@@ -1371,7 +1371,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [3213],
             ItemName = "HotP Crystal After Claw",
-            LocationName = "Hall of the Phantoms - Magic Crystal (After Claw)",
+            LocationName = "Hall of the Phantoms - Crystal (After Claw)",
         },
         new()
         {
@@ -1389,7 +1389,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [3314],
             ItemName = "Mech Crystal Cloak",
-            LocationName = "Mechanism - Magic Crystal (Cloak)",
+            LocationName = "Mechanism - Crystal (Cloak)",
         },
         new()
         {
@@ -1398,7 +1398,7 @@ public static class Data
             ObjectsToEnable = [3543, 3542],
             ObjectsToDisable = [],
             ItemName = "Mech Crystal Slimes",
-            LocationName = "Mechanism - Magic Crystal (Slimes)",
+            LocationName = "Mechanism - Crystal (Slimes)",
         },
         new()
         {
@@ -1443,7 +1443,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [4120],
             ItemName = "RoA Crystal 1st Room",
-            LocationName = "Ruins of Ash - Magic Crystal (1st Room)",
+            LocationName = "Ruins of Ash - Crystal (1st Room)",
         },
         new()
         {
@@ -1452,7 +1452,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [4171],
             ItemName = "RoA Crystal Baby Gorgon",
-            LocationName = "Ruins of Ash - Magic Crystal (Baby Gorgon)",
+            LocationName = "Ruins of Ash - Crystal (Baby Gorgon)",
         },
         new()
         {
@@ -1515,7 +1515,7 @@ public static class Data
             ObjectsToEnable = [4466, 4467],
             ObjectsToDisable = [],
             ItemName = "RoA Crystal Ladder Right",
-            LocationName = "Ruins of Ash - Magic Crystal (Ladder Right)",
+            LocationName = "Ruins of Ash - Crystal (Ladder Right)",
         },
         new()
         {
@@ -1524,7 +1524,7 @@ public static class Data
             ObjectsToEnable = [4468, 4469],
             ObjectsToDisable = [],
             ItemName = "RoA Crystal Ladder Left",
-            LocationName = "Ruins of Ash - Magic Crystal (Ladder Left)",
+            LocationName = "Ruins of Ash - Crystal (Ladder Left)",
         },
         new()
         {
@@ -1569,7 +1569,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [4663, 4664, 4665, 4666, 4667, 4668, 4669, 4670],
             ItemName = "RoA Crystal Centaur",
-            LocationName = "Ruins of Ash - Magic Crystal (Centaur)",
+            LocationName = "Ruins of Ash - Crystal (Centaur)",
         },
         new()
         {
@@ -1614,7 +1614,7 @@ public static class Data
             ObjectsToEnable = [4848, 4849, 4850, 4851, 4852, 4853, 4854],
             ObjectsToDisable = [],
             ItemName = "RoA Crystal Spike Balls",
-            LocationName = "Ruins of Ash - Magic Crystal (Spike Balls)",
+            LocationName = "Ruins of Ash - Crystal (Spike Balls)",
         },
         new()
         {
@@ -1649,7 +1649,7 @@ public static class Data
             RoomId = 4305,
             ObjectsToEnable = [9931, 5375, 9930],
             ObjectsToDisable = [5376, 5372, 5374],
-            ItemName = "RoA Switch (Dark Room)",
+            ItemName = "RoA Switch Dark Room",
             LocationName = "Ruins of Ash - Switch (Dark Room)",
         },
         new()
@@ -1658,8 +1658,8 @@ public static class Data
             RoomId = 4620,
             ObjectsToEnable = [4253, 4254, 4251, 4252],
             ObjectsToDisable = [],
-            ItemName = "Apex Switch Epimetheus",
-            LocationName = "The Apex - Switch (Epimetheus)",
+            ItemName = "Apex Switch",
+            LocationName = "The Apex - Switch",
         },
         new()
         {
@@ -1722,7 +1722,7 @@ public static class Data
             ObjectsToEnable = [3730, 3731, 3732, 3733],
             ObjectsToDisable = [],
             ItemName = "Mech Crystal To CD",
-            LocationName = "Mechanism - Magic Crystal (To CD)",
+            LocationName = "Mechanism - Crystal (To CD)",
         },
         new()
         {
@@ -1767,7 +1767,7 @@ public static class Data
             ObjectsToEnable = [6445, 6447],
             ObjectsToDisable = [],
             ItemName = "HotP Crystal Maiden 1",
-            LocationName = "Hall of the Phantoms - Magic Crystal (Dead Maiden 1)",
+            LocationName = "Hall of the Phantoms - Crystal (Dead Maiden 1)",
         },
         new()
         {
@@ -1776,7 +1776,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [6467],
             ItemName = "HotP Crystal Maiden 2",
-            LocationName = "Hall of the Phantoms - Magic Crystal (Dead Maiden 2)",
+            LocationName = "Hall of the Phantoms - Crystal (Dead Maiden 2)",
         },
         new()
         {
@@ -1839,7 +1839,7 @@ public static class Data
             ObjectsToEnable = [6863, 6865, 6872],
             ObjectsToDisable = [],
             ItemName = "HotP Crystal Bell Access",
-            LocationName = "Hall of the Phantoms - Magic Crystal (Bell Access)",
+            LocationName = "Hall of the Phantoms - Crystal (Bell Access)",
         },
         new()
         {
@@ -1848,7 +1848,7 @@ public static class Data
             ObjectsToEnable = [6882, 6883, 6884, 6885],
             ObjectsToDisable = [],
             ItemName = "HotP Crystal Heart",
-            LocationName = "Hall of the Phantoms - Magic Crystal (Heart)",
+            LocationName = "Hall of the Phantoms - Crystal (Heart)",
         },
         new()
         {
@@ -1875,7 +1875,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [6925, 6926],
             ItemName = "RoA Crystal Left Ascend",
-            LocationName = "Ruins of Ash - Magic Crystal (Left Ascend)",
+            LocationName = "Ruins of Ash - Crystal (Left Ascend)",
         },
         new()
         {
@@ -1884,7 +1884,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [8718],
             ItemName = "RoA Crystal Shaft",
-            LocationName = "Ruins of Ash - Magic Crystal (Shaft)",
+            LocationName = "Ruins of Ash - Crystal (Shaft)",
         },
         new()
         {
@@ -1893,7 +1893,7 @@ public static class Data
             ObjectsToEnable = [6948, 6949],
             ObjectsToDisable = [],
             ItemName = "RoA Crystal Branch Right",
-            LocationName = "Ruins of Ash - Magic Crystal (Branch Right)",
+            LocationName = "Ruins of Ash - Crystal (Branch Right)",
         },
         new()
         {
@@ -1902,7 +1902,7 @@ public static class Data
             ObjectsToEnable = [6950, 6951],
             ObjectsToDisable = [],
             ItemName = "RoA Crystal Branch Left",
-            LocationName = "Ruins of Ash - Magic Crystal (Branch Left)",
+            LocationName = "Ruins of Ash - Crystal (Branch Left)",
         },
         new()
         {
@@ -1938,7 +1938,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [7208],
             ItemName = "Mech Crystal Campfire",
-            LocationName = "Mechanism - Magic Crystal (Campfire)",
+            LocationName = "Mechanism - Crystal (Campfire)",
         },
         new()
         {
@@ -1946,8 +1946,8 @@ public static class Data
             RoomId = 7256,
             ObjectsToEnable = [],
             ObjectsToDisable = [7285],
-            ItemName = "Cath Crystal (1st Room)",
-            LocationName = "Cathedral - Magic Crystal (1st Room)",
+            ItemName = "Cath Crystal 1st Room",
+            LocationName = "Cathedral - Crystal (1st Room)",
         },
         new()
         {
@@ -1964,8 +1964,8 @@ public static class Data
             RoomId = 7264,
             ObjectsToEnable = [],
             ObjectsToDisable = [7325],
-            ItemName = "Cath Switch",
-            LocationName = "Cathedral - Switch",
+            ItemName = "Cath Crystal Shaft",
+            LocationName = "Cathedral - Crystal (Shaft)",
         },
         new()
         {
@@ -1973,8 +1973,8 @@ public static class Data
             RoomId = 59,
             ObjectsToEnable = [],
             ObjectsToDisable = [1101],
-            ItemName = "Cata Crystal Shaft",
-            LocationName = "Catacombs - Magic Crystal (Shaft)",
+            ItemName = "Cata Switch 1st Room",
+            LocationName = "Catacombs - Switch (1st Room)",
         },
         new()
         {
@@ -1983,7 +1983,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [10474, 10475, 10471, 10473],
             ItemName = "CD Crystal Backtrack",
-            LocationName = "Cyclops Den - Magic Crystal (Backtrack)",
+            LocationName = "Cyclops Den - Crystal (Backtrack)",
         },
         new()
         {
@@ -1992,7 +1992,7 @@ public static class Data
             ObjectsToEnable = [2272],
             ObjectsToDisable = [],
             ItemName = "Mech Crystal 1st Room",
-            LocationName = "Mechanism - Magic Crystal (1st Room)",
+            LocationName = "Mechanism - Crystal (1st Room)",
         },
         new()
         {
@@ -2001,7 +2001,7 @@ public static class Data
             ObjectsToEnable = [7351, 7352, 7353, 7349],
             ObjectsToDisable = [],
             ItemName = "Mech Crystal Old Man",
-            LocationName = "Mechanism - Magic Crystal (Old Man)",
+            LocationName = "Mechanism - Crystal (Old Man)",
         },
         new()
         {
@@ -2010,7 +2010,7 @@ public static class Data
             ObjectsToEnable = [7430, 7429, 7431, 7432, 7433],
             ObjectsToDisable = [7419, 7420, 7421, 7422, 7423, 7424, 7425, 7426, 7427, 7428],
             ItemName = "SP Crystal Blocks",
-            LocationName = "Serpent Path - Magic Crystal (Blocks)",
+            LocationName = "Serpent Path - Crystal (Blocks)",
         },
         new()
         {
@@ -2018,8 +2018,8 @@ public static class Data
             RoomId = 7360,
             ObjectsToEnable = [],
             ObjectsToDisable = [7512],
-            ItemName = "CD Crystal 1",
-            LocationName = "Cyclops Den - Magic Crystal 1",
+            ItemName = "CD Crystal Start",
+            LocationName = "Cyclops Den - Crystal (Start)",
         },
         new()
         {
@@ -2064,7 +2064,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [7707],
             ItemName = "CD Crystal Campfire",
-            LocationName = "Cyclops Den - Magic Crystal (Campfire)",
+            LocationName = "Cyclops Den - Crystal (Campfire)",
         },
         new()
         {
@@ -2073,7 +2073,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [7735],
             ItemName = "CD Crystal Stairs",
-            LocationName = "Cyclops Den - Magic Crystal (Stairs)",
+            LocationName = "Cyclops Den - Crystal (Stairs)",
         },
         new()
         {
@@ -2109,7 +2109,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [8154, 8156],
             ItemName = "SP Crystal Star",
-            LocationName = "Serpent Path - Magic Crystal (Star)",
+            LocationName = "Serpent Path - Crystal (Star)",
         },
         new()
         {
@@ -2118,7 +2118,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [8242],
             ItemName = "Cath Crystal Spike Pit",
-            LocationName = "Cathedral - Magic Crystal (Spike Pit)",
+            LocationName = "Cathedral - Crystal (Spike Pit)",
         },
         new()
         {
@@ -2127,7 +2127,7 @@ public static class Data
             ObjectsToEnable = [8384],
             ObjectsToDisable = [],
             ItemName = "Cath Crystal Top Left",
-            LocationName = "Cathedral - Magic Crystal (Top Left)",
+            LocationName = "Cathedral - Crystal (Top Left)",
         },
         new()
         {
@@ -2136,7 +2136,7 @@ public static class Data
             ObjectsToEnable = [8386, 8388],
             ObjectsToDisable = [],
             ItemName = "Cath Crystal Top Right",
-            LocationName = "Cathedral - Magic Crystal (Top Right)",
+            LocationName = "Cathedral - Crystal (Top Right)",
         },
         new()
         {
@@ -2145,7 +2145,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [8460],
             ItemName = "Cath Crystal Shaft Access",
-            LocationName = "Cathedral - Magic Crystal (Shaft Access)",
+            LocationName = "Cathedral - Crystal (Shaft Access)",
         },
         new()
         {
@@ -2163,7 +2163,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [8656],
             ItemName = "RoA Crystal 3 Reapers",
-            LocationName = "Ruins of Ash - Magic Crystal (3 Reapers)",
+            LocationName = "Ruins of Ash - Crystal (3 Reapers)",
         },
         new()
         {
@@ -2190,7 +2190,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [9233, 9234, 9235],
             ItemName = "Mech Crystal Top Chains",
-            LocationName = "Mechanism - Magic Crystal (Top Chains)",
+            LocationName = "Mechanism - Crystal (Top Chains)",
         },
         new()
         {
@@ -2226,7 +2226,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [2274, 2275],
             ItemName = "Mech Crystal BK",
-            LocationName = "Mechanism - Magic Crystal (Black Knight)",
+            LocationName = "Mechanism - Crystal (Black Knight)",
         },
         new()
         {
@@ -2243,8 +2243,8 @@ public static class Data
             RoomId = 3941,
             ObjectsToEnable = [],
             ObjectsToDisable = [9502],
-            ItemName = "RoA Crystal (Triple 2)",
-            LocationName = "Ruins of Ash - Magic Crystal (Triple 2)",
+            ItemName = "RoA Crystal Triple 2",
+            LocationName = "Ruins of Ash - Crystal (Triple 2)",
         },
         new()
         {
@@ -2298,7 +2298,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [9769],
             ItemName = "TR Crystal Gold",
-            LocationName = "Tower Roots - Magic Crystal (Gold)",
+            LocationName = "Tower Roots - Crystal (Gold)",
         },
         new()
         {
@@ -2307,7 +2307,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [9905, 9908, 9907, 9909],
             ItemName = "HotP Crystal Below Puzzle",
-            LocationName = "Hall of the Phantoms - Magic Crystal (Below Puzzle)",
+            LocationName = "Hall of the Phantoms - Crystal (Below Puzzle)",
         },
         new()
         {
@@ -2379,7 +2379,7 @@ public static class Data
             ObjectsToEnable = [],
             ObjectsToDisable = [10249],
             ItemName = "Cath Crystal Orbs",
-            LocationName = "Cathedral - Magic Crystal (Orbs)",
+            LocationName = "Cathedral - Crystal (Orbs)",
         },
         new()
         {
@@ -2415,7 +2415,7 @@ public static class Data
             ObjectsToEnable = [10442],
             ObjectsToDisable = [],
             ItemName = "Cata Crystal Poison Roots",
-            LocationName = "Catacombs - Magic Crystal (Poison Roots)",
+            LocationName = "Catacombs - Crystal (Poison Roots)",
         },
         new()
         {
@@ -2424,7 +2424,7 @@ public static class Data
             ObjectsToEnable = [10490, 10492],
             ObjectsToDisable = [],
             ItemName = "TR Crystal Dark Arias",
-            LocationName = "Tower Roots - Magic Crystal (Dark Arias)",
+            LocationName = "Tower Roots - Crystal (Dark Arias)",
         },
         new()
         {
