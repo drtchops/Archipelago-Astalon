@@ -1028,8 +1028,6 @@ public static class Game
                 case "Bram":
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Bram, false);
-                    //Player.PlayerDataLocal.bramFreed = true;
-                    //Player.PlayerDataLocal.bramSeen = true;
                     break;
                 default:
                     Plugin.Logger.LogWarning($"Item {itemInfo.Id} - {itemName} not found");

@@ -920,8 +920,8 @@ public static class Data
             RoomId = 65,
             ObjectsToEnable = [],
             ObjectsToDisable = [987],
-            ItemName = "HotP Switch Rock Access",
-            LocationName = "Hall of the Phantoms - Switch (Rock Access)",
+            ItemName = "HotP Crystal Rock Access",
+            LocationName = "Hall of the Phantoms - Crystal (Rock Access)",
         },
         new()
         {
@@ -1784,8 +1784,8 @@ public static class Data
             RoomId = 2898,
             ObjectsToEnable = [6529, 6527, 6528, 6530],
             ObjectsToDisable = [],
-            ItemName = "HotP Switch Maiden Access",
-            LocationName = "Hall of the Phantoms - Switch (Dead Maiden Access)",
+            ItemName = "HotP Switch To Above Old Man",
+            LocationName = "Hall of the Phantoms - Switch (To Above Old Man)",
         },
         new()
         {
@@ -1793,8 +1793,8 @@ public static class Data
             RoomId = 3256,
             ObjectsToEnable = [],
             ObjectsToDisable = [6548],
-            ItemName = "HotP Switch Maze Puzzle",
-            LocationName = "Hall of the Phantoms - Switch (Maze Puzzle)",
+            ItemName = "HotP Switch TP Puzzle",
+            LocationName = "Hall of the Phantoms - Switch (Teleport Puzzle)",
         },
         new()
         {
@@ -2072,8 +2072,8 @@ public static class Data
             RoomId = 7374,
             ObjectsToEnable = [],
             ObjectsToDisable = [7735],
-            ItemName = "CD Crystal Stairs",
-            LocationName = "Cyclops Den - Crystal (Stairs)",
+            ItemName = "CD Crystal Steps",
+            LocationName = "Cyclops Den - Crystal (Steps)",
         },
         new()
         {
