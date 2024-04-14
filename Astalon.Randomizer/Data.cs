@@ -902,8 +902,8 @@ public static class Data
             RoomId = 806,
             ObjectsToEnable = [],
             ObjectsToDisable = [1050],
-            ItemName = "Mech Crystal Split Path",
-            LocationName = "Mechanism - Crystal (Split Path)",
+            ItemName = "Mech Switch Split Path",
+            LocationName = "Mechanism - Switch (Split Path)",
         },
         new()
         {
@@ -1019,8 +1019,8 @@ public static class Data
             RoomId = 336,
             ObjectsToEnable = [1441, 1442, 1443],
             ObjectsToDisable = [],
-            ItemName = "Mech Switch Lower",
-            LocationName = "Mechanism - Switch (Lower)",
+            ItemName = "Mech Crystal Lower",
+            LocationName = "Mechanism - Crystal (Lower)",
         },
         new()
         {
@@ -1028,8 +1028,8 @@ public static class Data
             RoomId = 799,
             ObjectsToEnable = [1527, 1528, 1525, 1526, 1523, 1524, 1529, 1532, 1521, 1522, 1530, 1531],
             ObjectsToDisable = [],
-            ItemName = "Mech Switch To Boss 3",
-            LocationName = "Mechanism - Switch (To Boss 3)",
+            ItemName = "Mech Crystal To Boss 3",
+            LocationName = "Mechanism - Crystal (To Boss 3)",
         },
         new()
         {
