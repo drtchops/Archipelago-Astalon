@@ -830,8 +830,8 @@ public static class Data
             RoomId = 74,
             ObjectsToEnable = [895, 896],
             ObjectsToDisable = [],
-            ItemName = "GT Switch Upper Path 1",
-            LocationName = "Gorgon Tomb - Switch (Upper Path 1)",
+            ItemName = "GT Switch Upper Path Blocks",
+            LocationName = "Gorgon Tomb - Switch (Upper Path Blocks)",
         },
         new()
         {
@@ -839,8 +839,8 @@ public static class Data
             RoomId = 74,
             ObjectsToEnable = [],
             ObjectsToDisable = [677],
-            ItemName = "GT Switch Upper Path 2",
-            LocationName = "Gorgon Tomb - Switch (Upper Path 2)",
+            ItemName = "GT Switch Upper Path Access",
+            LocationName = "Gorgon Tomb - Switch (Upper Path Access)",
         },
         new()
         {
@@ -1406,8 +1406,8 @@ public static class Data
             RoomId = 3650,
             ObjectsToEnable = [3655, 3653],
             ObjectsToDisable = [],
-            ItemName = "GT Switch Old Man 1",
-            LocationName = "Gorgon Tomb - Switch (Old Man 1)",
+            ItemName = "GT Crystal Old Man 1",
+            LocationName = "Gorgon Tomb - Crystal (Old Man 1)",
         },
         new()
         {
@@ -1415,8 +1415,8 @@ public static class Data
             RoomId = 3650,
             ObjectsToEnable = [3654],
             ObjectsToDisable = [],
-            ItemName = "GT Switch Old Man 2",
-            LocationName = "Gorgon Tomb - Switch (Old Man 2)",
+            ItemName = "GT Crystal Old Man 2",
+            LocationName = "Gorgon Tomb - Crystal (Old Man 2)",
         },
         new()
         {
