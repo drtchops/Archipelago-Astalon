@@ -1631,8 +1631,8 @@ public static class Data
             RoomId = 4247,
             ObjectsToEnable = [],
             ObjectsToDisable = [4935, 4934, 4933],
-            ItemName = "RoA Switch Spiders Top",
-            LocationName = "Ruins of Ash - Switch (Spiders Top)",
+            ItemName = "RoA Switch Spiders",
+            LocationName = "Ruins of Ash - Switch (Spiders)",
         },
         new()
         {
@@ -1640,8 +1640,8 @@ public static class Data
             RoomId = 4248,
             ObjectsToEnable = [],
             ObjectsToDisable = [4943, 4944, 4945, 4946],
-            ItemName = "RoA Switch Spiders Bottom",
-            LocationName = "Ruins of Ash - Switch (Spiders Bottom)",
+            ItemName = "RoA Face Spiders",
+            LocationName = "Ruins of Ash - Face (Spiders)",
         },
         new()
         {
