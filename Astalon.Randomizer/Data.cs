@@ -821,8 +821,8 @@ public static class Data
             RoomId = 30,
             ObjectsToEnable = [],
             ObjectsToDisable = [548],
-            ItemName = "GT Switch RotA",
-            LocationName = "Gorgon Tomb - Switch (Ring of the Ancients)",
+            ItemName = "GT Crystal RotA",
+            LocationName = "Gorgon Tomb - Crystal (Ring of the Ancients)",
         },
         new()
         {
