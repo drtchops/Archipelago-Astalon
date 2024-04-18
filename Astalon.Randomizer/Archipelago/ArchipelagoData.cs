@@ -52,8 +52,8 @@ public class ArchipelagoSlotData
     public bool RandomizeBlueKeys { get; set; }
     public bool RandomizeRedKeys { get; set; }
     public bool RandomizeShop { get; set; }
-    public bool RandomizeSwitches { get; set; }
     public bool RandomizeElevator { get; set; }
+    public bool RandomizeSwitches { get; set; }
     public bool RandomizeFamiliars { get; set; }
     public bool RandomizeOrbCrates { get; set; }
     public bool RandomizeBossOrbRewards { get; set; }
@@ -86,8 +86,8 @@ public class ArchipelagoSlotData
         RandomizeBlueKeys = ParseBool(settings, "randomize_blue_keys");
         RandomizeRedKeys = ParseBool(settings, "randomize_red_keys");
         RandomizeShop = ParseBool(settings, "randomize_shop");
-        RandomizeSwitches = ParseBool(settings, "randomize_switches");
         RandomizeElevator = ParseBool(settings, "randomize_elevator");
+        RandomizeSwitches = ParseBool(settings, "randomize_switches");
         RandomizeFamiliars = ParseBool(settings, "randomize_familiars");
         RandomizeOrbCrates = ParseBool(settings, "randomize_orb_crates");
         RandomizeBossOrbRewards = ParseBool(settings, "randomize_boss_orb_rewards");

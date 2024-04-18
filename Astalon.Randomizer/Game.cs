@@ -788,6 +788,16 @@ public static class Game
             return "SoulOrb_Big";
         }
 
+        if (itemName.EndsWith("Elevator") && !itemName.Contains("Switch"))
+        {
+            return "ElevatorMenu_Icon_OldMan";
+        }
+
+        if (itemName.Contains("Switch") || itemName.Contains("Crystal") || itemName.Contains("Face"))
+        {
+            return "Frog";
+        }
+
         if (Data.IconMap.TryGetValue(itemName, out var icon))
         {
             return icon;
@@ -812,6 +822,7 @@ public static class Game
             "BlueOrb_1" => "TrapOrb",
             "SoulOrb_Big" => "Orb_Big_UI",
             "Orb_Idle_1" => "SecretsOrb_Idle",
+            "Frog" => null,
             _ => icon,
         };
     }
@@ -913,21 +924,15 @@ public static class Game
             ReceivingItem = true;
             Player.PlayerDataLocal.CollectItem(itemId);
             Player.PlayerDataLocal.EnableItem(itemId);
-            ReceivingItem = false;
 
             switch (itemId)
             {
                 case ItemProperties.ItemID.AscendantKey:
                     Player.PlayerDataLocal.elevatorsOpened = true;
+                    UpdateElevatorList();
                     foreach (var roomId in Player.PlayerDataLocal.elevatorsFound)
                     {
                         Player.PlayerDataLocal.UnlockElevator(roomId);
-                    }
-
-                    Player.PlayerDataLocal.UnlockElevator(6629);
-                    if (_saveData.SlotData.FreeApexElevator)
-                    {
-                        Player.PlayerDataLocal.UnlockElevator(4109);
                     }
 
                     break;
@@ -935,16 +940,16 @@ public static class Game
                     // TODO: figure out why this item doesn't work
                     Player.PlayerDataLocal.zeekItem = true;
                     Player.PlayerDataLocal.cyclopsDenKey = true;
-                    Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.CyclopsIdol);
-                    Player.PlayerDataLocal.EnableItem(ItemProperties.ItemID.CyclopsIdol);
+                    //Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.CyclopsIdol);
+                    //Player.PlayerDataLocal.EnableItem(ItemProperties.ItemID.CyclopsIdol);
                     Player.PlayerDataLocal.AddKey(Key.KeyType.Cyclops);
-                    Player.PlayerDataLocal.zeekQuestStatus = Room_Zeek.ZeekQuestStatus.QuestStarted;
-                    Player.PlayerDataLocal.zeekSeen = true;
                     break;
                 case ItemProperties.ItemID.AthenasBell:
                     Player.Instance.SetCanChangeCharacterTo(true);
                     break;
             }
+
+            ReceivingItem = false;
         }
         else if (itemName.EndsWith("Key"))
         {
@@ -1060,12 +1065,14 @@ public static class Game
 
         if (_saveData.SlotData.RandomizeElevator)
         {
+            var elevators = Player.PlayerDataLocal.elevatorsFound.Clone();
+
             foreach (var elevatorId in Player.PlayerDataLocal.elevatorsFound)
             {
                 if (elevatorId != 6629 && (elevatorId != 4109 || !_saveData.SlotData.FreeApexElevator) &&
                     !_saveData.ReceivedElevators.Contains(elevatorId))
                 {
-                    Player.PlayerDataLocal.elevatorsFound.Remove(elevatorId);
+                    elevators.Remove(elevatorId);
                 }
             }
 
@@ -1073,9 +1080,21 @@ public static class Game
             {
                 if (!Player.PlayerDataLocal.elevatorsFound.Contains(elevatorId))
                 {
-                    Player.PlayerDataLocal.elevatorsFound.Add(elevatorId);
+                    elevators.Add(elevatorId);
                 }
             }
+
+            if (!Player.PlayerDataLocal.elevatorsFound.Contains(6629))
+            {
+                elevators.Add(6629);
+            }
+
+            if (_saveData.SlotData.FreeApexElevator && !Player.PlayerDataLocal.elevatorsFound.Contains(4109))
+            {
+                elevators.Add(4109);
+            }
+
+            Player.PlayerDataLocal.elevatorsFound = elevators;
         }
         else if (!_saveData.SlotData.FreeApexElevator && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
         {
@@ -1499,7 +1518,8 @@ public static class Game
             {
                 _saveData.ItemIndex++;
                 var display = GiveItem(item);
-                if (display)
+                // don't show pre-collected items
+                if (display && item.LocationId != -2)
                 {
                     IncomingMessages.Enqueue(item);
                 }

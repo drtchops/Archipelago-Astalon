@@ -263,7 +263,6 @@ internal class PlayerData_Patch
     public static void UnlockElevatorPre(int roomID)
     {
         Plugin.Logger.LogDebug($"PlayerData.UnlockElevatorPre({roomID})");
-        Game.ElevatorUnlocked(roomID);
     }
 
     [HarmonyPatch(nameof(PlayerData.UnlockElevator))]
@@ -799,6 +798,20 @@ internal class ObjectSwitch_Patch
     }
 }
 
+[HarmonyPatch(typeof(MagicCrystal))]
+internal class MagicCrystal_Patch
+{
+    [HarmonyPatch(nameof(MagicCrystal.ActivateObject))]
+    [HarmonyPrefix]
+    public static void ActivateObject(MagicCrystal __instance)
+    {
+        Plugin.Logger.LogDebug(
+            $"MagicCrystal.ActivateObject({__instance.actorID}, {__instance.room?.roomID}, {__instance.switchID})");
+        var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
+        Game.PressSwitch(roomId, __instance.switchID);
+    }
+}
+
 [HarmonyPatch(typeof(SwitchableObject))]
 internal class SwitchableObject_Patch
 {
@@ -810,5 +823,44 @@ internal class SwitchableObject_Patch
             $"SwitchableObject.ToggleObject({__instance.actorID}, {__instance.objectType}, {__instance.linkID})");
         var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
         return !Game.IsSwitchRandomized(roomId, __instance.linkID, out _);
+    }
+}
+
+[HarmonyPatch(typeof(Elevator))]
+internal class Elevator_Patch
+{
+    [HarmonyPatch(nameof(Elevator.UnlockElevator))]
+    [HarmonyPrefix]
+    public static void UnlockElevator(Elevator __instance)
+    {
+        Plugin.Logger.LogDebug($"Elevator.UnlockElevator({__instance.actorID}, {__instance.room?.roomID})");
+        Game.ElevatorUnlocked(__instance.room?.roomID ?? -1);
+    }
+
+    [HarmonyPatch(nameof(Elevator.TriggerElevatorMenu))]
+    [HarmonyPrefix]
+    public static void TriggerElevatorMenu(Elevator __instance)
+    {
+        Plugin.Logger.LogDebug($"Elevator.TriggerElevatorMenu({__instance.actorID}, {__instance.room?.roomID})");
+        Game.ElevatorUnlocked(__instance.room?.roomID ?? -1);
+    }
+}
+
+[HarmonyPatch(typeof(Room_Zeek))]
+internal class Room_Zeek_Patch
+{
+    [HarmonyPatch(nameof(Room_Zeek.Activate))]
+    [HarmonyPrefix]
+    public static void ActivatePre()
+    {
+        Plugin.Logger.LogDebug("Room_Zeek.ActivatePre()");
+        // make has crown = false so we can do the cyclops check
+    }
+
+    [HarmonyPatch(nameof(Room_Zeek.Activate))]
+    [HarmonyPostfix]
+    public static void ActivatePost()
+    {
+        Plugin.Logger.LogDebug("Room_Zeek.ActivatePost()");
     }
 }
