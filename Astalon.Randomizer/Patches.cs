@@ -716,7 +716,7 @@ internal class ShopSubMenu_Patch
     [HarmonyPostfix]
     public static void UpdateDeal(DealProperties _deal, int _dealIndex, ShopSubMenu __instance)
     {
-        Plugin.Logger.LogDebug($"ShopSubMenu.UpdateDeal({_deal}, {_dealIndex})");
+        Plugin.Logger.LogDebug($"ShopSubMenu.UpdateDeal({_deal.dealID}, {_dealIndex})");
         if (Game.TryUpdateDeal(_deal.dealID, out _, out var name, out var playerName))
         {
             var description = name;

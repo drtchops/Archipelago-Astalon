@@ -109,9 +109,9 @@ public static class Game
         _spriteCollectionData = tk2dSpriteCollectionData.CreateFromTexture(
             LoadImageAsTexture("multi-images.png"),
             tk2dSpriteCollectionSize.ForTk2dCamera(),
-            new(new string[] { "AP_ITEM", "AP_ITEM_BRIGHT" }),
-            new(new Rect[] { new(0, 0, 16, 16), new(16, 0, 16, 16) }),
-            new(new Vector2[] { new(8, 8), new(8, 8) }));
+            new(["AP_ITEM", "AP_ITEM_BRIGHT"]),
+            new([new(0, 0, 16, 16), new(16, 0, 16, 16)]),
+            new([new(8, 8), new(8, 8)]));
 
         _spriteAnimationClip = new()
         {
@@ -119,8 +119,8 @@ public static class Game
             loopStart = 0,
             name = "AP_ITEM",
             wrapMode = tk2dSpriteAnimationClip.WrapMode.Loop,
-            frames = new(new tk2dSpriteAnimationFrame[]
-            {
+            frames = new(
+            [
                 new()
                 {
                     eventFloat = 0,
@@ -139,7 +139,7 @@ public static class Game
                     spriteId = 1,
                     triggerEvent = false,
                 },
-            }),
+            ]),
         };
     }
 
@@ -276,10 +276,7 @@ public static class Game
         }
 
         var sprite = gameObject.GetComponent<tk2dBaseSprite>();
-        if (sprite != null)
-        {
-            sprite.SetSprite(icon);
-        }
+        sprite?.SetSprite(icon);
     }
 
     #endregion
@@ -463,6 +460,8 @@ public static class Game
 
         _saveValid = true;
         _saveDataFilled = true;
+
+        Plugin.Logger.LogDebug(JsonConvert.SerializeObject(_saveData.SlotData.ShopItems));
 
         InitializeSave();
         ConnectSave();
@@ -1050,7 +1049,7 @@ public static class Game
             return;
         }
 
-        if (Data.ElevatorToLocation.TryGetValue(roomId, out var location))
+        if ((!_saveData.SlotData.FreeApexElevator || roomId != 4109) && Data.ElevatorToLocation.TryGetValue(roomId, out var location))
         {
             SendLocation(location);
         }
@@ -1423,10 +1422,7 @@ public static class Game
             {
                 var actor = actors[0];
                 var door = actor.gameObject.GetComponent<Door>();
-                if (door != null)
-                {
-                    door.OpenDoor();
-                }
+                door?.OpenDoor();
             }
         }
 
