@@ -63,6 +63,7 @@ public class ArchipelagoSlotData
     public int CostMultiplier { get; set; }
     public bool FastBloodChalice { get; set; }
     public bool CampfireWarp { get; set; }
+    public bool CheapKyuliRay { get; set; }
     public bool DeathLink { get; set; }
     public Dictionary<string, ShopItem> ShopItems { get; set; }
     public string[] StartingCharacters { get; set; }
@@ -97,6 +98,7 @@ public class ArchipelagoSlotData
         CostMultiplier = ParseInt(settings, "cost_multiplier", 100);
         FastBloodChalice = ParseBool(settings, "fast_blood_chalice", true);
         CampfireWarp = ParseBool(settings, "campfire_warp", true);
+        CheapKyuliRay = ParseBool(settings, "cheap_kyuli_ray");
         DeathLink = ParseBool(settings, "death_link");
 
         try

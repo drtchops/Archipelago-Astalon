@@ -28,6 +28,11 @@ public struct SaveData
     public List<string> PendingLocations { get; set; }
     public List<DealProperties.DealID> ReceivedDeals { get; set; }
     public List<int> ReceivedElevators { get; set; }
+    public bool ReceivedCyclopsKey { get; set; }
+    public bool ReceivedCrown { get; set; }
+    public bool CheckedCyclopsIdol { get; set; }
+    public bool CheckedZeek { get; set; }
+    public bool CheckedBram { get; set; }
 }
 
 [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
@@ -93,6 +98,8 @@ public static class Game
     private static tk2dSpriteAnimationClip _spriteAnimationClip;
     private static bool _injectedAnimation;
     private static int _warpCooldown;
+    private static bool _activatingZeekRoom;
+    private static bool _activatingBramRoom;
 
     #region AnimationExperiments
 
@@ -460,8 +467,6 @@ public static class Game
 
         _saveValid = true;
         _saveDataFilled = true;
-
-        Plugin.Logger.LogDebug(JsonConvert.SerializeObject(_saveData.SlotData.ShopItems));
 
         InitializeSave();
         ConnectSave();
@@ -880,6 +885,8 @@ public static class Game
             return false;
         }
 
+        ReceivingItem = true;
+
         var itemName = itemInfo.Name;
         Plugin.Logger.LogDebug($"Giving item: {itemName}");
 
@@ -920,7 +927,6 @@ public static class Game
         }
         else if (Data.ItemMap.TryGetValue(itemName, out var itemId))
         {
-            ReceivingItem = true;
             Player.PlayerDataLocal.CollectItem(itemId);
             Player.PlayerDataLocal.EnableItem(itemId);
 
@@ -936,19 +942,16 @@ public static class Game
 
                     break;
                 case ItemProperties.ItemID.ZeekItem:
-                    // TODO: figure out why this item doesn't work
-                    Player.PlayerDataLocal.zeekItem = true;
                     Player.PlayerDataLocal.cyclopsDenKey = true;
-                    //Player.PlayerDataLocal.CollectItem(ItemProperties.ItemID.CyclopsIdol);
-                    //Player.PlayerDataLocal.EnableItem(ItemProperties.ItemID.CyclopsIdol);
-                    Player.PlayerDataLocal.AddKey(Key.KeyType.Cyclops);
+                    _saveData.ReceivedCyclopsKey = true;
+                    break;
+                case ItemProperties.ItemID.PrincesCrown:
+                    _saveData.ReceivedCrown = true;
                     break;
                 case ItemProperties.ItemID.AthenasBell:
                     Player.Instance.SetCanChangeCharacterTo(true);
                     break;
             }
-
-            ReceivingItem = false;
         }
         else if (itemName.EndsWith("Key"))
         {
@@ -967,15 +970,21 @@ public static class Game
         }
         else if (Data.WhiteDoorMap.TryGetValue(itemName, out var whiteIds))
         {
-            return OpenDoor(whiteIds);
+            var result = OpenDoor(whiteIds);
+            ReceivingItem = false;
+            return result;
         }
         else if (Data.BlueDoorMap.TryGetValue(itemName, out var blueIds))
         {
-            return OpenDoor(blueIds);
+            var result = OpenDoor(blueIds);
+            ReceivingItem = false;
+            return result;
         }
         else if (Data.RedDoorMap.TryGetValue(itemName, out var redIds))
         {
-            return OpenDoor(redIds);
+            var result = OpenDoor(redIds);
+            ReceivingItem = false;
+            return result;
         }
         else if (Data.ItemToDeal.TryGetValue(itemName, out var dealId))
         {
@@ -1035,10 +1044,12 @@ public static class Game
                     break;
                 default:
                     Plugin.Logger.LogWarning($"Item {itemInfo.Id} - {itemName} not found");
+                    ReceivingItem = false;
                     return false;
             }
         }
 
+        ReceivingItem = false;
         return true;
     }
 
@@ -1099,6 +1110,30 @@ public static class Game
         {
             Player.PlayerDataLocal.elevatorsFound.Remove(4109);
         }
+    }
+
+    public static bool CharacterUnlocked(CharacterProperties.Character character)
+    {
+        if (!_saveDataFilled || ReceivingItem || _saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
+        {
+            return false;
+        }
+
+        if (character == CharacterProperties.Character.Zeek)
+        {
+            SendLocation("Mechanism - Zeek");
+            _saveData.CheckedZeek = true;
+            return true;
+        }
+
+        if (character == CharacterProperties.Character.Bram)
+        {
+            SendLocation("Tower Roots - Bram");
+            _saveData.CheckedBram = true;
+            return true;
+        }
+
+        return false;
     }
 
     public static void HandleDeath()
@@ -1203,6 +1238,81 @@ public static class Game
             name = shopItem.Name;
             playerName = shopItem.IsLocal ? null : shopItem.PlayerName;
             sprite = GetIcon(name, shopItem.Flags);
+
+            if (dealId == DealProperties.DealID.Deal_DeathOrb || dealId == DealProperties.DealID.Deal_Gift)
+            {
+                name = $"*{name}";
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool TryHasItem(ItemProperties.ItemID itemId, out bool result)
+    {
+        result = false;
+
+        if (!_saveDataFilled || !_activatingZeekRoom)
+        {
+            return false;
+        }
+
+        if (itemId == ItemProperties.ItemID.PrincesCrown)
+        {
+            if (!_saveData.CheckedCyclopsIdol)
+            {
+                result = false;
+            }
+            else
+            {
+                result = _saveData.ReceivedCrown;
+            }
+
+            return true;
+        }
+
+        if (itemId == ItemProperties.ItemID.ZeekItem)
+        {
+            result = _saveData.CheckedCyclopsIdol;
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool TryHasUnlockedCharacter(CharacterProperties.Character character, out bool result)
+    {
+        result = false;
+
+        if (!_saveDataFilled)
+        {
+            return false;
+        }
+
+        if (_activatingZeekRoom && character == CharacterProperties.Character.Zeek)
+        {
+            if (_saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
+            {
+                if (_saveData.CheckedCyclopsIdol)
+                {
+                    return false;
+                }
+                else
+                {
+                    result = false;
+                    return true;
+                }
+            }
+
+            result = _saveData.CheckedZeek;
+            return true;
+        }
+
+        if (_activatingBramRoom && character == CharacterProperties.Character.Bram && _saveData.SlotData.RandomizeCharacters != RandomizeCharacters.Vanilla)
+        {
+            result = _saveData.CheckedBram;
             return true;
         }
 
@@ -1276,7 +1386,17 @@ public static class Game
 
     public static void ExploreRoom(Room room)
     {
-        if (!_saveValid || !_saveDataFilled || _saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
+        if (!_saveValid || !_saveDataFilled)
+        {
+            return;
+        }
+
+        if (room.roomID == 3728)
+        {
+            Player.PlayerDataLocal.cyclopsDenKey = _saveData.ReceivedCyclopsKey;
+        }
+
+        if (_saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
         {
             return;
         }
@@ -1295,6 +1415,46 @@ public static class Game
         }
     }
 
+    public static void ActivateZeekRoom()
+    {
+        if (!_saveDataFilled)
+        {
+            return;
+        }
+
+        _activatingZeekRoom = true;
+    }
+
+    public static void DeactivateZeekRoom()
+    {
+        if (!_saveDataFilled)
+        {
+            return;
+        }
+
+        _activatingZeekRoom = false;
+    }
+
+    public static void ActivateBramRoom()
+    {
+        if (!_saveDataFilled)
+        {
+            return;
+        }
+
+        _activatingBramRoom = true;
+    }
+
+    public static void DeactivateBramRoom()
+    {
+        if (!_saveDataFilled)
+        {
+            return;
+        }
+
+        _activatingBramRoom = false;
+    }
+
     public static bool CollectItem(ItemProperties.ItemID itemId)
     {
         if (!_saveDataFilled)
@@ -1305,6 +1465,12 @@ public static class Game
         if (TryGetItemLocation(itemId, out var location))
         {
             SendLocation(location);
+
+            if (itemId == ItemProperties.ItemID.ZeekItem)
+            {
+                _saveData.CheckedCyclopsIdol = true;
+            }
+
             return true;
         }
 
@@ -1466,6 +1632,16 @@ public static class Game
         {
             _saveData.PendingLocations.Clear();
         }
+    }
+
+    public static void ShootKyuliRay()
+    {
+        if (!_saveDataFilled || !_saveData.SlotData.CheapKyuliRay)
+        {
+            return;
+        }
+
+        Player.PlayerDataLocal.collectedOrbs += 450;
     }
 
     public static void Update()

@@ -274,9 +274,10 @@ internal class PlayerData_Patch
 
     [HarmonyPatch(nameof(PlayerData.UnlockCharacter))]
     [HarmonyPrefix]
-    public static void UnlockCharacter(CharacterProperties.Character _character)
+    public static bool UnlockCharacter(CharacterProperties.Character _character)
     {
         Plugin.Logger.LogDebug($"PlayerData.UnlockCharacter({_character})");
+        return !Game.CharacterUnlocked(_character);
     }
 
     [HarmonyPatch(nameof(PlayerData.IsDealPurchased))]
@@ -307,6 +308,34 @@ internal class PlayerData_Patch
     {
         Plugin.Logger.LogDebug("PlayerData.AddDefaultDeals()");
         Game.MakeCharacterDealsUnavailable();
+    }
+
+    [HarmonyPatch(nameof(PlayerData.HasItem))]
+    [HarmonyPrefix]
+    public static bool HasItem(ItemProperties.ItemID itemID, ref bool __result)
+    {
+        // Plugin.Logger.LogDebug($"PlayerData.HasItem({itemID})");
+        if (Game.TryHasItem(itemID, out var result))
+        {
+            __result = result;
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyPatch(nameof(PlayerData.HasUnlockedCharacter), typeof(CharacterProperties.Character))]
+    [HarmonyPrefix]
+    public static bool HasUnlockedCharacter(CharacterProperties.Character _character, ref bool __result)
+    {
+        // Plugin.Logger.LogDebug($"PlayerData.HasUnlockedCharacter({_character})");
+        if (Game.TryHasUnlockedCharacter(_character, out var result))
+        {
+            __result = result;
+            return false;
+        }
+
+        return true;
     }
 }
 
@@ -758,29 +787,29 @@ internal class Room_Patch
     [HarmonyPostfix]
     public static void ActivateInisde(Room __instance)
     {
-        Plugin.Logger.LogDebug($"Room {__instance.RoomID} '{__instance.name}'");
+        Plugin.Logger.LogDebug($"Room {__instance.RoomID} '{__instance.name}' (Area {__instance.GetRoomArea()})");
 
-        if (__instance.objectSwitches.Count > 0)
-        {
-            List<int> ids = [];
-            foreach (var objSwitch in __instance.objectSwitches)
-            {
-                ids.Add(objSwitch.actorID);
-            }
+        // if (__instance.objectSwitches.Count > 0)
+        // {
+        //     List<int> ids = [];
+        //     foreach (var objSwitch in __instance.objectSwitches)
+        //     {
+        //         ids.Add(objSwitch.actorID);
+        //     }
 
-            Plugin.Logger.LogDebug($"Switches: {string.Join(", ", ids)}");
-        }
+        //     Plugin.Logger.LogDebug($"Switches: {string.Join(", ", ids)}");
+        // }
 
-        if (__instance.switchableObjects.Count > 0)
-        {
-            List<int> ids = [];
-            foreach (var switchObj in __instance.switchableObjects)
-            {
-                ids.Add(switchObj.actorID);
-            }
+        // if (__instance.switchableObjects.Count > 0)
+        // {
+        //     List<int> ids = [];
+        //     foreach (var switchObj in __instance.switchableObjects)
+        //     {
+        //         ids.Add(switchObj.actorID);
+        //     }
 
-            Plugin.Logger.LogDebug($"Switchables: {string.Join(", ", ids)}");
-        }
+        //     Plugin.Logger.LogDebug($"Switchables: {string.Join(", ", ids)}");
+        // }
     }
 }
 
@@ -854,7 +883,7 @@ internal class Room_Zeek_Patch
     public static void ActivatePre()
     {
         Plugin.Logger.LogDebug("Room_Zeek.ActivatePre()");
-        // make has crown = false so we can do the cyclops check
+        Game.ActivateZeekRoom();
     }
 
     [HarmonyPatch(nameof(Room_Zeek.Activate))]
@@ -862,5 +891,37 @@ internal class Room_Zeek_Patch
     public static void ActivatePost()
     {
         Plugin.Logger.LogDebug("Room_Zeek.ActivatePost()");
+        Game.DeactivateZeekRoom();
+    }
+}
+
+[HarmonyPatch(typeof(Room_Bram))]
+internal class Room_Bram_Patch
+{
+    [HarmonyPatch(nameof(Room_Bram.Activate))]
+    [HarmonyPrefix]
+    public static void ActivatePre()
+    {
+        Plugin.Logger.LogDebug("Room_Bram.ActivatePre()");
+        Game.ActivateBramRoom();
+    }
+
+    [HarmonyPatch(nameof(Room_Bram.Activate))]
+    [HarmonyPostfix]
+    public static void ActivatePost()
+    {
+        Plugin.Logger.LogDebug("Room_Bram.ActivatePost()");
+        Game.DeactivateBramRoom();
+    }
+}
+
+[HarmonyPatch(typeof(WeaponKyuliOrbBow))]
+internal class WeaponKyuliOrbBow_Patch
+{
+    [HarmonyPatch(nameof(WeaponKyuliOrbBow.Shoot))]
+    [HarmonyPrefix]
+    public static void Shoot()
+    {
+        Game.ShootKyuliRay();
     }
 }
