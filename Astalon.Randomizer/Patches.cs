@@ -922,6 +922,7 @@ internal class WeaponKyuliOrbBow_Patch
     [HarmonyPrefix]
     public static void Shoot()
     {
+        // Plugin.Logger.LogDebug("WeaponKyuliOrbBow.Shoot()");
         Game.ShootKyuliRay();
     }
 }

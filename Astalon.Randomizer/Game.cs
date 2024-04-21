@@ -752,11 +752,6 @@ public static class Game
 
     public static bool CanCycleCharacter()
     {
-        if (!_saveValid)
-        {
-            return true;
-        }
-
         if (!_saveDataFilled)
         {
             return false;
@@ -1151,7 +1146,7 @@ public static class Game
 
     public static bool TryGetItemLocation(ItemProperties.ItemID itemId, out string location)
     {
-        if (!_saveValid)
+        if (!_saveDataFilled)
         {
             location = null;
             return false;
@@ -1321,7 +1316,7 @@ public static class Game
 
     public static void MakeCharacterDealsUnavailable()
     {
-        if (!_saveValid)
+        if (!_saveDataFilled)
         {
             return;
         }
@@ -1344,7 +1339,7 @@ public static class Game
 
     public static void UpdateSaveCharacters(SavePoint savePoint)
     {
-        if (!_saveValid)
+        if (!_saveDataFilled)
         {
             return;
         }
@@ -1361,7 +1356,7 @@ public static class Game
     {
         location = null;
 
-        if (!_saveValid)
+        if (!_saveDataFilled)
         {
             return false;
         }
@@ -1386,7 +1381,7 @@ public static class Game
 
     public static void ExploreRoom(Room room)
     {
-        if (!_saveValid || !_saveDataFilled)
+        if (!_saveDataFilled)
         {
             return;
         }
@@ -1641,7 +1636,7 @@ public static class Game
             return;
         }
 
-        Player.PlayerDataLocal.collectedOrbs += 450;
+        Player.PlayerDataLocal.currentOrbs += 450;
     }
 
     public static void Update()
