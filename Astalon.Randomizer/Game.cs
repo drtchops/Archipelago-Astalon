@@ -1109,7 +1109,7 @@ public static class Game
 
     public static bool CharacterUnlocked(CharacterProperties.Character character)
     {
-        if (!_saveDataFilled || ReceivingItem || _saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
+        if (!_saveDataFilled || !_saveInitialized || ReceivingItem || _saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
         {
             return false;
         }
