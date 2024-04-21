@@ -1835,11 +1835,18 @@ public static class Game
         }
     }
 
+#if DEBUG
     public static bool CanWarp(string destination)
     {
-#if DEBUG
-        return true;
-#endif
+        return Player.PlayerDataLocal != null;
+    }
+#else
+    public static bool CanWarp(string destination)
+    {
+        if (Player.PlayerDataLocal == null)
+        {
+            return false;
+        }
 
         if (destination == "Last Checkpoint")
         {
@@ -1852,8 +1859,8 @@ public static class Game
             {
                 return false;
             }
-            else if (Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId) &&
-                     (checkpoint.Id != 2669 || GetObjectValue(4338, "wasActivated").ToLower() == "true"))
+            else if (Player.PlayerDataLocal.discoveredRooms != null && Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId) &&
+                (checkpoint.Id != 2669 || GetObjectValue(4338, "wasActivated").ToLower() == "true"))
             {
                 return true;
             }
@@ -1861,6 +1868,7 @@ public static class Game
 
         return false;
     }
+#endif
 
     private static void CheckWarp()
     {

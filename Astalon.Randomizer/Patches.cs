@@ -841,6 +841,20 @@ internal class MagicCrystal_Patch
     }
 }
 
+[HarmonyPatch(typeof(AttackSwitch))]
+internal class AttackSwitch_Patch
+{
+    [HarmonyPatch(nameof(AttackSwitch.ActivateObject))]
+    [HarmonyPrefix]
+    public static void ActivateObject(AttackSwitch __instance)
+    {
+        Plugin.Logger.LogDebug(
+            $"AttackSwitch.ActivateObject({__instance.actorID}, {__instance.room?.roomID}, {__instance.switchID})");
+        var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
+        Game.PressSwitch(roomId, __instance.switchID);
+    }
+}
+
 [HarmonyPatch(typeof(SwitchableObject))]
 internal class SwitchableObject_Patch
 {
