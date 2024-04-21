@@ -1114,14 +1114,14 @@ public static class Game
             return false;
         }
 
-        if (character == CharacterProperties.Character.Zeek)
+        if (character == CharacterProperties.Character.Zeek && !_saveData.SlotData.StartingCharacters.Contains("Zeek"))
         {
             SendLocation("Mechanism - Zeek");
             _saveData.CheckedZeek = true;
             return true;
         }
 
-        if (character == CharacterProperties.Character.Bram)
+        if (character == CharacterProperties.Character.Bram && !_saveData.SlotData.StartingCharacters.Contains("Bram"))
         {
             SendLocation("Tower Roots - Bram");
             _saveData.CheckedBram = true;
