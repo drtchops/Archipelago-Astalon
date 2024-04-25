@@ -93,13 +93,17 @@ public static class Game
     private static bool _saveInitialized;
     private static SaveData _saveData;
     private static int _deathCounter = -1;
-    private static tk2dBaseSprite _baseSprite;
-    private static tk2dSpriteCollectionData _spriteCollectionData;
-    private static tk2dSpriteAnimationClip _spriteAnimationClip;
-    private static bool _injectedAnimation;
     private static int _warpCooldown;
     private static bool _activatingZeekRoom;
     private static bool _activatingBramRoom;
+
+#if DEBUG
+    private static tk2dBaseSprite _baseSprite;
+    private static tk2dSpriteCollectionData _spriteCollectionData;
+    private static tk2dSpriteAnimationClip _spriteAnimationClip;
+    private static bool _injectedSprite;
+    private static int _injectedSpriteId;
+    private static bool _injectedAnimation;
 
     #region AnimationExperiments
 
@@ -109,9 +113,10 @@ public static class Game
         var gameObject = tk2dSprite.CreateFromTexture(
             apTexture,
             tk2dSpriteCollectionSize.ForTk2dCamera(),
-            new(0, 0, 16, 16),
-            new(8, 8));
+            new(0, 0, apTexture.width, apTexture.height),
+            new(0.5f, 0.5f));
         _baseSprite = gameObject.GetComponent<tk2dSprite>();
+        _baseSprite.collection.spriteDefinitions[0].name = "AP_ITEM";
 
         _spriteCollectionData = tk2dSpriteCollectionData.CreateFromTexture(
             LoadImageAsTexture("multi-images.png"),
@@ -154,14 +159,31 @@ public static class Game
     {
         var path = $"{DataDir}/{filename}";
         var bytes = File.ReadAllBytes(path);
-        var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-        texture.LoadImage(bytes, false);
+        var texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+        texture.LoadImage(bytes, markNonReadable: true);
+        texture.filterMode = FilterMode.Bilinear;
         return texture;
     }
 
     public static void UpdateSprite(tk2dBaseSprite sprite)
     {
-        sprite.SetSprite(_baseSprite.Collection, 0);
+        // if (!_injectedSprite)
+        // {
+        //     Plugin.Logger.LogDebug("Injecting");
+        //     var newDefinitions = sprite.collection.spriteDefinitions.ToList();
+        //     newDefinitions.Add(sprite.collection.spriteDefinitions[0]);
+        //     sprite.collection.spriteDefinitions = newDefinitions.ToArray();
+        //     _injectedSprite = true;
+        //     _injectedSpriteId = sprite.collection.spriteDefinitions.Count - 1;
+        // }
+
+        var sr = sprite.GetComponent<SpriteRenderer>();
+        Plugin.Logger.LogDebug($"has sr: {sr != null}");
+        Plugin.Logger.LogDebug(sr?.sprite);
+
+        // sprite.SetSprite(_injectedSpriteId);
+        // sprite.SetSprite(_baseSprite.Collection, 1);
+        tk2dSprite.AddComponent(sprite.gameObject, _baseSprite.Collection, 0);
     }
 
     public static void UpdateAnimation(tk2dSpriteAnimator animator)
@@ -180,6 +202,7 @@ public static class Game
     }
 
     #endregion
+#endif
 
     #region Visuals
 
@@ -284,6 +307,14 @@ public static class Game
 
         var sprite = gameObject.GetComponent<tk2dBaseSprite>();
         sprite?.SetSprite(icon);
+        // if (icon == "AP_ITEM" && sprite != null)
+        // {
+        //     UpdateSprite(sprite);
+        // }
+        // else
+        // {
+        //     sprite?.SetSprite(icon);
+        // }
     }
 
     #endregion
@@ -599,12 +630,7 @@ public static class Game
             if (!Player.PlayerDataLocal.firstElevatorLit)
             {
                 Player.PlayerDataLocal.firstElevatorLit = true;
-
-                Player.PlayerDataLocal.elevatorsFound ??= new();
-                if (!Player.PlayerDataLocal.elevatorsFound.Contains(6629))
-                {
-                    Player.PlayerDataLocal.elevatorsFound.Add(6629);
-                }
+                Player.PlayerDataLocal.UnlockElevator(6629);
 
                 // blocks around first elevator
                 for (var i = 6641; i < 6647; i++)
@@ -668,6 +694,11 @@ public static class Game
         if (_saveData.SlotData.FastBloodChalice)
         {
             Player.Instance.regenInterval = 0.2f;
+        }
+
+        if (_saveData.SlotData.CheapKyuliRay)
+        {
+            Player.Instance.shiningRayCost = 50;
         }
 
         _saveInitialized = true;
@@ -822,6 +853,7 @@ public static class Game
             "SoulOrb_Big" => "Orb_Big_UI",
             "Orb_Idle_1" => "SecretsOrb_Idle",
             "Frog" => null,
+            "AP_ITEM" => null,
             _ => icon,
         };
     }
@@ -887,7 +919,7 @@ public static class Game
 
         if (itemName == "Attack +1")
         {
-            Player.PlayerDataLocal.strengthBonusShared += 1;
+            Player.PlayerDataLocal.IncreaseStrengthBonusBy(1);
         }
         else if (itemName.StartsWith("Max HP"))
         {
@@ -901,9 +933,7 @@ public static class Game
                 _ => 0,
             };
 
-            Player.PlayerDataLocal.healthItemBonus += bonus;
-            Player.PlayerDataLocal.currentHealth += bonus;
-            GameplayUIManager.Instance?.UpdateHealthBar(Player.Instance, true);
+            Player.Instance.IncrementMaxHealth(bonus, true, true);
         }
         else if (itemName.EndsWith("Orbs"))
         {
@@ -1007,10 +1037,11 @@ public static class Game
             if (_saveData.SlotData.RandomizeElevator)
             {
                 _saveData.ReceivedElevators.Add(elevatorId);
+                UpdateElevatorList();
             }
-            else if (!Player.PlayerDataLocal.elevatorsFound.Contains(elevatorId))
+            else
             {
-                Player.PlayerDataLocal.elevatorsFound.Add(elevatorId);
+                Player.PlayerDataLocal.UnlockElevator(elevatorId);
             }
         }
         else
@@ -1627,16 +1658,6 @@ public static class Game
         {
             _saveData.PendingLocations.Clear();
         }
-    }
-
-    public static void ShootKyuliRay()
-    {
-        if (!_saveDataFilled || !_saveData.SlotData.CheapKyuliRay)
-        {
-            return;
-        }
-
-        Player.PlayerDataLocal.currentOrbs += 450;
     }
 
     public static void Update()

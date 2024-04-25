@@ -49,7 +49,7 @@ public class Plugin : BasePlugin
 
         Logger = Log;
 
-        //Game.Awake();
+        // Game.Awake();
 
         var harmony = new Harmony("Archipelago");
         harmony.PatchAll(Assembly.GetExecutingAssembly());

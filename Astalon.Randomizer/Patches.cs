@@ -928,15 +928,3 @@ internal class Room_Bram_Patch
         Game.DeactivateBramRoom();
     }
 }
-
-[HarmonyPatch(typeof(WeaponKyuliOrbBow))]
-internal class WeaponKyuliOrbBow_Patch
-{
-    [HarmonyPatch(nameof(WeaponKyuliOrbBow.Shoot))]
-    [HarmonyPrefix]
-    public static void Shoot()
-    {
-        // Plugin.Logger.LogDebug("WeaponKyuliOrbBow.Shoot()");
-        Game.ShootKyuliRay();
-    }
-}
