@@ -1870,8 +1870,7 @@ public static class Game
             {
                 return false;
             }
-            else if (Player.PlayerDataLocal.discoveredRooms != null && Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId) &&
-                (checkpoint.Id != 2669 || GetObjectValue(4338, "wasActivated").ToLower() == "true"))
+            else if (Player.PlayerDataLocal.discoveredRooms != null && Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId))
             {
                 return true;
             }
