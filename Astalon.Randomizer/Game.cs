@@ -69,6 +69,10 @@ public static class Game
     public const int SaveObjectId = 333000;
     public const int SaveRoomId = -1;
 
+    private const string HealthRegex = @"^Max HP \+(\d+)$";
+    private const string AttackRegex = @"^Attack \+(\d+)$";
+    private const string OrbsRegex = @"^(\d+) Orbs$";
+
     public static Queue<ItemInfo> IncomingItems { get; } = new();
     public static Queue<ItemInfo> IncomingMessages { get; } = new();
     public static string DeathSource { get; private set; }
@@ -793,6 +797,11 @@ public static class Game
 
     public static string GetIcon(string itemName, ItemFlags flags = ItemFlags.None)
     {
+        if (Data.IconMap.TryGetValue(itemName, out var icon))
+        {
+            return icon;
+        }
+
         if (itemName.Contains("White Door"))
         {
             return "WhiteKey_1";
@@ -808,12 +817,17 @@ public static class Game
             return "RedKey_1";
         }
 
-        if (itemName.StartsWith("Max HP"))
+        if (Regex.IsMatch(itemName, HealthRegex))
         {
             return "Item_HealthStone_1";
         }
 
-        if (itemName.EndsWith("Orbs"))
+        if (Regex.IsMatch(itemName, AttackRegex))
+        {
+            return "Item_PowerStone_1";
+        }
+
+        if (Regex.IsMatch(itemName, OrbsRegex))
         {
             return "SoulOrb_Big";
         }
@@ -826,11 +840,6 @@ public static class Game
         if (itemName.Contains("Switch") || itemName.Contains("Crystal") || itemName.Contains("Face"))
         {
             return "Frog";
-        }
-
-        if (Data.IconMap.TryGetValue(itemName, out var icon))
-        {
-            return icon;
         }
 
         return flags == ItemFlags.Advancement ? "BlueOrb_1" : "Orb_Idle_1";
@@ -917,37 +926,24 @@ public static class Game
         var itemName = itemInfo.Name;
         Plugin.Logger.LogDebug($"Giving item: {itemName}");
 
-        if (itemName == "Attack +1")
+        if (Regex.IsMatch(itemName, AttackRegex))
         {
-            Player.PlayerDataLocal.IncreaseStrengthBonusBy(1);
+            var match = Regex.Match(itemName, AttackRegex);
+            var bonus = int.Parse(match.Groups[1].ToString());
+            Player.PlayerDataLocal.IncreaseStrengthBonusBy(bonus);
         }
-        else if (itemName.StartsWith("Max HP"))
+        else if (Regex.IsMatch(itemName, HealthRegex))
         {
-            var bonus = itemName switch
-            {
-                "Max HP +1" => 1,
-                "Max HP +2" => 2,
-                "Max HP +3" => 3,
-                "Max HP +4" => 4,
-                "Max HP +5" => 5,
-                _ => 0,
-            };
-
-            Player.Instance.IncrementMaxHealth(bonus, true, true);
+            var match = Regex.Match(itemName, HealthRegex);
+            var bonus = int.Parse(match.Groups[1].ToString());
+            Player.PlayerDataLocal.healthItemBonus += bonus;
+            Player.PlayerDataLocal.currentHealth += bonus;
+            GameplayUIManager.Instance?.UpdateHealthBar(Player.Instance, true);
         }
-        else if (itemName.EndsWith("Orbs"))
+        else if (Regex.IsMatch(itemName, OrbsRegex))
         {
-            var amount = itemName switch
-            {
-                "50 Orbs" => 50,
-                "100 Orbs" => 100,
-                "200 Orbs" => 200,
-                "500 Orbs" => 500,
-                "1000 Orbs" => 1000,
-                "2000 Orbs" => 2000,
-                _ => 0,
-            };
-
+            var match = Regex.Match(itemName, OrbsRegex);
+            var amount = int.Parse(match.Groups[1].ToString());
             Player.Instance.CollectOrbs(amount);
         }
         else if (Data.ItemMap.TryGetValue(itemName, out var itemId))
@@ -975,21 +971,6 @@ public static class Game
                     break;
                 case ItemProperties.ItemID.AthenasBell:
                     Player.Instance.SetCanChangeCharacterTo(true);
-                    break;
-            }
-        }
-        else if (itemName.EndsWith("Key"))
-        {
-            switch (itemName)
-            {
-                case "White Key":
-                    Player.PlayerDataLocal.AddKey(Key.KeyType.White);
-                    break;
-                case "Blue Key":
-                    Player.PlayerDataLocal.AddKey(Key.KeyType.Blue);
-                    break;
-                case "Red Key":
-                    Player.PlayerDataLocal.AddKey(Key.KeyType.Red);
                     break;
             }
         }
@@ -1067,6 +1048,15 @@ public static class Game
                 case "Bram":
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Bram, false);
+                    break;
+                case "White Key":
+                    Player.PlayerDataLocal.AddKey(Key.KeyType.White);
+                    break;
+                case "Blue Key":
+                    Player.PlayerDataLocal.AddKey(Key.KeyType.Blue);
+                    break;
+                case "Red Key":
+                    Player.PlayerDataLocal.AddKey(Key.KeyType.Red);
                     break;
                 default:
                     Plugin.Logger.LogWarning($"Item {itemInfo.Id} - {itemName} not found");
