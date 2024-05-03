@@ -21,6 +21,7 @@ public class Plugin : BasePlugin
     private static ConfigEntry<string> _configPassword;
     private static ConfigEntry<bool> _configShowConnection;
     private static ConfigEntry<bool> _configShowConsole;
+    private static ConfigEntry<bool> _configRunInBackground;
 
     public override void Load()
     {
@@ -37,6 +38,8 @@ public class Plugin : BasePlugin
             "Show or hide the AP connection info when connected");
         _configShowConsole = Config.Bind("UI", "showConsole", true,
             "Show or hide the AP message console at the top of the screen");
+        _configRunInBackground = Config.Bind("UI", "runInBackground", true,
+            "Control if the game should continue running when not in focus");
 
         if (!configEnabled.Value)
         {
@@ -46,6 +49,9 @@ public class Plugin : BasePlugin
 
         Settings.ShowConnection = _configShowConnection.Value;
         Settings.ShowConsole = _configShowConsole.Value;
+        Settings.RunInBackground = _configRunInBackground.Value;
+
+        Application.runInBackground = Settings.RunInBackground;
 
         Logger = Log;
 
@@ -83,6 +89,14 @@ public class Plugin : BasePlugin
         var enabled = !Settings.ShowConsole;
         _configShowConsole.Value = enabled;
         Settings.ShowConsole = enabled;
+    }
+
+    public static void ToggleRunInBackground()
+    {
+        var enabled = !Settings.RunInBackground;
+        _configRunInBackground.Value = enabled;
+        Settings.RunInBackground = enabled;
+        Application.runInBackground = enabled;
     }
 }
 

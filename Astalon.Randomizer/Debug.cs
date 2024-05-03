@@ -1,12 +1,122 @@
-﻿using Astalon.Randomizer.Archipelago;
+﻿using System;
+using Astalon.Randomizer.Archipelago;
 using UnityEngine;
 
 namespace Astalon.Randomizer;
 
 public static class Debug
 {
+    private const int ButtonWidth = 150;
+    private const int ButtonHeight = 20;
+    private const int ButtonPadding = 4;
+
+    internal struct Button(Func<string> label, Action callback)
+    {
+        public Func<string> Label = label;
+        public Action Callback = callback;
+    }
+
+    internal struct Group
+    {
+        public int Left;
+        public int Top;
+        public int Height;
+        public Button[] Buttons;
+
+        public Group(int left, int top, Button[] buttons)
+        {
+            Left = left < 0 ? Screen.width - ButtonWidth + left : left;
+            Height = (ButtonHeight * buttons.Length) + (ButtonPadding * (buttons.Length - 1));
+            Top = top < 0 ? Screen.height - Height + top : top;
+            Buttons = buttons;
+        }
+    }
+
     public static bool Hidden { get; private set; } = true;
     private static string _roomWarp = "";
+
+    private static readonly Group[] ButtonGroups = [
+        new(
+            left: (Screen.width / 2) - ButtonWidth - (ButtonPadding / 2),
+            top: -ButtonPadding,
+            buttons: [
+                new(
+                    label: () => "Die",
+                    callback: () => Game.TriggerDeath = true
+                ),
+                new(
+                    label: () => Plugin.ArchipelagoClient.DeathLinkEnabled() ? "Disable Death Link" : "Enable Death Link",
+                    callback: Plugin.ArchipelagoClient.ToggleDeathLink
+                ),
+                new(
+                    label: () => Settings.ShowConnection ? "Hide Connection" : "Show Connection",
+                    callback: Plugin.ToggleConnection
+                ),
+                new(
+                    label: () => Settings.ShowConsole ? "Hide Console" : "Show Console",
+                    callback: Plugin.ToggleConsole
+                ),
+                new(
+                    label: () => Settings.RunInBackground ? "Pause In Background" : "Run In Background",
+                    callback: Plugin.ToggleRunInBackground
+                ),
+            ]
+        ),
+        new(
+            left: (Screen.width / 2) + (ButtonPadding / 2),
+            top: -ButtonPadding,
+            buttons: [
+                new(
+                    label: () => Settings.Invincibility ? "Disable Invincibility" : "Enable Invincibility",
+                    callback: () => Settings.Invincibility = !Settings.Invincibility
+                ),
+                new(
+                    label: () => Settings.MaxDamage ? "Disable Max Damage" : "Enable Max Damage",
+                    callback: () => Settings.MaxDamage = !Settings.MaxDamage
+                ),
+                new(
+                    label: () => Settings.FreeKeys ? "Disable Free Keys" : "Enable Free Keys",
+                    callback: () => Settings.FreeKeys = !Settings.FreeKeys
+                ),
+                new(
+                    label: () => Settings.FreePurchases ? "Disable Free Purchases" : "Enable Free Purchases",
+                    callback: () => Settings.FreePurchases = !Settings.FreePurchases
+                ),
+                new(
+                    label: () => Settings.InfiniteJumps ? "Disable Infinite Jumps" : "Enable Infinite Jumps",
+                    callback: () => Settings.InfiniteJumps = !Settings.InfiniteJumps
+                ),
+                new(
+                    label: () => "Unlock All Elevators",
+                    callback: () => Game.UnlockElevators = true
+                ),
+            ]
+        ),
+#if DEBUG
+        new(
+            left: ButtonPadding,
+            top: -ButtonPadding,
+            buttons: [
+                new(
+                    label: () => "Dump Room Data",
+                    callback: () => Game.DumpRoom = true
+                ),
+                new(
+                    label: () => "Toggle Switches",
+                    callback: () => Game.ToggleSwitches = true
+                ),
+                new(
+                    label: () => "Toggle Objects",
+                    callback: () => Game.ToggleObjects = true
+                ),
+                new(
+                    label: () => "Reset Doors",
+                    callback: () => Game.ResetDoors = true
+                ),
+            ]
+        ),
+#endif
+    ];
 
     private static readonly string[,] WarpButtons =
     {
@@ -26,11 +136,6 @@ public static class Debug
 
     public static void OnGUI()
     {
-        if (!Plugin.ArchipelagoClient.Connected)
-        {
-            return;
-        }
-
         var e = Event.current;
         if (e.type == EventType.KeyUp && e.keyCode == KeyCode.F1)
         {
@@ -42,88 +147,43 @@ public static class Debug
             return;
         }
 
+        DebugButtons();
 
-        const int width = 150;
-        const int height = 20;
-        const int padding = 4;
-        var left1 = (Screen.width / 2) - width - (padding / 2);
-        var left2 = (Screen.width / 2) + (padding / 2);
-        var bottom = Screen.height - height - padding;
-        const int fullHeight = (height + padding) * 5;
-        var top = bottom - fullHeight;
-
-        GUI.BeginGroup(new(left1, top, width, fullHeight));
-
-        if (GUI.Button(new(0, 0, width, height), "Die"))
+        if (Plugin.ArchipelagoClient.Connected && ArchipelagoClient.ServerData.SlotData.CampfireWarp)
         {
-            Game.TriggerDeath = true;
+            CampfireWarps();
         }
 
-        if (GUI.Button(new(0, 25, width, height),
-                Plugin.ArchipelagoClient.DeathLinkEnabled() ? "Disable Death Link" : "Enable Death Link"))
+#if DEBUG
+        ExtraDebug();
+#endif
+    }
+
+    private static void DebugButtons()
+    {
+        foreach (var g in ButtonGroups)
         {
-            Plugin.ArchipelagoClient.ToggleDeathLink();
+            GUI.BeginGroup(new(g.Left, g.Top, ButtonWidth, g.Height));
+            var y = 0;
+
+            foreach (var b in g.Buttons)
+            {
+                if (GUI.Button(new(0, y, ButtonWidth, ButtonHeight), b.Label()))
+                {
+                    b.Callback();
+                }
+
+                y += ButtonHeight + ButtonPadding;
+            }
+
+            GUI.EndGroup();
         }
+    }
 
-        if (GUI.Button(new(0, 50, width, height),
-                Settings.ShowConnection ? "Hide Connection" : "Show Connection"))
-        {
-            Plugin.ToggleConnection();
-        }
-
-        if (GUI.Button(new(0, 75, width, height), Settings.ShowConsole ? "Hide Console" : "Show Console"))
-        {
-            Plugin.ToggleConsole();
-        }
-
-        if (GUI.Button(new(0, 100, width, height),
-                Settings.InfiniteJumps ? "Disable Infinite Jumps" : "Enable Infinite Jumps"))
-        {
-            Settings.InfiniteJumps = !Settings.InfiniteJumps;
-        }
-
-        GUI.EndGroup();
-
-        GUI.BeginGroup(new(left2, top, width, fullHeight));
-
-        if (GUI.Button(new(0, 0, width, height),
-                Settings.Invincibility ? "Disable Invincibility" : "Enable Invincibility"))
-        {
-            Settings.Invincibility = !Settings.Invincibility;
-        }
-
-        if (GUI.Button(new(0, 25, width, height),
-                Settings.MaxDamage ? "Disable Max Damage" : "Enable Max Damage"))
-        {
-            Settings.MaxDamage = !Settings.MaxDamage;
-        }
-
-        if (GUI.Button(new(0, 50, width, height),
-                Settings.FreeKeys ? "Disable Free Keys" : "Enable Free Keys"))
-        {
-            Settings.FreeKeys = !Settings.FreeKeys;
-        }
-
-        if (GUI.Button(new(0, 75, width, height),
-                Settings.FreePurchases ? "Disable Free Purchases" : "Enable Free Purchases"))
-        {
-            Settings.FreePurchases = !Settings.FreePurchases;
-        }
-
-        if (GUI.Button(new(0, 100, width, height), "Unlock All Elevators"))
-        {
-            Game.UnlockElevators = true;
-        }
-
-        GUI.EndGroup();
-
-        if (!ArchipelagoClient.ServerData.SlotData.CampfireWarp)
-        {
-            return;
-        }
-
-        GUI.BeginGroup(new(padding * 2, 124, WarpButtons.GetLength(1) * (width + padding),
-            WarpButtons.GetLength(0) * (height + padding)));
+    private static void CampfireWarps()
+    {
+        GUI.BeginGroup(new(ButtonPadding * 2, 124, WarpButtons.GetLength(1) * (ButtonWidth + ButtonPadding),
+            WarpButtons.GetLength(0) * (ButtonHeight + ButtonPadding)));
 
         var y = 0;
 
@@ -135,40 +195,23 @@ public static class Debug
             {
                 var label = WarpButtons[i, j];
 
-                if (label != null && Game.CanWarp(label) && GUI.Button(new(x, y, width, height), label))
+                if (label != null && Game.CanWarp(label) && GUI.Button(new(x, y, ButtonWidth, ButtonHeight), label))
                 {
                     Game.WarpDestination = label;
                 }
 
-                x += width + padding;
+                x += ButtonWidth + ButtonPadding;
             }
 
-            y += height + padding;
+            y += ButtonHeight + ButtonPadding;
         }
 
         GUI.EndGroup();
 
-#if DEBUG
-        if (GUI.Button(new(8, bottom - 25, width, height), "Dump Room Data"))
-        {
-            Game.DumpRoom = true;
-        }
+    }
 
-        if (GUI.Button(new(8, bottom - 50, width, height), "Toggle Switches"))
-        {
-            Game.ToggleSwitches = true;
-        }
-
-        if (GUI.Button(new(8, bottom - 75, width, height), "Toggle Objects"))
-        {
-            Game.ToggleObjects = true;
-        }
-
-        if (GUI.Button(new(8, bottom - 100, width, height), "Reset Doors"))
-        {
-            Game.ResetDoors = true;
-        }
-
+    private static void ExtraDebug()
+    {
         if (GUI.Button(new(1000, 500, 50, 20), "Up"))
         {
             Game.MoveDirection = "up";
@@ -202,6 +245,5 @@ public static class Debug
                 // ignored
             }
         }
-#endif
     }
 }

@@ -4,6 +4,7 @@ public static class Settings
 {
     public static bool ShowConnection { get; set; }
     public static bool ShowConsole { get; set; }
+    public static bool RunInBackground { get; set; }
 
     public static bool Invincibility { get; set; }
     public static bool MaxDamage { get; set; }
