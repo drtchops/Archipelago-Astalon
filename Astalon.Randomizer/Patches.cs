@@ -337,6 +337,20 @@ internal class PlayerData_Patch
 
         return true;
     }
+
+    [HarmonyPatch(nameof(PlayerData.ElevatorFound))]
+    [HarmonyPrefix]
+    public static bool ElevatorFound(int roomID, ref bool __result)
+    {
+        // Plugin.Logger.LogDebug($"PlayerData.ElevatorFound({roomID})");
+        if (Game.TryElevatorFound(roomID, out var result))
+        {
+            __result = result;
+            return false;
+        }
+
+        return true;
+    }
 }
 
 [HarmonyPatch(typeof(Player))]
@@ -872,6 +886,29 @@ internal class SwitchableObject_Patch
 [HarmonyPatch(typeof(Elevator))]
 internal class Elevator_Patch
 {
+    [HarmonyPatch(nameof(Elevator.Activate))]
+    [HarmonyPrefix]
+    public static void Activate(Elevator __instance)
+    {
+        Plugin.Logger.LogDebug($"Elevator.Activate({__instance.actorID}, {__instance.room?.roomID}, {__instance.playerInElevator})");
+        if (Player.Instance.isInElevator)
+        {
+            Game.ElevatorUnlocked(__instance.room?.roomID ?? -1);
+        }
+        else
+        {
+            Game.ActivateElevator(__instance.room?.roomID ?? -1);
+        }
+    }
+
+    [HarmonyPatch(nameof(Elevator.Deactivate))]
+    [HarmonyPrefix]
+    public static void Deactivate(Elevator __instance)
+    {
+        Plugin.Logger.LogDebug($"Elevator.Deactivate({__instance.actorID}, {__instance.room?.roomID})");
+        Game.DeactivateElevator();
+    }
+
     [HarmonyPatch(nameof(Elevator.UnlockElevator))]
     [HarmonyPrefix]
     public static void UnlockElevator(Elevator __instance)

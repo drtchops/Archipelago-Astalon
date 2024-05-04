@@ -28,6 +28,7 @@ public struct SaveData
     public List<string> PendingLocations { get; set; }
     public List<DealProperties.DealID> ReceivedDeals { get; set; }
     public List<int> ReceivedElevators { get; set; }
+    public List<int> CheckedElevators { get; set; }
     public bool ReceivedCyclopsKey { get; set; }
     public bool ReceivedCrown { get; set; }
     public bool CheckedCyclopsIdol { get; set; }
@@ -100,6 +101,7 @@ public static class Game
     private static int _warpCooldown;
     private static bool _activatingZeekRoom;
     private static bool _activatingBramRoom;
+    private static int _activatingElevator = -1;
 
 #if DEBUG
     private static tk2dBaseSprite _baseSprite;
@@ -500,6 +502,11 @@ public static class Game
             return;
         }
 
+        _saveData.PendingLocations ??= [];
+        _saveData.ReceivedDeals ??= [];
+        _saveData.ReceivedElevators ??= [];
+        _saveData.CheckedElevators ??= [];
+
         _saveValid = true;
         _saveDataFilled = true;
 
@@ -518,6 +525,7 @@ public static class Game
             PendingLocations = [],
             ReceivedDeals = [],
             ReceivedElevators = [],
+            CheckedElevators = [],
         };
     }
 
@@ -635,6 +643,10 @@ public static class Game
             {
                 Player.PlayerDataLocal.firstElevatorLit = true;
                 Player.PlayerDataLocal.UnlockElevator(6629);
+                if (_saveData.SlotData.FreeApexElevator)
+                {
+                    Player.PlayerDataLocal.UnlockElevator(4109);
+                }
 
                 // blocks around first elevator
                 for (var i = 6641; i < 6647; i++)
@@ -1079,6 +1091,7 @@ public static class Game
         if ((!_saveData.SlotData.FreeApexElevator || roomId != 4109) && Data.ElevatorToLocation.TryGetValue(roomId, out var location))
         {
             SendLocation(location);
+            _saveData.CheckedElevators.Add(roomId);
         }
     }
 
@@ -1335,6 +1348,24 @@ public static class Game
         return false;
     }
 
+    public static bool TryElevatorFound(int roomId, out bool result)
+    {
+        result = false;
+
+        if (!_saveDataFilled || !_saveData.SlotData.RandomizeElevator || _activatingElevator != roomId)
+        {
+            return false;
+        }
+
+        if ((!_saveData.SlotData.FreeApexElevator || roomId != 4109) && Data.ElevatorToLocation.ContainsKey(roomId))
+        {
+            result = _saveData.CheckedElevators.Contains(roomId);
+            return true;
+        }
+
+        return false;
+    }
+
     public static void MakeCharacterDealsUnavailable()
     {
         if (!_saveDataFilled)
@@ -1443,11 +1474,6 @@ public static class Game
 
     public static void DeactivateZeekRoom()
     {
-        if (!_saveDataFilled)
-        {
-            return;
-        }
-
         _activatingZeekRoom = false;
     }
 
@@ -1463,12 +1489,22 @@ public static class Game
 
     public static void DeactivateBramRoom()
     {
+        _activatingBramRoom = false;
+    }
+
+    public static void ActivateElevator(int roomId)
+    {
         if (!_saveDataFilled)
         {
             return;
         }
 
-        _activatingBramRoom = false;
+        _activatingElevator = roomId;
+    }
+
+    public static void DeactivateElevator()
+    {
+        _activatingElevator = -1;
     }
 
     public static bool CollectItem(ItemProperties.ItemID itemId)
