@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using Astalon.Randomizer.Archipelago;
+﻿using Astalon.Randomizer.Archipelago;
 using HarmonyLib;
 using I2.Loc;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Il2CppSystem.Collections.Generic;
 using UnityEngine;
 
 // ReSharper disable InconsistentNaming
@@ -567,6 +568,19 @@ internal class GameplayUIManager_Patch
             __instance.confirmPurchaseDealTitle.text = title;
         }
     }
+
+    [HarmonyPatch(nameof(GameplayUIManager.TriggerFullScreen))]
+    [HarmonyPrefix]
+    public static void TriggerFullScreen(ref Il2CppArrayBase<Dialogue> dialogueSequence)
+    {
+        Plugin.Logger.LogDebug("GameplayUIManager.TriggerFullScreen()");
+        if (dialogueSequence.Length == 5 && dialogueSequence[0].dialogueLine.StartsWith("We traveled through hell to get here"))
+        {
+            List<Dialogue> newDialogue = new();
+            newDialogue.Add(new("Good luck, have fun!"));
+            dialogueSequence = newDialogue.ToArray();
+        }
+    }
 }
 
 [HarmonyPatch(typeof(Cutscene))]
@@ -599,14 +613,79 @@ internal class CutsceneManager_Patch
     }
 }
 
-[HarmonyPatch(typeof(CS_Scene3), nameof(CS_Scene3.PlayScene))]
-[HarmonyPatch(typeof(CS_Scene4), nameof(CS_Scene4.PlayScene))]
-[HarmonyPatch(typeof(CS_Scene9), nameof(CS_Scene9.PlayScene))]
-internal class CS_Scene_Patch
+[HarmonyPatch(typeof(CS_Scene3._PlayScene_d__4))]
+class CS_Scene3_PlayScene_Patch
 {
-    public static void Prefix(object __instance)
+    [HarmonyPatch(nameof(CS_Scene3._PlayScene_d__4.MoveNext))]
+    [HarmonyPrefix]
+    static bool MoveNext(ref bool __result)
     {
-        Plugin.Logger.LogDebug($"{__instance.GetType()}.PlayScene()");
+        Plugin.Logger.LogDebug("CS_Scene3._PlayScene_d__4.MoveNext()");
+
+        if (Game.ShouldSkipCutscenes())
+        {
+            __result = false;
+            return false;
+        }
+
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(SplashScreen._StartDeveloperSplashScreen_d__5))]
+class SplashScreen_StartDeveloperSplashScreen_Patch
+{
+    [HarmonyPatch(nameof(SplashScreen._StartDeveloperSplashScreen_d__5.MoveNext))]
+    [HarmonyPrefix]
+    static bool MoveNext(ref bool __result)
+    {
+        Plugin.Logger.LogDebug("SplashScreen._StartDeveloperSplashScreen_d__5.MoveNext()");
+
+        if (Settings.SkipIntroScreens)
+        {
+            __result = false;
+            return false;
+        }
+
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(SplashScreen._StartPublisherSplashScreen_d__6))]
+class SplashScreen_StartPublisherSplashScreen_Patch
+{
+    [HarmonyPatch(nameof(SplashScreen._StartPublisherSplashScreen_d__6.MoveNext))]
+    [HarmonyPrefix]
+    static bool MoveNext(ref bool __result)
+    {
+        Plugin.Logger.LogDebug("SplashScreen._StartPublisherSplashScreen_d__6.MoveNext()");
+
+        if (Settings.SkipIntroScreens)
+        {
+            __result = false;
+            return false;
+        }
+
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(SeizureWarningScreen._StartScreen_d__5))]
+class SeizureWarningScreen_StartScreen_Patch
+{
+    [HarmonyPatch(nameof(SeizureWarningScreen._StartScreen_d__5.MoveNext))]
+    [HarmonyPrefix]
+    static bool MoveNext(ref bool __result)
+    {
+        Plugin.Logger.LogDebug("SeizureWarningScreen._StartScreen_d__5.MoveNext()");
+
+        if (Settings.SkipIntroScreens)
+        {
+            __result = false;
+            return false;
+        }
+
+        return true;
     }
 }
 

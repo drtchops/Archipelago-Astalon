@@ -22,6 +22,7 @@ public class Plugin : BasePlugin
     private static ConfigEntry<bool> _configShowConnection;
     private static ConfigEntry<bool> _configShowConsole;
     private static ConfigEntry<bool> _configRunInBackground;
+    private static ConfigEntry<bool> _configSkipIntroScenes;
 
     public override void Load()
     {
@@ -40,6 +41,8 @@ public class Plugin : BasePlugin
             "Show or hide the AP message console at the top of the screen");
         _configRunInBackground = Config.Bind("UI", "runInBackground", true,
             "Control if the game should continue running when not in focus");
+        _configSkipIntroScenes = Config.Bind("UI", "skipIntroScenes", true,
+            "Whether to automatically skip the intro screens when opening the game");
 
         if (!configEnabled.Value)
         {
@@ -50,6 +53,7 @@ public class Plugin : BasePlugin
         Settings.ShowConnection = _configShowConnection.Value;
         Settings.ShowConsole = _configShowConsole.Value;
         Settings.RunInBackground = _configRunInBackground.Value;
+        Settings.SkipIntroScreens = _configSkipIntroScenes.Value;
 
         Application.runInBackground = Settings.RunInBackground;
 

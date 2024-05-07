@@ -1,12 +1,15 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Archipelago.MultiClient.Net.Enums;
 using Astalon.Randomizer.Archipelago;
+using BepInEx.Unity.IL2CPP.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using PathologicalGames;
 using UnityEngine;
 
 namespace Astalon.Randomizer;
@@ -99,6 +102,7 @@ public static class Game
     private static SaveData _saveData;
     private static int _deathCounter = -1;
     private static int _warpCooldown;
+    private static bool _isWarping;
     private static bool _activatingZeekRoom;
     private static bool _activatingBramRoom;
     private static int _activatingElevator = -1;
@@ -1569,6 +1573,8 @@ public static class Game
                Data.ItemToDeal.ContainsValue(dealId);
     }
 
+    public static bool ShouldSkipCutscenes() => _saveDataFilled && _saveData.SlotData.SkipCutscenes;
+
     public static bool IsDealReceived(DealProperties.DealID dealId)
     {
         if (!_saveDataFilled)
@@ -1926,27 +1932,32 @@ public static class Game
         var destination = WarpDestination;
         WarpDestination = null;
 
-        if (Player.Instance == null || Player.PlayerDataLocal == null || Player.Instance.isInElevator ||
-            _warpCooldown > 0)
+        if (Player.Instance == null ||
+            !Player.Instance.gameObject.active ||
+            Player.PlayerDataLocal == null ||
+            Player.Instance.isInElevator ||
+            !Player.Instance.allowRoomTransition ||
+            (GameplayUIManager.Instance?.InGameMenuOpen ?? false) ||
+            (GameplayUIManager.Instance?.FullMapOpen ?? false) ||
+            _isWarping)
         {
             return;
         }
 
-        Vector3 playerPos;
-        Vector2 cameraPos;
+        Vector2 targetDestination;
+        Room targetRoom;
 
         if (destination == "Last Checkpoint")
         {
-            var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID);
-            playerPos = new(Player.PlayerDataLocal.lastCheckpointX, Player.PlayerDataLocal.lastCheckpointY, 0);
-            cameraPos = room.roomInitialPosition;
+            targetRoom = GameManager.GetRoomFromID(Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID);
+            targetDestination = new(Player.PlayerDataLocal.lastCheckpointX, Player.PlayerDataLocal.lastCheckpointY);
         }
         else if (Data.Checkpoints.TryGetValue(destination, out var checkpoint))
         {
             if (CanWarp(destination))
             {
-                playerPos = checkpoint.PlayerPos;
-                cameraPos = checkpoint.CameraPos;
+                targetRoom = GameManager.GetRoomFromID(checkpoint.RoomId);
+                targetDestination = checkpoint.PlayerPos;
             }
             else
             {
@@ -1960,10 +1971,57 @@ public static class Game
             return;
         }
 
-        Player.Instance.transform.position = playerPos;
-        CameraManager.MoveCameraTo(cameraPos);
-        AudioManager.Play("thunder");
+        _isWarping = true;
+        GameManager.Instance.StartCoroutine(Warp_Routine(targetDestination, targetRoom));
+    }
+
+    private static IEnumerator Warp_Routine(Vector2 targetDestination, Room targetRoom)
+    {
+        var currentRoom = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
+        Player.Instance.liftableObject?.Object_Throw();
+        Player.Instance.HidePlayer();
+        CameraManager.Flash(NESPalette.White, 0.02f, 0f, false);
+        var lightning = PoolManager.Pools["Particles"].Spawn("Lightning");
+        lightning.position = new(
+            Player.Instance.selfTransform.position.x,
+            Player.Instance.selfTransform.position.y + lightning.GetComponent<BoxCollider2D>().size.y / 2f,
+            Player.Instance.selfTransform.position.z
+        );
         AudioManager.Play("wall-gem");
-        _warpCooldown = 60;
+        yield return new WaitForSeconds(0.2f);
+
+        targetRoom.ActivateInisde();
+        targetRoom.ActivateRoomSpecificOptions();
+        CameraManager.MoveCameraTo(targetRoom);
+        currentRoom.PreDeactivateInisde();
+        currentRoom.DeactivateInisde();
+        yield return new WaitForSeconds(0.5f);
+
+        var emptyAutoKill = PoolManager.Pools["Particles"].Spawn("EmptyAutoKill");
+        emptyAutoKill.position = targetDestination;
+        GameManager.ReparentToWorld(emptyAutoKill);
+        var component = emptyAutoKill.GetComponent<KillSelfAfter>();
+        component.clipName = "Teleport_Charge2";
+        component.Activate();
+        yield return new WaitForSeconds(1f);
+
+        Player.Instance.AllowRoomTransition(false);
+        Player.Instance.AssignRoom(targetRoom);
+        Player.Instance.selfTransform.position = targetDestination;
+        CameraManager.Flash(NESPalette.White, 0.02f, 0f, false);
+        lightning = PoolManager.Pools["Particles"].Spawn("Lightning");
+        lightning.position = new(
+            Player.Instance.selfTransform.position.x,
+            Player.Instance.selfTransform.position.y + lightning.GetComponent<BoxCollider2D>().size.y / 2f,
+            Player.Instance.selfTransform.position.z
+        );
+        AudioManager.Play("wall-gem");
+        Player.Instance.ResetMaterial();
+        Player.Instance.ShowPlayer(true, true);
+        yield return new WaitForSeconds(0.1f);
+
+        Player.Instance.AllowRoomTransition(true);
+        _isWarping = false;
+        yield break;
     }
 }
