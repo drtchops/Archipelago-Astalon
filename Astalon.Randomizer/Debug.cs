@@ -149,7 +149,7 @@ public static class Debug
 
         DebugButtons();
 
-        if (Plugin.ArchipelagoClient.Connected && ArchipelagoClient.ServerData.SlotData.CampfireWarp)
+        if (Game.CampfireWarpsEnabled())
         {
             CampfireWarps();
         }

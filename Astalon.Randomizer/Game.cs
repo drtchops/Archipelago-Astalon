@@ -721,6 +721,11 @@ public static class Game
             Player.Instance.shiningRayCost = 50;
         }
 
+        // maybe for future version
+        // Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.BlackKnight);
+        // Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Gargoyle);
+        // Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.OldMan);
+
         _saveInitialized = true;
     }
 
@@ -1575,6 +1580,8 @@ public static class Game
 
     public static bool ShouldSkipCutscenes() => _saveDataFilled && _saveData.SlotData.SkipCutscenes;
 
+    public static bool CampfireWarpsEnabled() => _saveDataFilled && _saveData.SlotData.CampfireWarp;
+
     public static bool IsDealReceived(DealProperties.DealID dealId)
     {
         if (!_saveDataFilled)
@@ -1978,7 +1985,8 @@ public static class Game
     private static IEnumerator Warp_Routine(Vector2 targetDestination, Room targetRoom)
     {
         var currentRoom = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
-        Player.Instance.liftableObject?.Object_Throw();
+        Player.Instance.liftableObject?.Object_Drop();
+        Player.Instance.SetIsInLadder(false, null);
         Player.Instance.HidePlayer();
         CameraManager.Flash(NESPalette.White, 0.02f, 0f, false);
         var lightning = PoolManager.Pools["Particles"].Spawn("Lightning");
