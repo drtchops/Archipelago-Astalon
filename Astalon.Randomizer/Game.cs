@@ -32,6 +32,7 @@ public struct SaveData
     public List<DealProperties.DealID> ReceivedDeals { get; set; }
     public List<int> ReceivedElevators { get; set; }
     public List<int> CheckedElevators { get; set; }
+    public List<int> VisitedCampfires { get; set; }
     public bool ReceivedCyclopsKey { get; set; }
     public bool ReceivedCrown { get; set; }
     public bool CheckedCyclopsIdol { get; set; }
@@ -218,12 +219,7 @@ public static class Game
 
     public static void UpdateItem(Item item)
     {
-        if (!_saveDataFilled)
-        {
-            return;
-        }
-
-        if (item.itemProperties?.itemID == null)
+        if (!_saveDataFilled || !_saveData.SlotData.RandomizeKeyItems || item.itemProperties?.itemID == null)
         {
             return;
         }
@@ -510,6 +506,7 @@ public static class Game
         _saveData.ReceivedDeals ??= [];
         _saveData.ReceivedElevators ??= [];
         _saveData.CheckedElevators ??= [];
+        _saveData.VisitedCampfires ??= [];
 
         _saveValid = true;
         _saveDataFilled = true;
@@ -530,6 +527,7 @@ public static class Game
             ReceivedDeals = [],
             ReceivedElevators = [],
             CheckedElevators = [],
+            VisitedCampfires = [],
         };
     }
 
@@ -561,7 +559,7 @@ public static class Game
             _saveData.SlotData = slotData;
             _saveDataFilled = true;
 
-            if (slotData.RandomizeCharacters != RandomizeCharacters.Vanilla)
+            if (slotData.RandomizeCharacters)
             {
                 if (!slotData.StartingCharacters.Contains("Algus"))
                 {
@@ -647,7 +645,7 @@ public static class Game
             {
                 Player.PlayerDataLocal.firstElevatorLit = true;
                 Player.PlayerDataLocal.UnlockElevator(6629);
-                if (_saveData.SlotData.FreeApexElevator)
+                if (_saveData.SlotData.ApexElevator == ApexElevator.Vanilla)
                 {
                     Player.PlayerDataLocal.UnlockElevator(4109);
                 }
@@ -1097,7 +1095,7 @@ public static class Game
             return;
         }
 
-        if ((!_saveData.SlotData.FreeApexElevator || roomId != 4109) && Data.ElevatorToLocation.TryGetValue(roomId, out var location))
+        if ((roomId != 4109 || _saveData.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.TryGetValue(roomId, out var location))
         {
             SendLocation(location);
             _saveData.CheckedElevators.Add(roomId);
@@ -1117,8 +1115,7 @@ public static class Game
 
             foreach (var elevatorId in Player.PlayerDataLocal.elevatorsFound)
             {
-                if (elevatorId != 6629 && (elevatorId != 4109 || !_saveData.SlotData.FreeApexElevator) &&
-                    !_saveData.ReceivedElevators.Contains(elevatorId))
+                if (elevatorId != 6629 && (elevatorId != 4109 || _saveData.SlotData.ApexElevator != ApexElevator.Vanilla) && !_saveData.ReceivedElevators.Contains(elevatorId))
                 {
                     elevators.Remove(elevatorId);
                 }
@@ -1137,22 +1134,32 @@ public static class Game
                 elevators.Add(6629);
             }
 
-            if (_saveData.SlotData.FreeApexElevator && !Player.PlayerDataLocal.elevatorsFound.Contains(4109))
+            if (_saveData.SlotData.ApexElevator == ApexElevator.Vanilla && !Player.PlayerDataLocal.elevatorsFound.Contains(4109))
             {
                 elevators.Add(4109);
             }
 
             Player.PlayerDataLocal.elevatorsFound = elevators;
         }
-        else if (!_saveData.SlotData.FreeApexElevator && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
+        else if (_saveData.SlotData.ApexElevator != ApexElevator.Vanilla && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
         {
             Player.PlayerDataLocal.elevatorsFound.Remove(4109);
         }
     }
 
+    public static void CampfireVisited(int id)
+    {
+        if (!_saveDataFilled || _saveData.VisitedCampfires.Contains(id))
+        {
+            return;
+        }
+
+        _saveData.VisitedCampfires.Add(id);
+    }
+
     public static bool CharacterUnlocked(CharacterProperties.Character character)
     {
-        if (!_saveDataFilled || !_saveInitialized || ReceivingItem || _saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
+        if (!_saveDataFilled || !_saveInitialized || ReceivingItem || !_saveData.SlotData.RandomizeCharacters)
         {
             return false;
         }
@@ -1189,7 +1196,7 @@ public static class Game
 
     public static bool TryGetItemLocation(ItemProperties.ItemID itemId, out string location)
     {
-        if (!_saveDataFilled)
+        if (!_saveDataFilled || !_saveData.SlotData.RandomizeKeyItems)
         {
             location = null;
             return false;
@@ -1292,7 +1299,7 @@ public static class Game
     {
         result = false;
 
-        if (!_saveDataFilled || !_activatingZeekRoom)
+        if (!_saveDataFilled || !_saveData.SlotData.RandomizeKeyItems || !_activatingZeekRoom)
         {
             return false;
         }
@@ -1331,9 +1338,9 @@ public static class Game
 
         if (_activatingZeekRoom && character == CharacterProperties.Character.Zeek)
         {
-            if (_saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
+            if (!_saveData.SlotData.RandomizeCharacters)
             {
-                if (_saveData.CheckedCyclopsIdol)
+                if (_saveData.CheckedCyclopsIdol || !_saveData.SlotData.RandomizeKeyItems)
                 {
                     return false;
                 }
@@ -1348,7 +1355,7 @@ public static class Game
             return true;
         }
 
-        if (_activatingBramRoom && character == CharacterProperties.Character.Bram && _saveData.SlotData.RandomizeCharacters != RandomizeCharacters.Vanilla)
+        if (_activatingBramRoom && character == CharacterProperties.Character.Bram && _saveData.SlotData.RandomizeCharacters)
         {
             result = _saveData.CheckedBram;
             return true;
@@ -1366,7 +1373,7 @@ public static class Game
             return false;
         }
 
-        if ((!_saveData.SlotData.FreeApexElevator || roomId != 4109) && Data.ElevatorToLocation.ContainsKey(roomId))
+        if ((roomId != 4109 || _saveData.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.ContainsKey(roomId))
         {
             result = _saveData.CheckedElevators.Contains(roomId);
             return true;
@@ -1447,12 +1454,12 @@ public static class Game
             return;
         }
 
-        if (room.roomID == 3728)
+        if (room.roomID == 3728 && _saveData.SlotData.RandomizeKeyItems)
         {
             Player.PlayerDataLocal.cyclopsDenKey = _saveData.ReceivedCyclopsKey;
         }
 
-        if (_saveData.SlotData.RandomizeCharacters == RandomizeCharacters.Vanilla)
+        if (!_saveData.SlotData.RandomizeCharacters)
         {
             return;
         }
@@ -1518,7 +1525,7 @@ public static class Game
 
     public static bool CollectItem(ItemProperties.ItemID itemId)
     {
-        if (!_saveDataFilled)
+        if (!_saveDataFilled || !_saveData.SlotData.RandomizeKeyItems)
         {
             return false;
         }
@@ -1581,6 +1588,21 @@ public static class Game
     public static bool ShouldSkipCutscenes() => _saveDataFilled && _saveData.SlotData.SkipCutscenes;
 
     public static bool CampfireWarpsEnabled() => _saveDataFilled && _saveData.SlotData.CampfireWarp;
+
+    public static bool ShouldUnlockDeal(DealProperties.DealID dealId)
+    {
+        if (!_saveDataFilled || !_saveData.SlotData.RandomizeCharacters)
+        {
+            return true;
+        }
+
+        if (dealId != DealProperties.DealID.Deal_SubMenu_Zeek && dealId != DealProperties.DealID.Deal_SubMenu_Bram)
+        {
+            return true;
+        }
+
+        return ReceivingItem;
+    }
 
     public static bool IsDealReceived(DealProperties.DealID dealId)
     {
@@ -1903,14 +1925,19 @@ public static class Game
 #else
     public static bool CanWarp(string destination)
     {
-        if (Player.PlayerDataLocal == null)
+        if (Player.PlayerDataLocal == null || !_saveDataFilled)
         {
             return false;
         }
 
         if (destination == "Last Checkpoint")
         {
-            return true;
+            return Player.PlayerDataLocal.lastCheckpointData != null && Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID != Player.PlayerDataLocal.currentRoomID;
+        }
+
+        if (destination == "Entrance")
+        {
+            return Player.PlayerDataLocal.currentRoomID != 5;
         }
 
         if (Data.Checkpoints.TryGetValue(destination, out var checkpoint))
@@ -1919,7 +1946,7 @@ public static class Game
             {
                 return false;
             }
-            else if (Player.PlayerDataLocal.discoveredRooms != null && Player.PlayerDataLocal.discoveredRooms.Contains(checkpoint.RoomId))
+            else if (_saveData.VisitedCampfires.Contains(checkpoint.Id))
             {
                 return true;
             }
@@ -1944,6 +1971,7 @@ public static class Game
             Player.PlayerDataLocal == null ||
             Player.Instance.isInElevator ||
             !Player.Instance.allowRoomTransition ||
+            Player.Instance.isDead ||
             (GameplayUIManager.Instance?.InGameMenuOpen ?? false) ||
             (GameplayUIManager.Instance?.FullMapOpen ?? false) ||
             _isWarping)

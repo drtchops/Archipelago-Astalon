@@ -7,12 +7,6 @@ using Newtonsoft.Json.Serialization;
 
 namespace Astalon.Randomizer.Archipelago;
 
-public enum Difficulty
-{
-    Easy = 0,
-    Hard = 1,
-}
-
 public enum Campaign
 {
     TearsOfTheEarth = 0,
@@ -21,13 +15,11 @@ public enum Campaign
     MonsterMode = 3,
 }
 
-public enum RandomizeCharacters
+public enum ApexElevator
 {
     Vanilla = 0,
-    Trio = 1,
-    Solo = 2,
-    All = 3,
-    Random = 4,
+    Included = 1,
+    Removed = 2,
 }
 
 [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
@@ -43,9 +35,9 @@ public struct ShopItem
 
 public class ArchipelagoSlotData
 {
-    public Difficulty Difficulty { get; set; }
     public Campaign Campaign { get; set; }
-    public RandomizeCharacters RandomizeCharacters { get; set; }
+    public bool RandomizeCharacters { get; set; }
+    public bool RandomizeKeyItems { get; set; }
     public bool RandomizeAttackPickups { get; set; }
     public bool RandomizeHealthPickups { get; set; }
     public bool RandomizeWhiteKeys { get; set; }
@@ -59,7 +51,7 @@ public class ArchipelagoSlotData
     public bool RandomizeBossOrbRewards { get; set; }
     public bool RandomizeMinibossOrbRewards { get; set; }
     public bool SkipCutscenes { get; set; }
-    public bool FreeApexElevator { get; set; }
+    public ApexElevator ApexElevator { get; set; }
     public int CostMultiplier { get; set; }
     public bool FastBloodChalice { get; set; }
     public bool CampfireWarp { get; set; }
@@ -78,9 +70,9 @@ public class ArchipelagoSlotData
     {
         var settings = (JObject)slotData["settings"];
 
-        Difficulty = ParseEnum<Difficulty>(settings, "difficulty");
         Campaign = ParseEnum<Campaign>(settings, "campaign");
-        RandomizeCharacters = ParseEnum<RandomizeCharacters>(settings, "randomize_characters");
+        RandomizeCharacters = ParseInt(settings, "randomize_characters") != 0;
+        RandomizeKeyItems = ParseBool(settings, "randomize_key_items", true);
         RandomizeAttackPickups = ParseBool(settings, "randomize_attack_pickups", true);
         RandomizeHealthPickups = ParseBool(settings, "randomize_health_pickups", true);
         RandomizeWhiteKeys = ParseBool(settings, "randomize_white_keys");
@@ -94,7 +86,7 @@ public class ArchipelagoSlotData
         RandomizeBossOrbRewards = ParseBool(settings, "randomize_boss_orb_rewards");
         RandomizeMinibossOrbRewards = ParseBool(settings, "randomize_miniboss_orb_rewards");
         SkipCutscenes = ParseBool(settings, "skip_cutscenes", true);
-        FreeApexElevator = ParseBool(settings, "free_apex_elevator", true);
+        ApexElevator = ParseEnum<ApexElevator>(settings, "free_apex_elevator");
         CostMultiplier = ParseInt(settings, "cost_multiplier", 100);
         FastBloodChalice = ParseBool(settings, "fast_blood_chalice", true);
         CampfireWarp = ParseBool(settings, "campfire_warp", true);

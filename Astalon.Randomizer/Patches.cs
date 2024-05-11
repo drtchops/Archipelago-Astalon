@@ -339,6 +339,14 @@ internal class PlayerData_Patch
         return true;
     }
 
+    [HarmonyPatch(nameof(PlayerData.MakeDealAvailable))]
+    [HarmonyPrefix]
+    public static bool MakeDealAvailable(DealProperties.DealID deal)
+    {
+        Plugin.Logger.LogDebug($"PlayerData.MakeDealAvailable({deal})");
+        return Game.ShouldUnlockDeal(deal);
+    }
+
     [HarmonyPatch(nameof(PlayerData.ElevatorFound))]
     [HarmonyPrefix]
     public static bool ElevatorFound(int roomID, ref bool __result)
@@ -401,6 +409,14 @@ internal class Player_Patch
     {
         Plugin.Logger.LogDebug("Player.ChangeCharacters()");
         return Game.CanCycleCharacter();
+    }
+
+    [HarmonyPatch(nameof(Player.SetCheckpoint))]
+    [HarmonyPrefix]
+    public static void SetCheckpoint(int _checkpointID)
+    {
+        Plugin.Logger.LogDebug($"Player.SetCheckpoint({_checkpointID})");
+        Game.CampfireVisited(_checkpointID);
     }
 }
 

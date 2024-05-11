@@ -131,7 +131,7 @@ public static class Debug
         { "RoA Elevator", "RoA Boss", null, null },
         { "SP 1", "SP 2", "The Apex", null },
         { "Catacombs Upper", "Catacombs Bow", "Catacombs Roots", "Catacombs Boss" },
-        { "Tower Roots", null, null, null },
+        { "Tower Roots", "Dev Room", null, null },
     };
 
     public static void OnGUI()
