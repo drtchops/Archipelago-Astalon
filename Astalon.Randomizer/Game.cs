@@ -1972,6 +1972,9 @@ public static class Game
             Player.Instance.isInElevator ||
             !Player.Instance.allowRoomTransition ||
             Player.Instance.isDead ||
+            Player.Instance.meteorInProgress ||
+            (Player.Instance.currentSubWeaponClass?.isShooting ?? false) ||
+            (Player.Instance.currentSubWeaponClass?.isAttacking ?? false) ||
             (GameplayUIManager.Instance?.InGameMenuOpen ?? false) ||
             (GameplayUIManager.Instance?.FullMapOpen ?? false) ||
             _isWarping)
