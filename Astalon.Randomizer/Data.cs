@@ -99,6 +99,7 @@ public static class Data
         { "Gorgon Eye (Red)", "Item_GorgonEyeRed" },
         { "Gorgon Eye (Blue)", "Item_GorgonEyeBlue" },
         { "Gorgon Eye (Green)", "Item_GorgonEyeGreen" },
+        { "Gorgon Eye (Gold)", "Item_GorgonEyeGreen" },
         { "Dead Maiden's Ring", "Item_DeadMaidensRing" },
         { "Linus' Map", "Item_LinusMap" },
         { "Athena's Bell", "Item_AthenasBell" },

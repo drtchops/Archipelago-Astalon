@@ -134,6 +134,29 @@ public static class Debug
         { "Tower Roots", "Dev Room", null, null },
     };
 
+    private static Texture2D _blackTexture;
+
+    private static Texture2D MakeTexture()
+    {
+        if (_blackTexture != null)
+        {
+            return _blackTexture;
+        }
+
+        var width = 128;
+        var height = 64;
+        var texture = new Texture2D(width, height);
+        var pixels = new Color[width * height];
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            pixels[i] = Color.black;
+        }
+        texture.SetPixels(pixels);
+        texture.Apply();
+        _blackTexture = texture;
+        return texture;
+    }
+
     public static void OnGUI()
     {
         var e = Event.current;
@@ -152,6 +175,11 @@ public static class Debug
         if (Game.CampfireWarpsEnabled())
         {
             CampfireWarps();
+        }
+
+        if (Game.IsEyeHunt())
+        {
+            GoalDisplay();
         }
 
 #if DEBUG
@@ -207,7 +235,6 @@ public static class Debug
         }
 
         GUI.EndGroup();
-
     }
 
     private static void ExtraDebug()
@@ -245,5 +272,16 @@ public static class Debug
                 // ignored
             }
         }
+    }
+
+    private static void GoalDisplay()
+    {
+        var eyes = Game.GoldEyesCollected();
+        var goal = Game.GoldEyeRequirement();
+
+        var style = new GUIStyle("box");
+        style.normal.textColor = eyes >= goal ? Color.green : Color.red;
+        style.normal.background = MakeTexture();
+        GUI.Box(new(Screen.width - 164, 124, 160, 25), $"Eye Hunt Goal: {eyes} / {goal}", style);
     }
 }

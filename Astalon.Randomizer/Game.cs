@@ -38,6 +38,7 @@ public struct SaveData
     public bool CheckedCyclopsIdol { get; set; }
     public bool CheckedZeek { get; set; }
     public bool CheckedBram { get; set; }
+    public int CollectedGoldEyes { get; set; }
 }
 
 [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
@@ -1045,6 +1046,9 @@ public static class Game
         {
             switch (itemName)
             {
+                case "Gorgon Eye (Gold)":
+                    _saveData.CollectedGoldEyes += 1;
+                    break;
                 case "Algus":
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Algus);
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Algus, false);
@@ -1297,29 +1301,39 @@ public static class Game
     {
         result = false;
 
-        if (!_saveDataFilled || !_saveData.SlotData.RandomizeKeyItems || !_activatingZeekRoom)
+        if (!_saveDataFilled)
         {
             return false;
         }
 
-        if (itemId == ItemProperties.ItemID.PrincesCrown)
+        if (Player.PlayerDataLocal.currentRoomID == 4112 && itemId == ItemProperties.ItemID.GorgonEyeGreen &&
+            _saveData.SlotData.Goal == Goal.EyeHunt && (Player.PlayerDataLocal.collectedItems?.Contains(ItemProperties.ItemID.GorgonEyeGreen) ?? false))
         {
-            if (!_saveData.CheckedCyclopsIdol)
-            {
-                result = false;
-            }
-            else
-            {
-                result = _saveData.ReceivedCrown;
-            }
-
+            result = _saveData.CollectedGoldEyes >= _saveData.SlotData.AdditionalEyesRequired;
             return true;
         }
 
-        if (itemId == ItemProperties.ItemID.ZeekItem)
+        if (_saveData.SlotData.RandomizeKeyItems && _activatingZeekRoom)
         {
-            result = _saveData.CheckedCyclopsIdol;
-            return true;
+            if (itemId == ItemProperties.ItemID.PrincesCrown)
+            {
+                if (!_saveData.CheckedCyclopsIdol)
+                {
+                    result = false;
+                }
+                else
+                {
+                    result = _saveData.ReceivedCrown;
+                }
+
+                return true;
+            }
+
+            if (itemId == ItemProperties.ItemID.ZeekItem)
+            {
+                result = _saveData.CheckedCyclopsIdol;
+                return true;
+            }
         }
 
         return false;
@@ -1586,6 +1600,12 @@ public static class Game
     public static bool ShouldSkipCutscenes() => _saveDataFilled && _saveData.SlotData.SkipCutscenes;
 
     public static bool CampfireWarpsEnabled() => _saveDataFilled && _saveData.SlotData.CampfireWarp;
+
+    public static bool IsEyeHunt() => _saveDataFilled && _saveData.SlotData.Goal == Goal.EyeHunt;
+
+    public static int GoldEyeRequirement() => _saveDataFilled ? _saveData.SlotData.AdditionalEyesRequired : 0;
+
+    public static int GoldEyesCollected() => _saveDataFilled ? _saveData.CollectedGoldEyes : 0;
 
     public static bool ShouldUnlockDeal(DealProperties.DealID dealId)
     {

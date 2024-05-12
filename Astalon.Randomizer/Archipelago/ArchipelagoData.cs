@@ -15,6 +15,12 @@ public enum Campaign
     MonsterMode = 3,
 }
 
+public enum Goal
+{
+    Vanilla = 0,
+    EyeHunt = 1,
+}
+
 public enum ApexElevator
 {
     Vanilla = 0,
@@ -36,6 +42,8 @@ public struct ShopItem
 public class ArchipelagoSlotData
 {
     public Campaign Campaign { get; set; }
+    public Goal Goal { get; set; }
+    public int AdditionalEyesRequired { get; set; }
     public bool RandomizeCharacters { get; set; }
     public bool RandomizeKeyItems { get; set; }
     public bool RandomizeAttackPickups { get; set; }
@@ -71,6 +79,8 @@ public class ArchipelagoSlotData
         var settings = (JObject)slotData["settings"];
 
         Campaign = ParseEnum<Campaign>(settings, "campaign");
+        Goal = ParseEnum<Goal>(settings, "goal");
+        AdditionalEyesRequired = ParseInt(settings, "additional_eyes_required");
         RandomizeCharacters = ParseInt(settings, "randomize_characters") != 0;
         RandomizeKeyItems = ParseBool(settings, "randomize_key_items", true);
         RandomizeAttackPickups = ParseBool(settings, "randomize_attack_pickups", true);
