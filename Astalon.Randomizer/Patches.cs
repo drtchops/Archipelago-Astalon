@@ -260,16 +260,10 @@ internal class PlayerData_Patch
     }
 
     [HarmonyPatch(nameof(PlayerData.UnlockElevator))]
-    [HarmonyPrefix]
-    public static void UnlockElevatorPre(int roomID)
-    {
-        Plugin.Logger.LogDebug($"PlayerData.UnlockElevatorPre({roomID})");
-    }
-
-    [HarmonyPatch(nameof(PlayerData.UnlockElevator))]
     [HarmonyPostfix]
-    public static void UnlockElevatorPost()
+    public static void UnlockElevator(int roomID)
     {
+        Plugin.Logger.LogDebug($"PlayerData.UnlockElevator({roomID})");
         Game.UpdateElevatorList();
     }
 
@@ -368,6 +362,13 @@ internal class Player_Patch
     [HarmonyPatch(nameof(Player.Damage))]
     [HarmonyPrefix]
     public static bool Damage()
+    {
+        return !Settings.Invincibility;
+    }
+
+    [HarmonyPatch(nameof(Player.ForceDamage))]
+    [HarmonyPrefix]
+    public static bool ForceDamage()
     {
         return !Settings.Invincibility;
     }

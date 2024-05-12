@@ -635,6 +635,7 @@ public static class Game
             Player.PlayerDataLocal.cs_bkbossintro1 = true;
             Player.PlayerDataLocal.cs_bkFinalToMedusa = true;
             Player.PlayerDataLocal.cs_finalPlatformRide = true;
+            Player.PlayerDataLocal.cs_ending1 = true;
             if (Player.PlayerDataLocal.epimetheusSequence == 0)
             {
                 Player.PlayerDataLocal.epimetheusSequence = 10;
@@ -644,11 +645,7 @@ public static class Game
             if (!Player.PlayerDataLocal.firstElevatorLit)
             {
                 Player.PlayerDataLocal.firstElevatorLit = true;
-                Player.PlayerDataLocal.UnlockElevator(6629);
-                if (_saveData.SlotData.ApexElevator == ApexElevator.Vanilla)
-                {
-                    Player.PlayerDataLocal.UnlockElevator(4109);
-                }
+                UpdateElevatorList();
 
                 // blocks around first elevator
                 for (var i = 6641; i < 6647; i++)
@@ -1111,9 +1108,10 @@ public static class Game
 
         if (_saveData.SlotData.RandomizeElevator)
         {
-            var elevators = Player.PlayerDataLocal.elevatorsFound.Clone();
+            var existingElevators = Player.PlayerDataLocal.elevatorsFound ?? new();
+            var elevators = existingElevators.Clone();
 
-            foreach (var elevatorId in Player.PlayerDataLocal.elevatorsFound)
+            foreach (var elevatorId in existingElevators)
             {
                 if (elevatorId != 6629 && (elevatorId != 4109 || _saveData.SlotData.ApexElevator != ApexElevator.Vanilla) && !_saveData.ReceivedElevators.Contains(elevatorId))
                 {
@@ -1123,25 +1121,25 @@ public static class Game
 
             foreach (var elevatorId in _saveData.ReceivedElevators)
             {
-                if (!Player.PlayerDataLocal.elevatorsFound.Contains(elevatorId))
+                if (!existingElevators.Contains(elevatorId))
                 {
                     elevators.Add(elevatorId);
                 }
             }
 
-            if (!Player.PlayerDataLocal.elevatorsFound.Contains(6629))
+            if (!existingElevators.Contains(6629))
             {
                 elevators.Add(6629);
             }
 
-            if (_saveData.SlotData.ApexElevator == ApexElevator.Vanilla && !Player.PlayerDataLocal.elevatorsFound.Contains(4109))
+            if (_saveData.SlotData.ApexElevator == ApexElevator.Vanilla && !existingElevators.Contains(4109))
             {
                 elevators.Add(4109);
             }
 
             Player.PlayerDataLocal.elevatorsFound = elevators;
         }
-        else if (_saveData.SlotData.ApexElevator != ApexElevator.Vanilla && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
+        else if (Player.PlayerDataLocal.elevatorsFound != null && _saveData.SlotData.ApexElevator != ApexElevator.Vanilla && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
         {
             Player.PlayerDataLocal.elevatorsFound.Remove(4109);
         }
@@ -1984,11 +1982,13 @@ public static class Game
 
         Vector2 targetDestination;
         Room targetRoom;
+        int checkpointId = -1;
 
         if (destination == "Last Checkpoint")
         {
             targetRoom = GameManager.GetRoomFromID(Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID);
             targetDestination = new(Player.PlayerDataLocal.lastCheckpointX, Player.PlayerDataLocal.lastCheckpointY);
+            checkpointId = Player.PlayerDataLocal.lastCheckpointData.checkpointID;
         }
         else if (Data.Checkpoints.TryGetValue(destination, out var checkpoint))
         {
@@ -1996,6 +1996,7 @@ public static class Game
             {
                 targetRoom = GameManager.GetRoomFromID(checkpoint.RoomId);
                 targetDestination = checkpoint.PlayerPos;
+                checkpointId = checkpoint.Id;
             }
             else
             {
@@ -2010,10 +2011,10 @@ public static class Game
         }
 
         _isWarping = true;
-        GameManager.Instance.StartCoroutine(Warp_Routine(targetDestination, targetRoom));
+        GameManager.Instance.StartCoroutine(Warp_Routine(targetDestination, targetRoom, checkpointId));
     }
 
-    private static IEnumerator Warp_Routine(Vector2 targetDestination, Room targetRoom)
+    private static IEnumerator Warp_Routine(Vector2 targetDestination, Room targetRoom, int checkpointId)
     {
         var currentRoom = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
         Player.Instance.liftableObject?.Object_Drop();
@@ -2061,6 +2062,11 @@ public static class Game
 
         Player.Instance.AllowRoomTransition(true);
         _isWarping = false;
+        foreach (var actor in targetRoom.GetActorsWithID(checkpointId))
+        {
+            var checkpoint = actor.GetComponent<SavePoint>();
+            checkpoint?.SaveGame();
+        }
         yield break;
     }
 }

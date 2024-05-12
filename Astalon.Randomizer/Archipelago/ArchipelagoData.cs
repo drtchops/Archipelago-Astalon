@@ -86,7 +86,7 @@ public class ArchipelagoSlotData
         RandomizeBossOrbRewards = ParseBool(settings, "randomize_boss_orb_rewards");
         RandomizeMinibossOrbRewards = ParseBool(settings, "randomize_miniboss_orb_rewards");
         SkipCutscenes = ParseBool(settings, "skip_cutscenes", true);
-        ApexElevator = ParseEnum<ApexElevator>(settings, "free_apex_elevator");
+        ApexElevator = ParseEnum<ApexElevator>(settings, "apex_elevator");
         CostMultiplier = ParseInt(settings, "cost_multiplier", 100);
         FastBloodChalice = ParseBool(settings, "fast_blood_chalice", true);
         CampfireWarp = ParseBool(settings, "campfire_warp", true);

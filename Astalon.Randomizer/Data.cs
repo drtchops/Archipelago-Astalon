@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Astalon.Randomizer;
 
-public readonly struct Checkpoint
+public readonly struct CheckpointData
 {
     public int Id { get; init; }
     public int RoomId { get; init; }
@@ -345,7 +345,7 @@ public static class Data
         { "Red Door (Dev Room)", (2598, 3276) },
     };
 
-    public static readonly Dictionary<string, Checkpoint> Checkpoints = new()
+    public static readonly Dictionary<string, CheckpointData> Checkpoints = new()
     {
         {
             "Entrance", new()
