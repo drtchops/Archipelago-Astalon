@@ -73,6 +73,34 @@ internal class Item_PlayerHeart_Patch
     }
 }
 
+[HarmonyPatch(typeof(Item_PlayerHeart._Gather_Routine_d__11))]
+internal class Item_PlayerHeart_Gather_Routine_Patch
+{
+    [HarmonyPatch(nameof(Item_PlayerHeart._Gather_Routine_d__11.MoveNext))]
+    [HarmonyPrefix]
+    public static bool MoveNext(Item_PlayerHeart._Gather_Routine_d__11 __instance)
+    {
+        if (!Game.ShouldSkipCutscenes())
+        {
+            return true;
+        }
+
+        for (int i = 0; i < __instance.__4__this.dropEmmiters.Length; i++)
+        {
+            __instance.__4__this.dropEmmiters[i].StopParticle();
+        }
+        __instance.__4__this.spriteDOTweenAnim.DOComplete();
+        Player.PlayerDataLocal.CollectHeart(__instance.__4__this.actorID);
+        __instance.__4__this.wasPickedUp = true;
+        __instance.__4__this.ResetData();
+        __instance.__4__this.SaveState();
+        __instance.__4__this.Deactivate();
+        Player.Instance.EnableController(false, true);
+        Player.Instance.SetPhysicsActive(true);
+        return false;
+    }
+}
+
 [HarmonyPatch(typeof(Item_PlayerStrength))]
 internal class Item_PlayerStrength_Patch
 {
@@ -97,6 +125,30 @@ internal class Item_PlayerStrength_Patch
     {
         Plugin.Logger.LogDebug($"Item_PlayerStrength.Activate({__instance}, {__instance.actorID})");
         Game.UpdateEntity(__instance.sprite.gameObject, __instance.actorID);
+    }
+}
+
+[HarmonyPatch(typeof(Item_PlayerStrength._Gather_Routine_d__11))]
+internal class Item_PlayerStrength_Gather_Routine_Patch
+{
+    [HarmonyPatch(nameof(Item_PlayerStrength._Gather_Routine_d__11.MoveNext))]
+    [HarmonyPrefix]
+    public static bool MoveNext(Item_PlayerStrength._Gather_Routine_d__11 __instance)
+    {
+        if (!Game.ShouldSkipCutscenes())
+        {
+            return true;
+        }
+
+        for (int i = 0; i < __instance.__4__this.dropEmmiters.Length; i++)
+        {
+            __instance.__4__this.dropEmmiters[i].StopParticle();
+        }
+        __instance.__4__this.spriteDOTweenAnim.DOComplete();
+        __instance.__4__this.Deactivate();
+        Player.Instance.EnableController(false, true);
+        Player.Instance.SetPhysicsActive(true);
+        return false;
     }
 }
 
@@ -421,8 +473,26 @@ internal class Player_Patch
     }
 }
 
+[HarmonyPatch(typeof(EnemyMiniboss._ColorScroll_d__17))]
+internal class EnemyMiniboss_ColorScroll_Patch
+{
+    [HarmonyPatch(nameof(EnemyMiniboss._ColorScroll_d__17.MoveNext))]
+    [HarmonyPrefix]
+    public static bool MoveNext(ref bool __result)
+    {
+        if (Game.ShouldSkipCutscenes())
+        {
+            GameManager.ResetTimeScale();
+            __result = false;
+            return false;
+        }
+
+        return true;
+    }
+}
+
 [HarmonyPatch(typeof(EnemyEntity))]
-internal class EnemyEntity_Damage_Patch
+internal class EnemyEntity_Patch
 {
     [HarmonyPatch(nameof(EnemyEntity.Damage))]
     [HarmonyPrefix]
