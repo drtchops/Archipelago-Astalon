@@ -15,6 +15,7 @@ public class Plugin : BasePlugin
 {
     public static ManualLogSource Logger { get; private set; }
     public static ArchipelagoClient ArchipelagoClient { get; private set; }
+    public static State State { get; set; }
 
     private static ConfigEntry<string> _configUri;
     private static ConfigEntry<string> _configSlotName;
@@ -64,7 +65,8 @@ public class Plugin : BasePlugin
         var harmony = new Harmony("Archipelago");
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-        ArchipelagoClient = new(_configUri.Value, _configSlotName.Value, _configPassword.Value);
+        State = new(_configUri.Value, _configSlotName.Value, _configPassword.Value);
+        ArchipelagoClient = new();
 
         Il2CppBase.Initialize(this);
 
@@ -76,9 +78,9 @@ public class Plugin : BasePlugin
         _configUri.Value = uri;
         _configSlotName.Value = slotName;
         _configPassword.Value = password;
-        ArchipelagoClient.ServerData.Uri = uri;
-        ArchipelagoClient.ServerData.SlotName = slotName;
-        ArchipelagoClient.ServerData.Password = password;
+        State.Uri = uri;
+        State.SlotName = slotName;
+        State.Password = password;
     }
 
     public static void ToggleConnection()
@@ -130,11 +132,6 @@ public class Il2CppBase : MonoBehaviour
         ArchipelagoConsole.OnGUI();
         Debug.OnGUI();
 
-        var right = Screen.width - 8;
-        var bottom = Screen.height - 8;
-        var left = right - 300;
-        var top = bottom - 120;
-
         if (Plugin.ArchipelagoClient.Connected)
         {
             ConnectionFocused = false;
@@ -164,23 +161,22 @@ public class Il2CppBase : MonoBehaviour
 
         var e = Event.current;
         var control = GUI.GetNameOfFocusedControl();
-        var pressedEnter = e.type == EventType.KeyUp && control is "uri" or "slotName" or "password" &&
-                           e.keyCode is KeyCode.KeypadEnter or KeyCode.Return;
+        var pressedEnter = e.type == EventType.KeyUp &&
+                            control is "uri" or "slotName" or "password" &&
+                            e.keyCode is KeyCode.KeypadEnter or KeyCode.Return;
 
         ConnectionFocused = control is "uri" or "slotName" or "password";
 
         GUI.SetNextControlName("uri");
-        var uri = GUI.TextField(new(134, 40, 150, 20), ArchipelagoClient.ServerData.Uri);
+        var uri = GUI.TextField(new(134, 40, 150, 20), Plugin.State.Uri);
         GUI.SetNextControlName("slotName");
-        var slotName = GUI.TextField(new(134, 60, 150, 20), ArchipelagoClient.ServerData.SlotName);
+        var slotName = GUI.TextField(new(134, 60, 150, 20), Plugin.State.SlotName);
         GUI.SetNextControlName("password");
-        var password = GUI.PasswordField(new(134, 80, 150, 20), ArchipelagoClient.ServerData.Password,
-            "*"[0]);
+        var password = GUI.PasswordField(new(134, 80, 150, 20), Plugin.State.Password, "*"[0]);
         Plugin.UpdateConfig(uri, slotName, password);
 
         var pressedButton = GUI.Button(new(4, 100, 100, 20), "Connect");
-        // requires that the player at least puts *something* in the slot name
-        if (!string.IsNullOrWhiteSpace(ArchipelagoClient.ServerData.SlotName) && (pressedEnter || pressedButton))
+        if (pressedEnter || pressedButton)
         {
             Plugin.ArchipelagoClient.Connect();
         }

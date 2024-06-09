@@ -4,6 +4,705 @@ using UnityEngine;
 
 namespace Astalon.Randomizer;
 
+public enum ApLocationId
+{
+    GtAlgus = 333150,
+    GtArias = 333151,
+    GtKyuli = 333152,
+    GtGorgonheart = 333000,
+    GtAncientsRing = 333001,
+    GtSword = 333002,
+    GtMap = 333003,
+    GtAscendantKey = 333004,
+    GtBanish = 333005,
+    GtVoid = 333006,
+    GtEyeRed = 333007,
+    GtAttack = 333008,
+    GtHp1Ring = 333009,
+    GtHp5Key = 333010,
+    GtWhiteKeyStart = 333011,
+    GtWhiteKeyRight = 333012,
+    GtWhiteKeyBoss = 333013,
+    GtBlueKeyBonesnake = 333014,
+    GtBlueKeyButt = 333015,
+    GtBlueKeyWall = 333016,
+    GtBlueKeyPot = 333017,
+    GtRedKey = 333018,
+    GtElevator2 = 333155,
+    GtSwitch2ndRoom = 333156,
+    GtSwitch1stCyclops = 333157,
+    GtSwitchSpikeTunnel = 333158,
+    GtSwitchButtAccess = 333159,
+    GtSwitchGh = 333160,
+    GtSwitchUpperPathBlocks = 333161,
+    GtSwitchUpperPathAccess = 333162,
+    GtSwitchCrosses = 333163,
+    GtSwitchGhShortcut = 333164,
+    GtSwitchAriasPath = 333165,
+    GtSwitchSwordAccess = 333166,
+    GtSwitchSwordBacktrack = 333167,
+    GtSwitchSword = 333168,
+    GtSwitchUpperArias = 333169,
+    GtCrystalLadder = 333170,
+    GtCrystalRota = 333171,
+    GtCrystalOldMan1 = 333172,
+    GtCrystalOldMan2 = 333173,
+    MechZeek = 333153,
+    MechBoots = 333019,
+    MechCloak = 333020,
+    MechCyclops = 333357,
+    MechEyeBlue = 333021,
+    MechAttackVolantis = 333022,
+    MechAttackStar = 333023,
+    MechHp1Switch = 333024,
+    MechHp1star = 333025,
+    MechHp3Claw = 333026,
+    MechWhiteKeyLinus = 333027,
+    MechWhiteKeyBk = 333028,
+    MechWhiteKeyArena = 333029,
+    MechWhiteKeyTop = 333030,
+    MechBlueKeyVoid = 333031,
+    MechBlueKeySnake = 333032,
+    MechBlueKeyLinus = 333033,
+    MechBlueKeySacrifice = 333034,
+    MechBlueKeyRed = 333035,
+    MechBlueKeyArias = 333036,
+    MechBlueKeyBlocks = 333037,
+    MechBlueKeyTop = 333038,
+    MechBlueKeyOldMan = 333039,
+    MechBlueKeySave = 333040,
+    MechBlueKeyPot = 333041,
+    MechRedKey = 333042,
+    MechElevator1 = 333174,
+    MechElevator2 = 333175,
+    MechSwitchWatcher = 333176,
+    MechSwitchChains = 333177,
+    MechSwitchBossAccess1 = 333178,
+    MechSwitchBossAccess2 = 333179,
+    MechSwitchSplitPath = 333180,
+    MechSwitchSnake1 = 333181,
+    MechSwitchBootsAccess = 333182,
+    MechSwitchUpperGtAccess = 333183,
+    MechSwitchUpperVoidDrop = 333184,
+    MechSwitchUpperVoid = 333185,
+    MechSwitchLinus = 333186,
+    MechSwitchToBoss2 = 333187,
+    MechSwitchPots = 333188,
+    MechSwitchMazeBackdoor = 333189,
+    MechSwitchToBoss1 = 333190,
+    MechSwitchBlockStairs = 333191,
+    MechSwitchAriasCyclops = 333192,
+    MechSwitchBootsLower = 333193,
+    MechSwitchChainsGap = 333194,
+    MechSwitchLowerKey = 333195,
+    MechSwitchArias = 333196,
+    MechSwitchSnake2 = 333197,
+    MechSwitchKeyBlocks = 333198,
+    MechSwitchCannon = 333199,
+    MechSwitchEyeball = 333200,
+    MechSwitchInvisible = 333201,
+    MechCrystalCannon = 333202,
+    MechCrystalLinus = 333203,
+    MechCrystalLower = 333204,
+    MechCrystalToBoss3 = 333205,
+    MechCrystalTriple1 = 333206,
+    MechCrystalTriple2 = 333207,
+    MechCrystalTriple3 = 333208,
+    MechCrystalTop = 333209,
+    MechCrystalCloak = 333210,
+    MechCrystalSlimes = 333211,
+    MechCrystalToCd = 333212,
+    MechCrystalCampfire = 333213,
+    MechCrystal1stRoom = 333214,
+    MechCrystalOldMan = 333215,
+    MechCrystalTopChains = 333216,
+    MechCrystalBk = 333217,
+    MechFaceAboveVolantis = 333218,
+    HotpBell = 333043,
+    HotpAmulet = 333044,
+    HotpClaw = 333045,
+    HotpGauntlet = 333046,
+    HotpMaidenRing = 333047,
+    HotpHp1Claw = 333048,
+    HotpHp2Ladder = 333049,
+    HotpHp2Gauntlet = 333050,
+    HotpHp5OldMan = 333051,
+    HotpHp5Maze = 333052,
+    HotpHp5Start = 333053,
+    HotpWhiteKeyLeft = 333054,
+    HotpWhiteKeyGhost = 333055,
+    HotpWhiteKeyOldMan = 333056,
+    HotpWhiteKeyBoss = 333057,
+    HotpBlueKeyStatue = 333058,
+    HotpBlueKeyGold = 333059,
+    HotpBlueKeyAmulet = 333060,
+    HotpBlueKeyLadder = 333061,
+    HotpBlueKeyTeleports = 333062,
+    HotpBlueKeyMaze = 333063,
+    HotpRedKey = 333064,
+    HotpElevator = 333219,
+    HotpSwitchRock = 333220,
+    HotpSwitchBelowStart = 333221,
+    HotpSwitchLeft2 = 333222,
+    HotpSwitchLeft1 = 333223,
+    HotpSwitchLowerShortcut = 333224,
+    HotpSwitchBell = 333225,
+    HotpSwitchGhostBlood = 333226,
+    HotpSwitchTeleports = 333227,
+    HotpSwitchWormPillar = 333228,
+    HotpSwitchToClaw1 = 333229,
+    HotpSwitchToClaw2 = 333230,
+    HotpSwitchClawAccess = 333231,
+    HotpSwitchGhosts = 333232,
+    HotpSwitchLeft3 = 333233,
+    HotpSwitchAboveOldMan = 333234,
+    HotpSwitchToAboveOldMan = 333235,
+    HotpSwitchTpPuzzle = 333236,
+    HotpSwitchEyeballShortcut = 333237,
+    HotpSwitchBellAccess = 333238,
+    HotpSwitch1stRoom = 333239,
+    HotpSwitchLeftBacktrack = 333240,
+    HotpCrystalRockAccess = 333241,
+    HotpCrystalBottom = 333242,
+    HotpCrystalLower = 333243,
+    HotpCrystalAfterClaw = 333244,
+    HotpCrystalMaiden1 = 333245,
+    HotpCrystalMaiden2 = 333246,
+    HotpCrystalBellAccess = 333247,
+    HotpCrystalHeart = 333248,
+    HotpCrystalBelowPuzzle = 333249,
+    HotpFaceOldMan = 333250,
+    RoaIcarus = 333065,
+    RoaEyeGreen = 333066,
+    RoaAttack = 333067,
+    RoaHp1Left = 333068,
+    RoaHp2Right = 333069,
+    RoaHp5Solaria = 333070,
+    RoaWhiteKeySave = 333071,
+    RoaWhiteKeyReapers = 333072,
+    RoaWhiteKeyTorches = 333073,
+    RoaWhiteKeyPortal = 333074,
+    RoaBlueKeyFace = 333075,
+    RoaBlueKeyFlames = 333076,
+    RoaBlueKeyBaby = 333077,
+    RoaBlueKeyTop = 333078,
+    RoaBlueKeyPot = 333079,
+    RoaRedKey = 333080,
+    RoaElevator1 = 333251,
+    RoaElevator2 = 333252,
+    RoaSwitchAscend = 333253,
+    RoaSwitchAfterWorms = 333254,
+    RoaSwitchRightPath = 333255,
+    RoaSwitchApexAccess = 333256,
+    RoaSwitchIcarus = 333257,
+    RoaSwitchShaftL = 333258,
+    RoaSwitchShaftR = 333259,
+    RoaSwitchElevator = 333260,
+    RoaSwitchShaftDownwards = 333261,
+    RoaSwitchSpiders = 333262,
+    RoaSwitchDarkRoom = 333263,
+    RoaSwitchAscendShortcut = 333264,
+    RoaSwitch1stShortcut = 333265,
+    RoaSwitchSpikeClimb = 333266,
+    RoaSwitchAboveCentaur = 333267,
+    RoaSwitchBloodPot = 333268,
+    RoaSwitchWorms = 333269,
+    RoaSwitchTriple1 = 333270,
+    RoaSwitchTriple3 = 333271,
+    RoaSwitchBabyGorgon = 333272,
+    RoaSwitchBossAccess = 333273,
+    RoaSwitchBloodPotL = 333274,
+    RoaSwitchBloodPotR = 333275,
+    RoaSwitchLowerVoid = 333276,
+    RoaCrystal1stRoom = 333277,
+    RoaCrystalBabyGorgon = 333278,
+    RoaCrystalLadderR = 333279,
+    RoaCrystalLadderL = 333280,
+    RoaCrystalCentaur = 333281,
+    RoaCrystalSpikeBalls = 333282,
+    RoaCrystalLeftAscend = 333283,
+    RoaCrystalShaft = 333284,
+    RoaCrystalBranchR = 333285,
+    RoaCrystalBranchL = 333286,
+    RoaCrystal3Reapers = 333287,
+    RoaCrystalTriple2 = 333288,
+    RoaFaceSpiders = 333289,
+    RoaFaceBlueKey = 333290,
+    DarkHp4 = 333081,
+    DarkWhiteKey = 333082,
+    DarkSwitch = 333291,
+    ApexChalice = 333083,
+    ApexHp1Chalice = 333084,
+    ApexHp5Heart = 333085,
+    ApexBlueKey = 333086,
+    ApexElevator = 333292,
+    ApexSwitch = 333293,
+    CavesAttackRed = 333088,
+    CavesAttackBlue = 333089,
+    CavesAttackGreen = 333090,
+    CavesHp1Start = 333093,
+    CavesHp1Cyclops = 333094,
+    CavesHp5Chain = 333101,
+    CavesSwitchSkeletons = 333294,
+    CavesSwitchCataAccess1 = 333295,
+    CavesSwitchCataAccess2 = 333296,
+    CavesSwitchCataAccess3 = 333297,
+    CavesFace1stRoom = 333298,
+    CataBow = 333087,
+    CataAttackRoot = 333091,
+    CataAttackPoison = 333092,
+    CataHp1AbovePoison = 333095,
+    CataHp2BeforePoison = 333096,
+    CataHp2AfterPoison = 333097,
+    CataHp2GeminiBottom = 333098,
+    CataHp2GeminiTop = 333099,
+    CataHp2AboveGemini = 333100,
+    CataWhiteKeyHead = 333102,
+    CataWhiteKeyDevRoom = 333103,
+    CataWhiteKeyPrison = 333104,
+    CataBlueKeySlimes = 333105,
+    CataBlueKeyEyeballs = 333106,
+    CataElevator1 = 333299,
+    CataElevator2 = 333300,
+    CataSwitchElevator = 333301,
+    CataSwitchShortcut = 333302,
+    CataSwitchTop = 333303,
+    CataSwitchClaw1 = 333304,
+    CataSwitchClaw2 = 333305,
+    CataSwitchWater1 = 333306,
+    CataSwitchWater2 = 333307,
+    CataSwitchDevRoom = 333308,
+    CataSwitchAfterBlueDoor = 333309,
+    CataSwitchShortcutAccess = 333310,
+    CataSwitchLadderBlocks = 333311,
+    CataSwitchMidShortcut = 333312,
+    CataSwitch1stRoom = 333313,
+    CataSwitchFlames2 = 333314,
+    CataSwitchFlames1 = 333315,
+    CataCrystalPoisonRoots = 333316,
+    CataFaceAfterBow = 333317,
+    CataFaceBow = 333318,
+    CataFaceX4 = 333319,
+    CataFaceCampfire = 333320,
+    CataFaceDoubleDoor = 333321,
+    CataFaceBottom = 333322,
+    TrBram = 333154,
+    TrAdornedKey = 333107,
+    TrHp1Bottom = 333108,
+    TrHp2Top = 333109,
+    TrRedKey = 333110,
+    TrElevator = 333323,
+    TrSwitchAdornedL = 333324,
+    TrSwitchAdornedM = 333325,
+    TrSwitchAdornedR = 333326,
+    TrSwitchElevator = 333327,
+    TrSwitchBottom = 333328,
+    TrCrystalGold = 333329,
+    TrCrystalDarkArias = 333330,
+    CdCrown = 333358,
+    CdAttack = 333111,
+    CdHp1 = 333112,
+    CdSwitch1 = 333331,
+    CdSwitch2 = 333332,
+    CdSwitch3 = 333333,
+    CdSwitchCampfire = 333334,
+    CdSwitchTop = 333335,
+    CdCrystalBacktrack = 333336,
+    CdCrystalStart = 333337,
+    CdCrystalCampfire = 333338,
+    CdCrystalSteps = 333339,
+    CathBlock = 333113,
+    CathAttack = 333114,
+    CathHp1TopLeft = 333115,
+    CathHp1TopRight = 333116,
+    CathHp2Claw = 333117,
+    CathHp5Bell = 333118,
+    CathSwitchBottom = 333340,
+    CathSwitchBesideShaft = 333341,
+    CathSwitchTopCampfire = 333342,
+    CathCrystal1stRoom = 333343,
+    CathCrystalShaft = 333344,
+    CathCrystalSpikePit = 333345,
+    CathCrystalTopL = 333346,
+    CathCrystalTopR = 333347,
+    CathCrystalShaftAccess = 333348,
+    CathCrystalOrbs = 333349,
+    CathFaceLeft = 333350,
+    CathFaceRight = 333351,
+    SpStar = 333119,
+    SpAttack = 333120,
+    SpHp1 = 333121,
+    SpBlueKeyBubbles = 333122,
+    SpBlueKeyStar = 333123,
+    SpBlueKeyPainting = 333124,
+    SpBlueKeyArias = 333125,
+    SpSwitchDoubleDoors = 333352,
+    SpSwitchBubbles = 333353,
+    SpSwitchAfterStar = 333354,
+    SpCrystalBlocks = 333355,
+    SpCrystalStar = 333356,
+    ShopGift = 333126,
+    ShopKnowledge = 333127,
+    ShopMercy = 333128,
+    ShopOrbSeeker = 333129,
+    ShopMapReveal = 333130,
+    ShopCartographer = 333131,
+    ShopDeathOrb = 333132,
+    ShopDeathPoint = 333133,
+    ShopTitansEgo = 333134,
+    ShopAlgusArcanist = 333135,
+    ShopAlgusShock = 333136,
+    ShopAlgusMeteor = 333137,
+    ShopAriasGorgonslayer = 333138,
+    ShopAriasLastStand = 333139,
+    ShopAriasLionheart = 333140,
+    ShopKyuliAssassin = 333141,
+    ShopKyuliBullseye = 333142,
+    ShopKyuliRay = 333143,
+    ShopZeekJunkyard = 333144,
+    ShopZeekOrbs = 333145,
+    ShopZeekLoot = 333146,
+    ShopBramAxe = 333147,
+    ShopBramHunter = 333148,
+    ShopBramWhiplash = 333149,
+}
+
+public enum ApItemId
+{
+    CharacterArias = 333085,
+    CharacterKyuli = 333086,
+    CharacterAlgus = 333087,
+    CharacterZeek = 333088,
+    CharacterBram = 333089,
+
+    EyeRed = 333000,
+    EyeBlue = 333001,
+    EyeGreen = 333002,
+    EyeGold = 333318,
+
+    KeyWhite = 333003,
+    KeyBlue = 333004,
+    KeyRed = 333005,
+
+    KeyItemGorgonheart = 333006,
+    KeyItemAncientsRing = 333007,
+    KeyItemMaidenRing = 333008,
+    KeyItemSword = 333009,
+    KeyItemMap = 333010,
+    KeyItemAscendantKey = 333011,
+    KeyItemAdornedKey = 333012,
+    KeyItemBanish = 333013,
+    KeyItemVoid = 333014,
+    KeyItemBoots = 333015,
+    KeyItemCloak = 333016,
+    KeyItemCyclops = 333316,
+    KeyItemBell = 333017,
+    KeyItemAmulet = 333018,
+    KeyItemClaw = 333019,
+    KeyItemGauntlet = 333020,
+    KeyItemIcarus = 333021,
+    KeyItemChalice = 333022,
+    KeyItemBow = 333023,
+    KeyItemCrown = 333317,
+    KeyItemBlock = 333024,
+    KeyItemStar = 333025,
+
+    UpgradeAttack1 = 333026,
+    UpgradeMaxHp1 = 333027,
+    UpgradeMaxHp2 = 333028,
+    UpgradeMaxHp3 = 333029,
+    UpgradeMaxHp4 = 333030,
+    UpgradeMaxHp5 = 333031,
+
+    Orbs200 = 333032,
+    Orbs500 = 333033,
+    Orbs1000 = 333034,
+
+    WhiteDoorGtStart = 333035,
+    WhiteDoorGtMap = 333036,
+    WhiteDoorGtTauros = 333037,
+    WhiteDoorMech2nd = 333038,
+    WhiteDoorMechBk = 333039,
+    WhiteDoorMechArena = 333040,
+    WhiteDoorMechTop = 333041,
+    WhiteDoorHotpStart = 333042,
+    WhiteDoorHotpClaw = 333043,
+    WhiteDoorHotpBoss = 333044,
+    WhiteDoorRoaWorms = 333045,
+    WhiteDoorRoaAscend = 333046,
+    WhiteDoorRoaBalls = 333047,
+    WhiteDoorRoaSpinners = 333048,
+    WhiteDoorRoaSkip = 333049,
+    WhiteDoorCataTop = 333050,
+    WhiteDoorCataBlue = 333051,
+    WhiteDoorCataPrison = 333052,
+
+    BlueDoorGtHunter = 333053,
+    BlueDoorGtRing = 333054,
+    BlueDoorGtOrbs = 333055,
+    BlueDoorGtAscendant = 333056,
+    BlueDoorGtSword = 333057,
+    BlueDoorMechRed = 333058,
+    BlueDoorMechShortcut = 333059,
+    BlueDoorMechMusic = 333060,
+    BlueDoorMechBoots = 333061,
+    BlueDoorMechVoid = 333062,
+    BlueDoorMechCd = 333063,
+    BlueDoorHotpStart = 333064,
+    BlueDoorHotpStatue = 333065,
+    BlueDoorHotpMaiden = 333066,
+    BlueDoorRoaFlames = 333067,
+    BlueDoorRoaBlood = 333068,
+    BlueDoorApex = 333069,
+    BlueDoorCaves = 333070,
+    BlueDoorCataOrbs = 333071,
+    BlueDoorCataSave = 333072,
+    BlueDoorCataBow = 333073,
+    BlueDoorCataRoots = 333074,
+    BlueDoorCataPrisonCyclops = 333075,
+    BlueDoorCataPrisonLeft = 333076,
+    BlueDoorCataPrisonRight = 333077,
+    BlueDoorTr = 333078,
+    BlueDoorSp = 333079,
+
+    RedDoorZeek = 333080,
+    RedDoorCath = 333081,
+    RedDoorSp = 333082,
+    RedDoorTr = 333083,
+    RedDoorDevRoom = 333084,
+
+    ShopUpgradeGift = 333090,
+    ShopUpgradeKnowledge = 333091,
+    ShopUpgradeMercy = 333092,
+    ShopUpgradeOrbSeeker = 333093,
+    ShopUpgradeMapReveal = 333094,
+    ShopUpgradeCartographer = 333095,
+    ShopUpgradeDeathOrb = 333096,
+    ShopUpgradeDeathPoint = 333097,
+    ShopUpgradeTitansEgo = 333098,
+    ShopUpgradeAlgusArcanist = 333099,
+    ShopUpgradeAlgusShock = 333100,
+    ShopUpgradeAlgusMeteor = 333101,
+    ShopUpgradeAriasGorgonslayer = 333102,
+    ShopUpgradeAriasLastStand = 333103,
+    ShopUpgradeAriasLionheart = 333104,
+    ShopUpgradeKyuliAssassin = 333105,
+    ShopUpgradeKyuliBullseye = 333106,
+    ShopUpgradeKyuliRay = 333107,
+    ShopUpgradeZeekJunkyard = 333108,
+    ShopUpgradeZeekOrbs = 333109,
+    ShopUpgradeZeekLoot = 333110,
+    ShopUpgradeBramAxe = 333111,
+    ShopUpgradeBramHunter = 333112,
+    ShopUpgradeBramWhiplash = 333113,
+
+    ElevatorGt2 = 333114,
+    ElevatorMech1 = 333115,
+    ElevatorMech2 = 333116,
+    ElevatorHotp = 333117,
+    ElevatorRoa1 = 333118,
+    ElevatorRoa2 = 333119,
+    ElevatorApex = 333120,
+    ElevatorCata1 = 333121,
+    ElevatorCata2 = 333122,
+    ElevatorTr = 333123,
+
+    SwitchGt2ndRoom = 333124,
+    SwitchGt1stCyclops = 333125,
+    SwitchGtSpikeTunnel = 333126,
+    SwitchGtButtAccess = 333127,
+    SwitchGtGh = 333128,
+    SwitchGtUpperPathBlocks = 333129,
+    SwitchGtUpperPathAccess = 333130,
+    SwitchGtCrosses = 333131,
+    SwitchGtGhShortcut = 333132,
+    SwitchGtArias = 333133,
+    SwitchGtSwordAccess = 333134,
+    SwitchGtSwordBacktrack = 333135,
+    SwitchGtSword = 333136,
+    SwitchGtUpperArias = 333137,
+    SwitchMechWatcher = 333138,
+    SwitchMechChains = 333139,
+    SwitchMechBoss1 = 333140,
+    SwitchMechBoss2 = 333141,
+    SwitchMechSplitPath = 333142,
+    SwitchMechSnake1 = 333143,
+    SwitchMechBoots = 333144,
+    SwitchMechToUpperGt = 333145,
+    SwitchMechUpperVoidDrop = 333146,
+    SwitchMechUpperVoid = 333147,
+    SwitchMechLinus = 333148,
+    SwitchMechToBoss2 = 333149,
+    SwitchMechPots = 333150,
+    SwitchMechMazeBackdoor = 333151,
+    SwitchMechToBoss1 = 333152,
+    SwitchMechBlockStairs = 333153,
+    SwitchMechAriasCyclops = 333154,
+    SwitchMechBootsLower = 333155,
+    SwitchMechChainsGap = 333156,
+    SwitchMechLowerKey = 333157,
+    SwitchMechArias = 333158,
+    SwitchMechSnake2 = 333159,
+    SwitchMechKeyBlocks = 333160,
+    SwitchMechCannon = 333161,
+    SwitchMechEyeball = 333162,
+    SwitchMechInvisible = 333163,
+    SwitchHotpRock = 333164,
+    SwitchHotpBelowStart = 333165,
+    SwitchHotpLeft2 = 333166,
+    SwitchHotpLeft1 = 333167,
+    SwitchHotpLowerShortcut = 333168,
+    SwitchHotpBell = 333169,
+    SwitchHotpGhostBlood = 333170,
+    SwitchHotpTeleports = 333171,
+    SwitchHotpWormPillar = 333172,
+    SwitchHotpToClaw1 = 333173,
+    SwitchHotpToClaw2 = 333174,
+    SwitchHotpClawAccess = 333175,
+    SwitchHotpGhosts = 333176,
+    SwitchHotpLeft3 = 333177,
+    SwitchHotpAboveOldMan = 333178,
+    SwitchHotpToAboveOldMan = 333179,
+    SwitchHotpTpPuzzle = 333180,
+    SwitchHotpEyeballShortcut = 333181,
+    SwitchHotpBellAccess = 333182,
+    SwitchHotp1stRoom = 333183,
+    SwitchHotpLeftBacktrack = 333184,
+    SwitchRoaAscend = 333185,
+    SwitchRoaAfterWorms = 333186,
+    SwitchRoaRightPath = 333187,
+    SwitchRoaApexAccess = 333188,
+    SwitchRoaIcarus = 333189,
+    SwitchRoaShaftL = 333190,
+    SwitchRoaShaftR = 333191,
+    SwitchRoaElevator = 333192,
+    SwitchRoaShaftDownwards = 333193,
+    SwitchRoaSpiders = 333194,
+    SwitchRoaDarkRoom = 333195,
+    SwitchRoaAscendShortcut = 333196,
+    SwitchRoa1stShortcut = 333197,
+    SwitchRoaSpikeClimb = 333198,
+    SwitchRoaAboveCentaur = 333199,
+    SwitchRoaBloodPot = 333200,
+    SwitchRoaWorms = 333201,
+    SwitchRoaTriple1 = 333202,
+    SwitchRoaTriple3 = 333203,
+    SwitchRoaBabyGorgon = 333204,
+    SwitchRoaBossAccess = 333205,
+    SwitchRoaBloodPotL = 333206,
+    SwitchRoaBloodPotR = 333207,
+    SwitchRoaLowerVoid = 333208,
+    SwitchDarkness = 333209,
+    SwitchApex = 333210,
+    SwitchCavesSkeletons = 333211,
+    SwitchCavesCata1 = 333212,
+    SwitchCavesCata2 = 333213,
+    SwitchCavesCata3 = 333214,
+    SwitchCataElevator = 333215,
+    SwitchCataVerticalShortcut = 333216,
+    SwitchCataTop = 333217,
+    SwitchCataClaw1 = 333218,
+    SwitchCataClaw2 = 333219,
+    SwitchCataWater1 = 333220,
+    SwitchCataWater2 = 333221,
+    SwitchCataDevRoom = 333222,
+    SwitchCataAfterBlueDoor = 333223,
+    SwitchCataShortcutAccess = 333224,
+    SwitchCataLadderBlocks = 333225,
+    SwitchCataMidShortcut = 333226,
+    SwitchCata1stRoom = 333227,
+    SwitchCataFlames2 = 333228,
+    SwitchCataFlames1 = 333229,
+    SwitchTrAdornedL = 333230,
+    SwitchTrAdornedM = 333231,
+    SwitchTrAdornedR = 333232,
+    SwitchTrElevator = 333233,
+    SwitchTrBottom = 333234,
+    SwitchCd1 = 333235,
+    SwitchCd2 = 333236,
+    SwitchCd3 = 333237,
+    SwitchCdCampfire = 333238,
+    SwitchCdTop = 333239,
+    SwitchCathBottom = 333240,
+    SwitchCathBesideShaft = 333241,
+    SwitchCathTopCampfire = 333242,
+    SwitchSpDoubleDoors = 333243,
+    SwitchSpBubbles = 333244,
+    SwitchSpAfterStar = 333245,
+
+    CrystalGtLadder = 333246,
+    CrystalGtRota = 333247,
+    CrystalGtOldMan1 = 333248,
+    CrystalGtOldMan2 = 333249,
+    CrystalMechCannon = 333250,
+    CrystalMechLinus = 333251,
+    CrystalMechLower = 333252,
+    CrystalMechToBoss3 = 333253,
+    CrystalMechTriple1 = 333254,
+    CrystalMechTriple2 = 333255,
+    CrystalMechTriple3 = 333256,
+    CrystalMechTop = 333257,
+    CrystalMechCloak = 333258,
+    CrystalMechSlimes = 333259,
+    CrystalMechToCd = 333260,
+    CrystalMechCampfire = 333261,
+    CrystalMech1stRoom = 333262,
+    CrystalMechOldMan = 333263,
+    CrystalMechTopChains = 333264,
+    CrystalMechBk = 333265,
+    CrystalHotpRockAccess = 333266,
+    CrystalHotpBottom = 333267,
+    CrystalHotpLower = 333268,
+    CrystalHotpAfterClaw = 333269,
+    CrystalHotpMaiden1 = 333270,
+    CrystalHotpMaiden2 = 333271,
+    CrystalHotpBellAccess = 333272,
+    CrystalHotpHeart = 333273,
+    CrystalHotpBelowPuzzle = 333274,
+    CrystalRoa1stRoom = 333275,
+    CrystalRoaBabyGorgon = 333276,
+    CrystalRoaLadderR = 333277,
+    CrystalRoaLadderL = 333278,
+    CrystalRoaCentaur = 333279,
+    CrystalRoaSpikeBalls = 333280,
+    CrystalRoaLeftAscend = 333281,
+    CrystalRoaShaft = 333282,
+    CrystalRoaBranchR = 333283,
+    CrystalRoaBranchL = 333284,
+    CrystalRoa3Reapers = 333285,
+    CrystalRoaTriple2 = 333286,
+    CrystalCataPoisonRoots = 333287,
+    CrystalTrGold = 333288,
+    CrystalTrDarkArias = 333289,
+    CrystalCdBacktrack = 333290,
+    CrystalCdStart = 333291,
+    CrystalCdCampfire = 333292,
+    CrystalCdSteps = 333293,
+    CrystalCath1stRoom = 333294,
+    CrystalCathShaft = 333295,
+    CrystalCathSpikePit = 333296,
+    CrystalCathTopL = 333297,
+    CrystalCathTopR = 333298,
+    CrystalCathShaftAccess = 333299,
+    CrystalCathOrbs = 333300,
+    CrystalSpBlocks = 333301,
+    CrystalSpStar = 333302,
+
+    FaceMechVolantis = 333303,
+    FaceHotpOldMan = 333304,
+    FaceRoaSpiders = 333305,
+    FaceRoaBlueKey = 333306,
+    FaceCaves1stRoom = 333307,
+    FaceCataAfterBow = 333308,
+    FaceCataBow = 333309,
+    FaceCataX4 = 333310,
+    FaceCataCampfire = 333311,
+    FaceCataDoubleDoor = 333312,
+    FaceCataBottom = 333313,
+    FaceCathL = 333314,
+    FaceCathR = 333315,
+}
+
 public readonly struct CheckpointData
 {
     public int Id { get; init; }
@@ -16,334 +715,340 @@ public readonly struct SwitchData
 {
     public string Id { get; init; }
     public int RoomId { get; init; }
-    public string ItemName { get; init; }
-    public string LocationName { get; init; }
+    public ApItemId ApItemId { get; init; }
+    public ApLocationId ApLocationId { get; init; }
     public int[] ObjectsToEnable { get; init; }
     public int[] ObjectsToDisable { get; init; }
+    public int[] ObjectsToTrigger { get; init; }
 }
 
 public static class Data
 {
-    public static readonly Dictionary<ItemProperties.ItemID, string> LocationMap = new()
+    public static readonly Dictionary<ItemProperties.ItemID, ApLocationId> ItemToApLocationId = new()
     {
-        { ItemProperties.ItemID.AmuletOfSol, "Hall of the Phantoms - Amulet of Sol" },
-        { ItemProperties.ItemID.BanishSpell, "Gorgon Tomb - Banish Spell" },
-        { ItemProperties.ItemID.GorgonHeart, "Gorgon Tomb - Gorgonheart" },
-        { ItemProperties.ItemID.GriffonClaw, "Hall of the Phantoms - Griffon Claw" },
-        { ItemProperties.ItemID.IcarusEmblem, "Ruins of Ash - Icarus Emblem" },
-        { ItemProperties.ItemID.LunarianBow, "Catacombs - Lunarian Bow" },
-        { ItemProperties.ItemID.RingOfTheAncients, "Gorgon Tomb - Ring of the Ancients" },
-        { ItemProperties.ItemID.SwordOfMirrors, "Gorgon Tomb - Sword of Mirrors" },
-        { ItemProperties.ItemID.GorgonEyeRed, "Gorgon Tomb - Gorgon Eye (Red)" },
-        { ItemProperties.ItemID.GorgonEyeBlue, "Mechanism - Gorgon Eye (Blue)" },
-        { ItemProperties.ItemID.GorgonEyeGreen, "Ruins of Ash - Gorgon Eye (Green)" },
-        { ItemProperties.ItemID.DeadMaidensRing, "Hall of the Phantoms - Dead Maiden's Ring" },
-        { ItemProperties.ItemID.LinusMap, "Gorgon Tomb - Linus' Map" },
-        { ItemProperties.ItemID.AthenasBell, "Hall of the Phantoms - Athena's Bell" },
-        { ItemProperties.ItemID.VoidCharm, "Gorgon Tomb - Void Charm" },
-        { ItemProperties.ItemID.CloakOfLevitation, "Mechanism - Cloak of Levitation" },
-        { ItemProperties.ItemID.AdornedKey, "Tower Roots - Adorned Key" },
-        { ItemProperties.ItemID.PrincesCrown, "Cyclops Den - Prince's Crown" },
-        { ItemProperties.ItemID.AscendantKey, "Gorgon Tomb - Ascendant Key" },
-        { ItemProperties.ItemID.TalariaBoots, "Mechanism - Talaria Boots" },
-        //{ ItemProperties.ItemID.MonsterBall, "Gorgon Tomb - Monster Ball" },
-        { ItemProperties.ItemID.BloodChalice, "The Apex - Blood Chalice" },
-        { ItemProperties.ItemID.MorningStar, "Serpent Path - Morning Star" },
-        { ItemProperties.ItemID.ZeekItem, "Mechanism - Cyclops Idol" },
-        { ItemProperties.ItemID.BoreasGauntlet, "Hall of the Phantoms - Boreas Gauntlet" },
-        //{ ItemProperties.ItemID.FamiliarGil, "Catacombs - Gil" },
-        { ItemProperties.ItemID.MagicBlock, "Cathedral - Magic Block" },
+        { ItemProperties.ItemID.AmuletOfSol, ApLocationId.HotpAmulet },
+        { ItemProperties.ItemID.BanishSpell, ApLocationId.GtBanish },
+        { ItemProperties.ItemID.GorgonHeart, ApLocationId.GtGorgonheart },
+        { ItemProperties.ItemID.GriffonClaw, ApLocationId.HotpClaw },
+        { ItemProperties.ItemID.IcarusEmblem, ApLocationId.RoaIcarus },
+        { ItemProperties.ItemID.LunarianBow, ApLocationId.CataBow },
+        { ItemProperties.ItemID.RingOfTheAncients, ApLocationId.GtAncientsRing },
+        { ItemProperties.ItemID.SwordOfMirrors, ApLocationId.GtSword },
+        { ItemProperties.ItemID.GorgonEyeRed, ApLocationId.GtEyeRed },
+        { ItemProperties.ItemID.GorgonEyeBlue, ApLocationId.MechEyeBlue },
+        { ItemProperties.ItemID.GorgonEyeGreen, ApLocationId.RoaEyeGreen },
+        { ItemProperties.ItemID.DeadMaidensRing, ApLocationId.HotpMaidenRing },
+        { ItemProperties.ItemID.LinusMap, ApLocationId.GtMap },
+        { ItemProperties.ItemID.AthenasBell, ApLocationId.HotpBell },
+        { ItemProperties.ItemID.VoidCharm, ApLocationId.GtVoid },
+        { ItemProperties.ItemID.CloakOfLevitation, ApLocationId.MechCloak },
+        { ItemProperties.ItemID.AdornedKey, ApLocationId.TrAdornedKey },
+        { ItemProperties.ItemID.PrincesCrown, ApLocationId.CdCrown },
+        { ItemProperties.ItemID.AscendantKey, ApLocationId.GtAscendantKey },
+        { ItemProperties.ItemID.TalariaBoots, ApLocationId.MechBoots },
+        // { ItemProperties.ItemID.MonsterBall, LocationId.GtMonster },
+        { ItemProperties.ItemID.BloodChalice, ApLocationId.ApexChalice },
+        { ItemProperties.ItemID.MorningStar, ApLocationId.SpStar },
+        { ItemProperties.ItemID.ZeekItem, ApLocationId.MechCyclops },
+        { ItemProperties.ItemID.BoreasGauntlet, ApLocationId.HotpGauntlet },
+        // { ItemProperties.ItemID.FamiliarGil, LocationId.CataGil },
+        { ItemProperties.ItemID.MagicBlock, ApLocationId.CathBlock },
     };
 
-    public static readonly Dictionary<string, ItemProperties.ItemID> ItemMap = new()
+    public static readonly Dictionary<ApItemId, ItemProperties.ItemID> ApItemIdToItem = new()
     {
-        { "Amulet of Sol", ItemProperties.ItemID.AmuletOfSol },
-        { "Banish Spell", ItemProperties.ItemID.BanishSpell },
-        { "Gorgonheart", ItemProperties.ItemID.GorgonHeart },
-        { "Griffon Claw", ItemProperties.ItemID.GriffonClaw },
-        { "Icarus Emblem", ItemProperties.ItemID.IcarusEmblem },
-        { "Lunarian Bow", ItemProperties.ItemID.LunarianBow },
-        { "Ring of the Ancients", ItemProperties.ItemID.RingOfTheAncients },
-        { "Sword of Mirrors", ItemProperties.ItemID.SwordOfMirrors },
-        { "Gorgon Eye (Red)", ItemProperties.ItemID.GorgonEyeRed },
-        { "Gorgon Eye (Blue)", ItemProperties.ItemID.GorgonEyeBlue },
-        { "Gorgon Eye (Green)", ItemProperties.ItemID.GorgonEyeGreen },
-        { "Dead Maiden's Ring", ItemProperties.ItemID.DeadMaidensRing },
-        { "Linus' Map", ItemProperties.ItemID.LinusMap },
-        { "Athena's Bell", ItemProperties.ItemID.AthenasBell },
-        { "Void Charm", ItemProperties.ItemID.VoidCharm },
-        { "Cloak of Levitation", ItemProperties.ItemID.CloakOfLevitation },
-        { "Adorned Key", ItemProperties.ItemID.AdornedKey },
-        { "Prince's Crown", ItemProperties.ItemID.PrincesCrown }, // not sure how this is handled
-        { "Ascendant Key", ItemProperties.ItemID.AscendantKey },
-        { "Talaria Boots", ItemProperties.ItemID.TalariaBoots },
-        //{ "Monster Ball", ItemProperties.ItemID.MonsterBall },
-        { "Blood Chalice", ItemProperties.ItemID.BloodChalice },
-        { "Morning Star", ItemProperties.ItemID.MorningStar },
-        { "Cyclops Idol", ItemProperties.ItemID.ZeekItem },
-        { "Boreas Gauntlet", ItemProperties.ItemID.BoreasGauntlet },
-        //{ "Gil", ItemProperties.ItemID.FamiliarGil }, // crashes
-        { "Magic Block", ItemProperties.ItemID.MagicBlock },
+        { ApItemId.KeyItemAmulet, ItemProperties.ItemID.AmuletOfSol },
+        { ApItemId.KeyItemBanish, ItemProperties.ItemID.BanishSpell },
+        { ApItemId.KeyItemGorgonheart, ItemProperties.ItemID.GorgonHeart },
+        { ApItemId.KeyItemClaw, ItemProperties.ItemID.GriffonClaw },
+        { ApItemId.KeyItemIcarus, ItemProperties.ItemID.IcarusEmblem },
+        { ApItemId.KeyItemBow, ItemProperties.ItemID.LunarianBow },
+        { ApItemId.KeyItemAncientsRing, ItemProperties.ItemID.RingOfTheAncients },
+        { ApItemId.KeyItemSword, ItemProperties.ItemID.SwordOfMirrors },
+        { ApItemId.EyeRed, ItemProperties.ItemID.GorgonEyeRed },
+        { ApItemId.EyeBlue, ItemProperties.ItemID.GorgonEyeBlue },
+        { ApItemId.EyeGreen, ItemProperties.ItemID.GorgonEyeGreen },
+        { ApItemId.KeyItemMaidenRing, ItemProperties.ItemID.DeadMaidensRing },
+        { ApItemId.KeyItemMap, ItemProperties.ItemID.LinusMap },
+        { ApItemId.KeyItemBell, ItemProperties.ItemID.AthenasBell },
+        { ApItemId.KeyItemVoid, ItemProperties.ItemID.VoidCharm },
+        { ApItemId.KeyItemCloak, ItemProperties.ItemID.CloakOfLevitation },
+        { ApItemId.KeyItemAdornedKey, ItemProperties.ItemID.AdornedKey },
+        { ApItemId.KeyItemCrown, ItemProperties.ItemID.PrincesCrown },
+        { ApItemId.KeyItemAscendantKey, ItemProperties.ItemID.AscendantKey },
+        { ApItemId.KeyItemBoots, ItemProperties.ItemID.TalariaBoots },
+        // { ItemId.KeyItemMonster, ItemProperties.ItemID.MonsterBall },
+        { ApItemId.KeyItemChalice, ItemProperties.ItemID.BloodChalice },
+        { ApItemId.KeyItemStar, ItemProperties.ItemID.MorningStar },
+        { ApItemId.KeyItemCyclops, ItemProperties.ItemID.ZeekItem },
+        { ApItemId.KeyItemGauntlet, ItemProperties.ItemID.BoreasGauntlet },
+        // { ItemId.KeyItemGil, ItemProperties.ItemID.FamiliarGil },
+        { ApItemId.KeyItemBlock, ItemProperties.ItemID.MagicBlock },
     };
 
-    public static readonly Dictionary<string, string> IconMap = new()
+    public static readonly Dictionary<ApItemId, string> ApItemIdToIcon = new()
     {
-        { "Amulet of Sol", "Item_AmuletOfSol" },
-        { "Banish Spell", "Item_BanishSpell" },
-        { "Gorgonheart", "Item_GorgonHeart" },
-        { "Griffon Claw", "Item_GriffonClaw" },
-        { "Icarus Emblem", "Item_IcarusEmblem" },
-        { "Lunarian Bow", "Item_LunarianBow" },
-        { "Ring of the Ancients", "Item_RingOfTheAncients" },
-        { "Sword of Mirrors", "Item_SwordOfMirrors" },
-        { "Gorgon Eye (Red)", "Item_GorgonEyeRed" },
-        { "Gorgon Eye (Blue)", "Item_GorgonEyeBlue" },
-        { "Gorgon Eye (Green)", "Item_GorgonEyeGreen" },
-        { "Gorgon Eye (Gold)", "Item_GorgonEyeGreen" },
-        { "Dead Maiden's Ring", "Item_DeadMaidensRing" },
-        { "Linus' Map", "Item_LinusMap" },
-        { "Athena's Bell", "Item_AthenasBell" },
-        { "Void Charm", "Item_VoidCharm" },
-        { "Cloak of Levitation", "Item_CloakOfLevitation" },
-        { "Adorned Key", "Item_AdornedKey" },
-        { "Prince's Crown", "Item_PrincesCrown" },
-        { "Ascendant Key", "Item_AscendantKey" },
-        { "Talaria Boots", "Item_TalariaBoots" },
-        { "Monster Ball", "Item_MonsterBall" },
-        { "Blood Chalice", "Item_BloodChalice" },
-        { "Morning Star", "Item_MorningStar" },
-        { "Cyclops Idol", "Item_CyclopsIdol" },
-        { "Boreas Gauntlet", "Item_BoreasGauntlet" },
-        { "Gil", "Item_FamiliarGil" },
-        { "Magic Block", "Item_MagicBlock" },
-        { "Attack +1", "Item_PowerStone_1" },
-        { "White Key", "WhiteKey_1" },
-        { "Blue Key", "BlueKey_1" },
-        { "Red Key", "RedKey_1" },
-        { "Death", "Deal_Gift" },
-        { "Algus", "ElevatorMenu_Icon_Algus" },
-        { "Arias", "ElevatorMenu_Icon_Arias" },
-        { "Bram", "ElevatorMenu_Icon_Bram" },
-        { "Kyuli", "ElevatorMenu_Icon_Kyuli" },
-        { "Zeek", "ElevatorMenu_Icon_Zeek" },
-        { "Knowledge", "Deal_Knowledge" },
-        { "Orb Seeker", "Deal_OrbReaper" },
-        { "Titan's Ego", "Deal_TitanEgo" },
-        { "Map Reveal", "Deal_MapReveal" },
-        { "Gift", "Deal_Gift" },
-        { "Cartographer", "Deal_LockedDoors" },
-        { "Death Orb", "Deal_DeathOrb" },
-        { "Death Point", "Deal_MapDeath" },
-        { "Mercy", "Deal_Mercy" },
-        { "Algus's Arcanist", "Deal_Algus_Arcanist" },
-        { "Algus's Shock Field", "Deal_Algus_DamageField" },
-        { "Algus's Meteor Rain", "Deal_Algus_MeteorRain" },
-        { "Arias's Gorgonslayer", "Deal_Arias_GorgonSlayer" },
-        { "Arias's Last Stand", "Deal_Arias_LastStand" },
-        { "Arias's Lionheart", "Deal_Arias_LionHeart" },
-        { "Kyuli's Assassin Strike", "Deal_Kyuli_AssassinStrike" },
-        { "Kyuli's Bullseye", "Deal_Kyuli_Bullseye" },
-        { "Kyuli's Shining Ray", "Deal_Kyuli_ShiningRay" },
-        { "Zeek's Junkyard Hunt", "Deal_Zeek_JunkyardHunt" },
-        { "Zeek's Orb Monger", "Deal_Zeek_OrbDigger" },
-        { "Zeek's Bigger Loot", "Deal_BiggerLoot" },
-        { "Bram's Golden Axe", "Deal_Bram_GoldenAxe" },
-        { "Bram's Monster Hunter", "Deal_Bram_MonsterHunter" },
-        { "Bram's Whiplash", "Deal_Bram_Whiplash" },
+        { ApItemId.KeyItemAmulet, "Item_AmuletOfSol" },
+        { ApItemId.KeyItemBanish, "Item_BanishSpell" },
+        { ApItemId.KeyItemGorgonheart, "Item_GorgonHeart" },
+        { ApItemId.KeyItemClaw, "Item_GriffonClaw" },
+        { ApItemId.KeyItemIcarus, "Item_IcarusEmblem" },
+        { ApItemId.KeyItemBow, "Item_LunarianBow" },
+        { ApItemId.KeyItemAncientsRing, "Item_RingOfTheAncients" },
+        { ApItemId.KeyItemSword, "Item_SwordOfMirrors" },
+        { ApItemId.EyeRed, "Item_GorgonEyeRed" },
+        { ApItemId.EyeBlue, "Item_GorgonEyeBlue" },
+        { ApItemId.EyeGreen, "Item_GorgonEyeGreen" },
+        { ApItemId.EyeGold, "Item_GorgonEyeGreen" },
+        { ApItemId.KeyItemMaidenRing, "Item_DeadMaidensRing" },
+        { ApItemId.KeyItemMap, "Item_LinusMap" },
+        { ApItemId.KeyItemBell, "Item_AthenasBell" },
+        { ApItemId.KeyItemVoid, "Item_VoidCharm" },
+        { ApItemId.KeyItemCloak, "Item_CloakOfLevitation" },
+        { ApItemId.KeyItemAdornedKey, "Item_AdornedKey" },
+        { ApItemId.KeyItemCrown, "Item_PrincesCrown" },
+        { ApItemId.KeyItemAscendantKey, "Item_AscendantKey" },
+        { ApItemId.KeyItemBoots, "Item_TalariaBoots" },
+        // { ApItemId.KeyItemMonsterBall, "Item_MonsterBall" },
+        { ApItemId.KeyItemChalice, "Item_BloodChalice" },
+        { ApItemId.KeyItemStar, "Item_MorningStar" },
+        { ApItemId.KeyItemCyclops, "Item_CyclopsIdol" },
+        { ApItemId.KeyItemGauntlet, "Item_BoreasGauntlet" },
+        // { ApItemId.KeyItemGil, "Item_FamiliarGil" },
+        { ApItemId.KeyItemBlock, "Item_MagicBlock" },
+        { ApItemId.UpgradeAttack1, "Item_PowerStone_1" },
+        { ApItemId.UpgradeMaxHp1, "Item_HealthStone_1" },
+        { ApItemId.UpgradeMaxHp2, "Item_HealthStone_1" },
+        { ApItemId.UpgradeMaxHp3, "Item_HealthStone_1" },
+        { ApItemId.UpgradeMaxHp4, "Item_HealthStone_1" },
+        { ApItemId.UpgradeMaxHp5, "Item_HealthStone_1" },
+        { ApItemId.KeyWhite, "WhiteKey_1" },
+        { ApItemId.KeyBlue, "BlueKey_1" },
+        { ApItemId.KeyRed, "RedKey_1" },
+        // { ApItemId.Death, "Deal_Gift" },
+        { ApItemId.CharacterAlgus, "ElevatorMenu_Icon_Algus" },
+        { ApItemId.CharacterArias, "ElevatorMenu_Icon_Arias" },
+        { ApItemId.CharacterBram, "ElevatorMenu_Icon_Bram" },
+        { ApItemId.CharacterKyuli, "ElevatorMenu_Icon_Kyuli" },
+        { ApItemId.CharacterZeek, "ElevatorMenu_Icon_Zeek" },
+        { ApItemId.ShopUpgradeKnowledge, "Deal_Knowledge" },
+        { ApItemId.ShopUpgradeOrbSeeker, "Deal_OrbReaper" },
+        { ApItemId.ShopUpgradeTitansEgo, "Deal_TitanEgo" },
+        { ApItemId.ShopUpgradeMapReveal, "Deal_MapReveal" },
+        { ApItemId.ShopUpgradeGift, "Deal_Gift" },
+        { ApItemId.ShopUpgradeCartographer, "Deal_LockedDoors" },
+        { ApItemId.ShopUpgradeDeathOrb, "Deal_DeathOrb" },
+        { ApItemId.ShopUpgradeDeathPoint, "Deal_MapDeath" },
+        { ApItemId.ShopUpgradeMercy, "Deal_Mercy" },
+        { ApItemId.ShopUpgradeAlgusArcanist, "Deal_Algus_Arcanist" },
+        { ApItemId.ShopUpgradeAlgusShock, "Deal_Algus_DamageField" },
+        { ApItemId.ShopUpgradeAlgusMeteor, "Deal_Algus_MeteorRain" },
+        { ApItemId.ShopUpgradeAriasGorgonslayer, "Deal_Arias_GorgonSlayer" },
+        { ApItemId.ShopUpgradeAriasLastStand, "Deal_Arias_LastStand" },
+        { ApItemId.ShopUpgradeAriasLionheart, "Deal_Arias_LionHeart" },
+        { ApItemId.ShopUpgradeKyuliAssassin, "Deal_Kyuli_AssassinStrike" },
+        { ApItemId.ShopUpgradeKyuliBullseye, "Deal_Kyuli_Bullseye" },
+        { ApItemId.ShopUpgradeKyuliRay, "Deal_Kyuli_ShiningRay" },
+        { ApItemId.ShopUpgradeZeekJunkyard, "Deal_Zeek_JunkyardHunt" },
+        { ApItemId.ShopUpgradeZeekOrbs, "Deal_Zeek_OrbDigger" },
+        { ApItemId.ShopUpgradeZeekLoot, "Deal_BiggerLoot" },
+        { ApItemId.ShopUpgradeBramAxe, "Deal_Bram_GoldenAxe" },
+        { ApItemId.ShopUpgradeBramHunter, "Deal_Bram_MonsterHunter" },
+        { ApItemId.ShopUpgradeBramWhiplash, "Deal_Bram_Whiplash" },
     };
 
-    public static readonly Dictionary<int, string> AttackMap = new()
+    public static readonly Dictionary<int, ApLocationId> AttackMap = new()
     {
-        { 7094, "Gorgon Tomb - Attack +1" }, // past void charm + green eye
-        { 6753, "Mechanism - Attack +1 (Above Volantis)" }, // above volantis, needs griffon claw
-        { 9229, "Mechanism - Attack +1 (Morning Star Blocks)" }, // need bram & morning star
-        { 8996, "Ruins of Ash - Attack +1" }, // needs morning star
-        { 6563, "Caves - Attack +1 (Item Chain Red)" }, // item chain, needs red
-        { 7105, "Caves - Attack +1 (Item Chain Blue)" }, // item chain, needs blue
-        { 7107, "Caves - Attack +1 (Item Chain Green)" }, // item chain, needs green
-        { 6594, "Catacombs - Attack +1 (Climbable Root)" }, // climb up root
-        { 10042, "Catacombs - Attack +1 (Poison Roots)" }, // after poison roots
-        { 8531, "Cyclops Den - Attack +1" },
-        { 8619, "Cathedral - Attack +1" },
-        { 8181, "Serpent Path - Attack +1" },
+        { 7094, ApLocationId.GtAttack },
+        { 6753, ApLocationId.MechAttackVolantis },
+        { 9229, ApLocationId.MechAttackStar },
+        { 8996, ApLocationId.RoaAttack },
+        { 6563, ApLocationId.CavesAttackRed },
+        { 7105, ApLocationId.CavesAttackBlue },
+        { 7107, ApLocationId.CavesAttackGreen },
+        { 6594, ApLocationId.CataAttackRoot },
+        { 10042, ApLocationId.CataAttackPoison },
+        { 8531, ApLocationId.CdAttack },
+        { 8619, ApLocationId.CathAttack },
+        { 8181, ApLocationId.SpAttack },
     };
 
-    public static readonly Dictionary<int, string> HealthMap = new()
+    public static readonly Dictionary<int, ApLocationId> HealthMap = new()
     {
-        { 6145, "Gorgon Tomb - Max HP +1 (Ring of the Ancients)" }, // by ring of the ancients, needs red eye
-        { 6134, "Gorgon Tomb - Max HP +5 (Ascendant Key)" }, // above ascendant key, needs griffon claw
-        { 9936, "Mechanism - Max HP +1 (Secret Switch)" }, // secret switch
-        { 10280, "Mechanism - Max HP +1 (Morning Star Blocks)" }, // tunnel to HotP, needs morning star
-        { 6201, "Mechanism - Max HP +3 (Above Checkpoint)" }, // above checkpoint, needs griffon claw
-        { 9979, "Hall of the Phantoms - Max HP +1 (Griffon Claw)" }, // left of claw
-        { 6173, "Hall of the Phantoms - Max HP +2 (Secret Ladder)" }, // secret ladder
-        { 9279, "Hall of the Phantoms - Max HP +2 (Boreas Gauntlet)" }, // after teleporter maze, needs zeek
-        { 6436, "Hall of the Phantoms - Max HP +5 (Old Man)" }, // above old man, need claw
-        { 6740, "Hall of the Phantoms - Max HP +5 (Teleport Maze)" }, // after tp maze
-        { 6518, "Hall of the Phantoms - Max HP +5 (Above Start)" }, // above start
-        { 9846, "Ruins of Ash - Max HP +1 (Left of Ascent)" }, // left of ascend
-        { 9570, "Ruins of Ash - Max HP +2 (Right Side)" }, // right side, needs boreas or morning star
-        { 10025, "Ruins of Ash - Max HP +5 (After Solaria)" }, // after solaria
-        { 10070, "Darkness - Max HP +4" },
-        { 8731, "The Apex - Max HP +1 (Blood Chalice)" }, // towards blood chalice
-        { 6820, "The Apex - Max HP +5 (After Heart)" }, // after heart
-        { 6177, "Caves - Max HP +1 (First Room)" }, // first room of catacombs
-        { 10003, "Caves - Max HP +1 (Cyclops Arena)" }, // cyclops room, needs sword of mirrors
-        { 10121, "Caves - Max HP +5 (Item Chain)" }, // item chain, needs morning star, griffon claw, bell
-        { 10324, "Catacombs - Max HP +1 (Above Poison Roots)" }, // before poison roots
-        { 10137, "Catacombs - Max HP +2 (Before Poison Roots)" }, // before poison roots
-        { 10043, "Catacombs - Max HP +2 (After Poison Roots)" }, // after poison roots
-        { 10581, "Catacombs - Max HP +2 (Before Gemini Bottom)" }, // before boss bottom
-        { 10583, "Catacombs - Max HP +2 (Before Gemini Top)" }, // before boss top
-        { 10138, "Catacombs - Max HP +2 (Above Gemini)" }, // above boss, need boreas gauntlet & griffon claw
-        { 9779, "Tower Roots - Max HP +1 (Bottom)" }, // bottom
-        { 9778, "Tower Roots - Max HP +2 (Top)" }, // top
-        { 8532, "Cyclops Den - Max HP +1" },
-        { 9833, "Cathedral - Max HP +1 (Top Left)" }, // top left
-        { 9834, "Cathedral - Max HP +1 (Top Right)" }, // top right
-        { 10204, "Cathedral - Max HP +2 (Left Climb)" }, // top of left side, needs claw
-        { 8609, "Cathedral - Max HP +5 (Bell)" }, // near bell
-        { 8202, "Serpent Path - Max HP +1" }, // before frog
+        { 6145, ApLocationId.GtHp1Ring },
+        { 6134, ApLocationId.GtHp5Key },
+        { 9936, ApLocationId.MechHp1Switch },
+        { 10280, ApLocationId.MechHp1star },
+        { 6201, ApLocationId.MechHp3Claw },
+        { 9979, ApLocationId.HotpHp1Claw },
+        { 6173, ApLocationId.HotpHp2Ladder },
+        { 9279, ApLocationId.HotpHp2Gauntlet },
+        { 6436, ApLocationId.HotpHp5OldMan },
+        { 6740, ApLocationId.HotpHp5Maze },
+        { 6518, ApLocationId.HotpHp5Start },
+        { 9846, ApLocationId.RoaHp1Left },
+        { 9570, ApLocationId.RoaHp2Right },
+        { 10025, ApLocationId.RoaHp5Solaria },
+        { 10070, ApLocationId.DarkHp4 },
+        { 8731, ApLocationId.ApexHp1Chalice },
+        { 6820, ApLocationId.ApexHp5Heart },
+        { 6177, ApLocationId.CavesHp1Start },
+        { 10003, ApLocationId.CavesHp1Cyclops },
+        { 10121, ApLocationId.CavesHp5Chain },
+        { 10324, ApLocationId.CataHp1AbovePoison },
+        { 10137, ApLocationId.CataHp2BeforePoison },
+        { 10043, ApLocationId.CataHp2AfterPoison },
+        { 10581, ApLocationId.CataHp2GeminiBottom },
+        { 10583, ApLocationId.CataHp2GeminiTop },
+        { 10138, ApLocationId.CataHp2AboveGemini },
+        { 9779, ApLocationId.TrHp1Bottom },
+        { 9778, ApLocationId.TrHp2Top },
+        { 8532, ApLocationId.CdHp1 },
+        { 9833, ApLocationId.CathHp1TopLeft },
+        { 9834, ApLocationId.CathHp1TopRight },
+        { 10204, ApLocationId.CathHp2Claw },
+        { 8609, ApLocationId.CathHp5Bell },
+        { 8202, ApLocationId.SpHp1 },
     };
 
-    public static readonly Dictionary<int, string> WhiteKeyMap = new()
+    public static readonly Dictionary<int, ApLocationId> WhiteKeyMap = new()
     {
-        { 8, "Gorgon Tomb - White Key (First Room)" },
-        { 79, "Gorgon Tomb - White Key (Right Side)" },
-        { 1088, "Gorgon Tomb - White Key (Before Boss)" },
-        { 483, "Mechanism - White Key (Below Linus)" },
-        { 6158, "Mechanism - White Key (Black Knight)" },
-        { 6163, "Mechanism - White Key (Enemy Arena)" },
-        { 1763, "Mechanism - White Key (Top)" },
-        { 1193, "Hall of the Phantoms - White Key (Left of Start)" },
-        { 10136, "Hall of the Phantoms - White Key (Ghost)" },
-        { 6171, "Hall of the Phantoms - White Key (Old Man)" },
-        { 6546, "Hall of the Phantoms - White Key (Boss)" },
-        { 3772, "Ruins of Ash - White Key (Checkpoint)" },
-        { 8650, "Ruins of Ash - White Key (Three Reapers)" },
-        { 8678, "Ruins of Ash - White Key (Torches)" },
-        { 4714, "Ruins of Ash - White Key (Void Portal)" },
-        { 3070, "Darkness - White Key" },
-        { 2491, "Catacombs - White Key (On Head)" },
-        { 2431, "Catacombs - White Key (Dev Room)" },
-        { 4764, "Catacombs - White Key (Prison)" },
+        { 8, ApLocationId.GtWhiteKeyStart },
+        { 79, ApLocationId.GtWhiteKeyRight },
+        { 1088, ApLocationId.GtWhiteKeyBoss },
+        { 483, ApLocationId.MechWhiteKeyLinus },
+        { 6158, ApLocationId.MechWhiteKeyBk },
+        { 6163, ApLocationId.MechWhiteKeyArena },
+        { 1763, ApLocationId.MechWhiteKeyTop },
+        { 1193, ApLocationId.HotpWhiteKeyLeft },
+        { 10136, ApLocationId.HotpWhiteKeyGhost },
+        { 6171, ApLocationId.HotpWhiteKeyOldMan },
+        { 6546, ApLocationId.HotpWhiteKeyBoss },
+        { 3772, ApLocationId.RoaWhiteKeySave },
+        { 8650, ApLocationId.RoaWhiteKeyReapers },
+        { 8678, ApLocationId.RoaWhiteKeyTorches },
+        { 4714, ApLocationId.RoaWhiteKeyPortal },
+        { 3070, ApLocationId.DarkWhiteKey },
+        { 2491, ApLocationId.CataWhiteKeyHead },
+        { 2431, ApLocationId.CataWhiteKeyDevRoom },
+        { 4764, ApLocationId.CataWhiteKeyPrison },
     };
 
-    public static readonly Dictionary<int, string> BlueKeyMap = new()
+    public static readonly Dictionary<int, ApLocationId> BlueKeyMap = new()
     {
-        { 432, "Gorgon Tomb - Blue Key (Bonesnakes)" },
-        { 2075, "Gorgon Tomb - Blue Key (Butt)" },
-        { 6135, "Gorgon Tomb - Blue Key (Inside Wall)" },
-        { 6374, "Mechanism - Blue Key (Void Charm)" },
-        { 7140, "Mechanism - Blue Key (Snake Head)" },
-        { 7186, "Mechanism - Blue Key (Linus)" },
-        { 6261, "Mechanism - Blue Key (Sacrifice)" },
-        { 7099, "Mechanism - Blue Key (To Red Key)" },
-        { 7167, "Mechanism - Blue Key (Arias)" },
-        { 6159, "Mechanism - Blue Key (Switch Blocks)" },
-        { 6143, "Mechanism - Blue Key (Top Path)" },
-        { 6292, "Mechanism - Blue Key (Old Man)" },
-        { 8806, "Mechanism - Blue Key (Checkpoint)" },
-        { 6752, "Hall of the Phantoms - Blue Key (Epimetheus)" },
-        { 6775, "Hall of the Phantoms - Blue Key (Gold Hint)" },
-        { 6483, "Hall of the Phantoms - Blue Key (Amulet of Sol)" },
-        { 7090, "Hall of the Phantoms - Blue Key (Secret Ladder)" },
-        { 6170, "Hall of the Phantoms - Blue Key (Spike Teleporters)" },
-        { 6556, "Hall of the Phantoms - Blue Key (Teleport Maze)" },
-        { 6910, "Ruins of Ash - Blue Key (Face)" },
-        { 10707, "Ruins of Ash - Blue Key (Flames)" },
-        { 7046, "Ruins of Ash - Blue Key (Baby Gorgon)" },
-        { 4618, "Ruins of Ash - Blue Key (Top)" },
-        { 6739, "The Apex - Blue Key" },
-        { 7343, "Catacombs - Blue Key (Slime Water)" },
-        { 6880, "Catacombs - Blue Key (Eyeballs)" },
-        { 7988, "Serpent Path - Blue Key (Bubbles)" },
-        { 8170, "Serpent Path - Blue Key (Morning Star)" },
-        { 8111, "Serpent Path - Blue Key (Painting)" },
-        { 8009, "Serpent Path - Blue Key (Arias)" },
+        { 432, ApLocationId.GtBlueKeyBonesnake },
+        { 2075, ApLocationId.GtBlueKeyButt },
+        { 6135, ApLocationId.GtBlueKeyWall },
+        { 6374, ApLocationId.MechBlueKeyVoid },
+        { 7140, ApLocationId.MechBlueKeySnake },
+        { 7186, ApLocationId.MechBlueKeyLinus },
+        { 6261, ApLocationId.MechBlueKeySacrifice },
+        { 7099, ApLocationId.MechBlueKeyRed },
+        { 7167, ApLocationId.MechBlueKeyArias },
+        { 6159, ApLocationId.MechBlueKeyBlocks },
+        { 6143, ApLocationId.MechBlueKeyTop },
+        { 6292, ApLocationId.MechBlueKeyOldMan },
+        { 8806, ApLocationId.MechBlueKeySave },
+        { 6752, ApLocationId.HotpBlueKeyStatue },
+        { 6775, ApLocationId.HotpBlueKeyGold },
+        { 6483, ApLocationId.HotpBlueKeyAmulet },
+        { 7090, ApLocationId.HotpBlueKeyLadder },
+        { 6170, ApLocationId.HotpBlueKeyTeleports },
+        { 6556, ApLocationId.HotpBlueKeyMaze },
+        { 6910, ApLocationId.RoaBlueKeyFace },
+        { 10707, ApLocationId.RoaBlueKeyFlames },
+        { 7046, ApLocationId.RoaBlueKeyBaby },
+        { 4618, ApLocationId.RoaBlueKeyTop },
+        { 6739, ApLocationId.ApexBlueKey },
+        { 7343, ApLocationId.CataBlueKeySlimes },
+        { 6880, ApLocationId.CataBlueKeyEyeballs },
+        { 7988, ApLocationId.SpBlueKeyBubbles },
+        { 8170, ApLocationId.SpBlueKeyStar },
+        { 8111, ApLocationId.SpBlueKeyPainting },
+        { 8009, ApLocationId.SpBlueKeyArias },
     };
 
-    public static readonly Dictionary<int, string> RedKeyMap = new()
+    public static readonly Dictionary<int, ApLocationId> RedKeyMap = new()
     {
-        { 9941, "Gorgon Tomb - Red Key" },
-        { 9571, "Mechanism - Red Key" },
-        { 3090, "Hall of the Phantoms - Red Key" },
-        { 7176, "Ruins of Ash - Red Key" },
-        { 7273, "Tower Roots - Red Key" },
+        { 9941, ApLocationId.GtRedKey },
+        { 9571, ApLocationId.MechRedKey },
+        { 3090, ApLocationId.HotpRedKey },
+        { 7176, ApLocationId.RoaRedKey },
+        { 7273, ApLocationId.TrRedKey },
     };
 
-    public static readonly Dictionary<int, string> SpawnedKeyMap = new()
+    public static readonly Dictionary<int, ApLocationId> SpawnedKeyMap = new()
     {
-        { 20, "Gorgon Tomb - Blue Key (Bonesnakes)" },
-        { 892, "Gorgon Tomb - Blue Key (Butt)" },
-        { 27, "Gorgon Tomb - Blue Key (Pot)" },
-        { 1177, "Mechanism - Blue Key (Snake Head)" },
-        { 1388, "Mechanism - White Key (Enemy Arena)" },
-        { 1216, "Mechanism - Blue Key (Pot)" },
-        { 3273, "Ruins of Ash - Blue Key (Pot)" },
-        { 2671, "Catacombs - Blue Key (Eyeballs)" },
+        { 20, ApLocationId.GtBlueKeyBonesnake },
+        { 892, ApLocationId.GtBlueKeyButt },
+        { 27, ApLocationId.GtBlueKeyPot },
+        { 1177, ApLocationId.MechBlueKeySnake },
+        { 1388, ApLocationId.MechWhiteKeyArena },
+        { 1216, ApLocationId.MechBlueKeyPot },
+        { 3273, ApLocationId.RoaBlueKeyPot },
+        { 2671, ApLocationId.CataBlueKeyEyeballs },
     };
 
-    public static readonly Dictionary<string, (int roomId, int objectId)> WhiteDoorMap = new()
+    public static readonly Dictionary<ApItemId, (int roomId, int objectId)> WhiteDoorMap = new()
     {
-        { "GT White Door (1st Room)", (3, 9) },
-        { "GT White Door (Linus' Map)", (268, 445) },
-        { "GT White Door (Tauros)", (62, 413) },
-        { "Mech White Door (2nd Room)", (302, 474) },
-        { "Mech White Door (Black Knight)", (343, 795) },
-        { "Mech White Door (Enemy Arena)", (1214, 6162) },
-        { "Mech White Door (Top)", (1633, 1672) },
-        { "HotP White Door (1st Room)", (820, 6166) },
-        { "HotP White Door (Griffon Claw)", (3012, 6174) },
-        { "HotP White Door (Boss)", (2889, 6545) },
-        { "RoA White Door (Worms)", (3271, 4138) },
-        { "RoA White Door (Ascend)", (3273, 8658) },
-        { "RoA White Door (Spike Balls)", (4096, 4709) },
-        { "RoA White Door (Spike Spinners)", (4249, 5770) },
-        { "RoA White Door (Skippable)", (4305, 5371) },
-        { "Cata White Door (Top)", (60, 2262) },
-        { "Cata White Door (After Blue Door)", (984, 4444) },
-        { "Cata White Door (Prison)", (4336, 4615) },
+        { ApItemId.WhiteDoorGtStart, (3, 9) },
+        { ApItemId.WhiteDoorGtMap, (268, 445) },
+        { ApItemId.WhiteDoorGtTauros, (62, 413) },
+        { ApItemId.WhiteDoorMech2nd, (302, 474) },
+        { ApItemId.WhiteDoorMechBk, (343, 795) },
+        { ApItemId.WhiteDoorMechArena, (1214, 6162) },
+        { ApItemId.WhiteDoorMechTop, (1633, 1672) },
+        { ApItemId.WhiteDoorHotpStart, (820, 6166) },
+        { ApItemId.WhiteDoorHotpClaw, (3012, 6174) },
+        { ApItemId.WhiteDoorHotpBoss, (2889, 6545) },
+        { ApItemId.WhiteDoorRoaWorms, (3271, 4138) },
+        { ApItemId.WhiteDoorRoaAscend, (3273, 8658) },
+        { ApItemId.WhiteDoorRoaBalls, (4096, 4709) },
+        { ApItemId.WhiteDoorRoaSpinners, (4249, 5770) },
+        { ApItemId.WhiteDoorRoaSkip, (4305, 5371) },
+        { ApItemId.WhiteDoorCataTop, (60, 2262) },
+        { ApItemId.WhiteDoorCataBlue, (984, 4444) },
+        { ApItemId.WhiteDoorCataPrison, (4336, 4615) },
     };
 
-    public static readonly Dictionary<string, (int roomId, int objectId)> BlueDoorMap = new()
+    public static readonly Dictionary<ApItemId, (int roomId, int objectId)> BlueDoorMap = new()
     {
-        { "GT Blue Door (Bestiary)", (6628, 9467) },
-        { "GT Blue Door (Ring of the Ancients)", (30, 6373) },
-        { "GT Blue Door (Bonus Orbs)", (32, 9470) },
-        { "GT Blue Door (Ascendant Key)", (38, 444) },
-        { "GT Blue Door (Sword of Mirrors)", (477, 6139) },
-        { "Mech Blue Door (Red Key)", (1300, 6137) },
-        { "Mech Blue Door (Shortcut)", (7235, 8810) },
-        { "Mech Blue Door (Music Test)", (324, 6275) },
-        { "Mech Blue Door (Talaria Boots)", (336, 6156) },
-        { "Mech Blue Door (Void Charm)", (330, 6146) },
-        { "Mech Blue Door (Cyclops Den)", (1623, 8808) },
-        { "HotP Blue Door (Above Start)", (821, 6165) },
-        { "HotP Blue Door (Epimetheus)", (2676, 6344) },
-        { "HotP Blue Door (Dead Maiden)", (2890, 6175) },
-        { "RoA Blue Door (Flames)", (4173, 8652) },
-        { "RoA Blue Door (Blood Pot)", (4106, 8763) },
-        { "Apex Blue Door", (7071, 7100) },
-        { "Caves Blue Door", (34, 2037) },
-        { "Cata Blue Door (Bonus Orbs)", (61, 6996) },
-        { "Cata Blue Door (Checkpoint)", (978, 2073) },
-        { "Cata Blue Door (Lunarian Bow)", (2416, 6997) },
-        { "Cata Blue Door (Poison Roots)", (2607, 6180) },
-        { "Cata Blue Door (Prison Cyclops)", (4336, 6184) },
-        { "Cata Blue Door (Prison Left)", (4335, 6185) },
-        { "Cata Blue Door (Prison Right)", (4335, 6186) },
-        { "TR Blue Door", (2706, 8815) },
-        { "SP Blue Door", (8088, 8809) },
+        { ApItemId.BlueDoorGtHunter, (6628, 9467) },
+        { ApItemId.BlueDoorGtRing, (30, 6373) },
+        { ApItemId.BlueDoorGtOrbs, (32, 9470) },
+        { ApItemId.BlueDoorGtAscendant, (38, 444) },
+        { ApItemId.BlueDoorGtSword, (477, 6139) },
+        { ApItemId.BlueDoorMechRed, (1300, 6137) },
+        { ApItemId.BlueDoorMechShortcut, (7235, 8810) },
+        { ApItemId.BlueDoorMechMusic, (324, 6275) },
+        { ApItemId.BlueDoorMechBoots, (336, 6156) },
+        { ApItemId.BlueDoorMechVoid, (330, 6146) },
+        { ApItemId.BlueDoorMechCd, (1623, 8808) },
+        { ApItemId.BlueDoorHotpStart, (821, 6165) },
+        { ApItemId.BlueDoorHotpStatue, (2676, 6344) },
+        { ApItemId.BlueDoorHotpMaiden, (2890, 6175) },
+        { ApItemId.BlueDoorRoaFlames, (4173, 8652) },
+        { ApItemId.BlueDoorRoaBlood, (4106, 8763) },
+        { ApItemId.BlueDoorApex, (7071, 7100) },
+        { ApItemId.BlueDoorCaves, (34, 2037) },
+        { ApItemId.BlueDoorCataOrbs, (61, 6996) },
+        { ApItemId.BlueDoorCataSave, (978, 2073) },
+        { ApItemId.BlueDoorCataBow, (2416, 6997) },
+        { ApItemId.BlueDoorCataRoots, (2607, 6180) },
+        { ApItemId.BlueDoorCataPrisonCyclops, (4336, 6184) },
+        { ApItemId.BlueDoorCataPrisonLeft, (4335, 6185) },
+        { ApItemId.BlueDoorCataPrisonRight, (4335, 6186) },
+        { ApItemId.BlueDoorTr, (2706, 8815) },
+        { ApItemId.BlueDoorSp, (8088, 8809) },
     };
 
-    public static readonly Dictionary<string, (int roomId, int objectId)> RedDoorMap = new()
+    public static readonly Dictionary<ApItemId, (int roomId, int objectId)> RedDoorMap = new()
     {
-        { "Red Door (Zeek)", (3227, 3288) },
-        { "Red Door (Cathedral)", (7055, 7252) },
-        { "Red Door (Serpent Path)", (5804, 7335) },
-        { "Red Door (Tower Roots)", (2706, 8812) },
-        { "Red Door (Dev Room)", (2598, 3276) },
+        { ApItemId.RedDoorZeek, (3227, 3288) },
+        { ApItemId.RedDoorCath, (7055, 7252) },
+        { ApItemId.RedDoorSp, (5804, 7335) },
+        { ApItemId.RedDoorTr, (2706, 8812) },
+        { ApItemId.RedDoorDevRoom, (2598, 3276) },
     };
 
     public static readonly Dictionary<string, CheckpointData> Checkpoints = new()
@@ -674,63 +1379,63 @@ public static class Data
         },
     };
 
-    public static readonly Dictionary<DealProperties.DealID, string> DealToLocation = new()
+    public static readonly Dictionary<DealProperties.DealID, ApLocationId> DealToLocation = new()
     {
-        { DealProperties.DealID.Deal_Knowledge, "Shop - Knowledge" },
-        { DealProperties.DealID.Deal_OrbReaper, "Shop - Orb Seeker" },
-        { DealProperties.DealID.Deal_TitanEgo, "Shop - Titan's Ego" },
-        { DealProperties.DealID.Deal_MapReveal, "Shop - Map Reveal" },
-        { DealProperties.DealID.Deal_Gift, "Shop - Gift" },
-        { DealProperties.DealID.Deal_LockedDoors, "Shop - Cartographer" },
-        { DealProperties.DealID.Deal_DeathOrb, "Shop - Death Orb" },
-        { DealProperties.DealID.Deal_MapDeath, "Shop - Death Point" },
-        { DealProperties.DealID.Deal_Mercy, "Shop - Mercy" },
-        { DealProperties.DealID.Deal_Algus_Arcanist, "Shop - Algus's Arcanist" },
-        { DealProperties.DealID.Deal_Algus_DamageField, "Shop - Algus's Shock Field" },
-        { DealProperties.DealID.Deal_Algus_MeteorRain, "Shop - Algus's Meteor Rain" },
-        { DealProperties.DealID.Deal_Arias_Gorgonslayer, "Shop - Arias's Gorgonslayer" },
-        { DealProperties.DealID.Deal_Arias_LastStand, "Shop - Arias's Last Stand" },
-        { DealProperties.DealID.Deal_Arias_Lionheart, "Shop - Arias's Lionheart" },
-        { DealProperties.DealID.Deal_Kyuli_AssassinStrike, "Shop - Kyuli's Assassin Strike" },
-        { DealProperties.DealID.Deal_Kyuli_Bullseye, "Shop - Kyuli's Bullseye" },
-        { DealProperties.DealID.Deal_Kyuli_ShiningRay, "Shop - Kyuli's Shining Ray" },
-        { DealProperties.DealID.Deal_Zeek_JunkyardHunt, "Shop - Zeek's Junkyard Hunt" },
-        { DealProperties.DealID.Deal_Zeek_GoldDigger, "Shop - Zeek's Orb Monger" },
-        { DealProperties.DealID.Deal_Zeek_BiggerLoot, "Shop - Zeek's Bigger Loot" },
-        { DealProperties.DealID.Deal_Bram_GoldenAxe, "Shop - Bram's Golden Axe" },
-        { DealProperties.DealID.Deal_Bram_MonsterHunter, "Shop - Bram's Monster Hunter" },
-        { DealProperties.DealID.Deal_Bram_Whiplash, "Shop - Bram's Whiplash" },
+        { DealProperties.DealID.Deal_Knowledge, ApLocationId.ShopKnowledge },
+        { DealProperties.DealID.Deal_OrbReaper, ApLocationId.ShopOrbSeeker },
+        { DealProperties.DealID.Deal_TitanEgo, ApLocationId.ShopTitansEgo },
+        { DealProperties.DealID.Deal_MapReveal, ApLocationId.ShopMapReveal },
+        { DealProperties.DealID.Deal_Gift, ApLocationId.ShopGift },
+        { DealProperties.DealID.Deal_LockedDoors, ApLocationId.ShopCartographer },
+        { DealProperties.DealID.Deal_DeathOrb, ApLocationId.ShopDeathOrb },
+        { DealProperties.DealID.Deal_MapDeath, ApLocationId.ShopDeathPoint },
+        { DealProperties.DealID.Deal_Mercy, ApLocationId.ShopMercy },
+        { DealProperties.DealID.Deal_Algus_Arcanist, ApLocationId.ShopAlgusArcanist },
+        { DealProperties.DealID.Deal_Algus_DamageField, ApLocationId.ShopAlgusShock },
+        { DealProperties.DealID.Deal_Algus_MeteorRain, ApLocationId.ShopAlgusMeteor },
+        { DealProperties.DealID.Deal_Arias_Gorgonslayer, ApLocationId.ShopAriasGorgonslayer },
+        { DealProperties.DealID.Deal_Arias_LastStand, ApLocationId.ShopAriasLastStand },
+        { DealProperties.DealID.Deal_Arias_Lionheart, ApLocationId.ShopAriasLionheart },
+        { DealProperties.DealID.Deal_Kyuli_AssassinStrike, ApLocationId.ShopKyuliAssassin },
+        { DealProperties.DealID.Deal_Kyuli_Bullseye, ApLocationId.ShopKyuliBullseye },
+        { DealProperties.DealID.Deal_Kyuli_ShiningRay, ApLocationId.ShopKyuliRay },
+        { DealProperties.DealID.Deal_Zeek_JunkyardHunt, ApLocationId.ShopZeekJunkyard },
+        { DealProperties.DealID.Deal_Zeek_GoldDigger, ApLocationId.ShopZeekOrbs },
+        { DealProperties.DealID.Deal_Zeek_BiggerLoot, ApLocationId.ShopZeekLoot },
+        { DealProperties.DealID.Deal_Bram_GoldenAxe, ApLocationId.ShopBramAxe },
+        { DealProperties.DealID.Deal_Bram_MonsterHunter, ApLocationId.ShopBramHunter },
+        { DealProperties.DealID.Deal_Bram_Whiplash, ApLocationId.ShopBramWhiplash },
     };
 
-    public static readonly Dictionary<string, DealProperties.DealID> ItemToDeal = new()
+    public static readonly Dictionary<ApItemId, DealProperties.DealID> ItemToDeal = new()
     {
-        { "Knowledge", DealProperties.DealID.Deal_Knowledge },
-        { "Orb Seeker", DealProperties.DealID.Deal_OrbReaper },
-        { "Titan's Ego", DealProperties.DealID.Deal_TitanEgo },
-        { "Map Reveal", DealProperties.DealID.Deal_MapReveal },
-        { "Gift", DealProperties.DealID.Deal_Gift },
-        { "Cartographer", DealProperties.DealID.Deal_LockedDoors },
-        { "Death Orb", DealProperties.DealID.Deal_DeathOrb },
-        { "Death Point", DealProperties.DealID.Deal_MapDeath },
-        { "Mercy", DealProperties.DealID.Deal_Mercy },
-        { "Algus's Arcanist", DealProperties.DealID.Deal_Algus_Arcanist },
-        { "Algus's Shock Field", DealProperties.DealID.Deal_Algus_DamageField },
-        { "Algus's Meteor Rain", DealProperties.DealID.Deal_Algus_MeteorRain },
-        { "Arias's Gorgonslayer", DealProperties.DealID.Deal_Arias_Gorgonslayer },
-        { "Arias's Last Stand", DealProperties.DealID.Deal_Arias_LastStand },
-        { "Arias's Lionheart", DealProperties.DealID.Deal_Arias_Lionheart },
-        { "Kyuli's Assassin Strike", DealProperties.DealID.Deal_Kyuli_AssassinStrike },
-        { "Kyuli's Bullseye", DealProperties.DealID.Deal_Kyuli_Bullseye },
-        { "Kyuli's Shining Ray", DealProperties.DealID.Deal_Kyuli_ShiningRay },
-        { "Zeek's Junkyard Hunt", DealProperties.DealID.Deal_Zeek_JunkyardHunt },
-        { "Zeek's Orb Monger", DealProperties.DealID.Deal_Zeek_GoldDigger },
-        { "Zeek's Bigger Loot", DealProperties.DealID.Deal_Zeek_BiggerLoot },
-        { "Bram's Golden Axe", DealProperties.DealID.Deal_Bram_GoldenAxe },
-        { "Bram's Monster Hunter", DealProperties.DealID.Deal_Bram_MonsterHunter },
-        { "Bram's Whiplash", DealProperties.DealID.Deal_Bram_Whiplash },
+        { ApItemId.ShopUpgradeKnowledge, DealProperties.DealID.Deal_Knowledge },
+        { ApItemId.ShopUpgradeOrbSeeker, DealProperties.DealID.Deal_OrbReaper },
+        { ApItemId.ShopUpgradeTitansEgo, DealProperties.DealID.Deal_TitanEgo },
+        { ApItemId.ShopUpgradeMapReveal, DealProperties.DealID.Deal_MapReveal },
+        { ApItemId.ShopUpgradeGift, DealProperties.DealID.Deal_Gift },
+        { ApItemId.ShopUpgradeCartographer, DealProperties.DealID.Deal_LockedDoors },
+        { ApItemId.ShopUpgradeDeathOrb, DealProperties.DealID.Deal_DeathOrb },
+        { ApItemId.ShopUpgradeDeathPoint, DealProperties.DealID.Deal_MapDeath },
+        { ApItemId.ShopUpgradeMercy, DealProperties.DealID.Deal_Mercy },
+        { ApItemId.ShopUpgradeAlgusArcanist, DealProperties.DealID.Deal_Algus_Arcanist },
+        { ApItemId.ShopUpgradeAlgusShock, DealProperties.DealID.Deal_Algus_DamageField },
+        { ApItemId.ShopUpgradeAlgusMeteor, DealProperties.DealID.Deal_Algus_MeteorRain },
+        { ApItemId.ShopUpgradeAriasGorgonslayer, DealProperties.DealID.Deal_Arias_Gorgonslayer },
+        { ApItemId.ShopUpgradeAriasLastStand, DealProperties.DealID.Deal_Arias_LastStand },
+        { ApItemId.ShopUpgradeAriasLionheart, DealProperties.DealID.Deal_Arias_Lionheart },
+        { ApItemId.ShopUpgradeKyuliAssassin, DealProperties.DealID.Deal_Kyuli_AssassinStrike },
+        { ApItemId.ShopUpgradeKyuliBullseye, DealProperties.DealID.Deal_Kyuli_Bullseye },
+        { ApItemId.ShopUpgradeKyuliRay, DealProperties.DealID.Deal_Kyuli_ShiningRay },
+        { ApItemId.ShopUpgradeZeekJunkyard, DealProperties.DealID.Deal_Zeek_JunkyardHunt },
+        { ApItemId.ShopUpgradeZeekOrbs, DealProperties.DealID.Deal_Zeek_GoldDigger },
+        { ApItemId.ShopUpgradeZeekLoot, DealProperties.DealID.Deal_Zeek_BiggerLoot },
+        { ApItemId.ShopUpgradeBramAxe, DealProperties.DealID.Deal_Bram_GoldenAxe },
+        { ApItemId.ShopUpgradeBramHunter, DealProperties.DealID.Deal_Bram_MonsterHunter },
+        { ApItemId.ShopUpgradeBramWhiplash, DealProperties.DealID.Deal_Bram_Whiplash },
     };
 
-    public static readonly Dictionary<string, CharacterProperties.Character> ItemToCharacter = new()
+    public static readonly Dictionary<string, CharacterProperties.Character> NameToCharacter = new()
     {
         { "Algus", CharacterProperties.Character.Algus },
         { "Arias", CharacterProperties.Character.Arias },
@@ -739,8 +1444,14 @@ public static class Data
         { "Bram", CharacterProperties.Character.Bram },
     };
 
-    public static readonly Dictionary<CharacterProperties.Character, string> CharacterToItem =
-        ItemToCharacter.ToDictionary((kvp) => kvp.Value, (kvp) => kvp.Key);
+    public static readonly Dictionary<CharacterProperties.Character, string> CharacterToName = new()
+    {
+        { CharacterProperties.Character.Algus, "Algus" },
+        { CharacterProperties.Character.Arias, "Arias" },
+        { CharacterProperties.Character.Kyuli, "Kyuli" },
+        { CharacterProperties.Character.Zeek, "Zeek" },
+        { CharacterProperties.Character.Bram, "Bram" },
+    };
 
     public static readonly SwitchData[] Switches =
     [
@@ -750,8 +1461,9 @@ public static class Data
             RoomId = 3,
             ObjectsToEnable = [],
             ObjectsToDisable = [12],
-            ItemName = "GT Switch 2nd Room",
-            LocationName = "Gorgon Tomb - Switch (2nd Room)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGt2ndRoom,
+            ApLocationId = ApLocationId.GtSwitch2ndRoom,
         },
         new()
         {
@@ -759,8 +1471,9 @@ public static class Data
             RoomId = 32,
             ObjectsToEnable = [],
             ObjectsToDisable = [246],
-            ItemName = "GT Switch 1st Cyclops",
-            LocationName = "Gorgon Tomb - Switch (1st Cyclops)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGt1stCyclops,
+            ApLocationId = ApLocationId.GtSwitch1stCyclops,
         },
         new()
         {
@@ -768,8 +1481,9 @@ public static class Data
             RoomId = 47,
             ObjectsToEnable = [],
             ObjectsToDisable = [349],
-            ItemName = "GT Switch Spike Tunnel",
-            LocationName = "Gorgon Tomb - Switch (Spike Tunnel Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtSpikeTunnel,
+            ApLocationId = ApLocationId.GtSwitchSpikeTunnel,
         },
         new()
         {
@@ -777,8 +1491,9 @@ public static class Data
             RoomId = 48,
             ObjectsToEnable = [],
             ObjectsToDisable = [346],
-            ItemName = "GT Switch Butt Access",
-            LocationName = "Gorgon Tomb - Switch (Butt Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtButtAccess,
+            ApLocationId = ApLocationId.GtSwitchButtAccess,
         },
         new()
         {
@@ -786,8 +1501,9 @@ public static class Data
             RoomId = 35,
             ObjectsToEnable = [431],
             ObjectsToDisable = [],
-            ItemName = "GT Switch Gorgonheart",
-            LocationName = "Gorgon Tomb - Switch (Gorgonheart)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtGh,
+            ApLocationId = ApLocationId.GtSwitchGh,
         },
         new()
         {
@@ -795,8 +1511,9 @@ public static class Data
             RoomId = 303,
             ObjectsToEnable = [],
             ObjectsToDisable = [486],
-            ItemName = "Mech Switch Watcher",
-            LocationName = "Mechanism - Switch (Watcher)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechWatcher,
+            ApLocationId = ApLocationId.MechSwitchWatcher,
         },
         new()
         {
@@ -804,8 +1521,9 @@ public static class Data
             RoomId = 335,
             ObjectsToEnable = [],
             ObjectsToDisable = [535],
-            ItemName = "GT Crystal Ladder",
-            LocationName = "Gorgon Tomb - Crystal (Ladder)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalGtLadder,
+            ApLocationId = ApLocationId.GtCrystalLadder,
         },
         new()
         {
@@ -813,8 +1531,9 @@ public static class Data
             RoomId = 302,
             ObjectsToEnable = [],
             ObjectsToDisable = [538],
-            ItemName = "Mech Crystal Cannon",
-            LocationName = "Mechanism - Crystal (Cannon)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechCannon,
+            ApLocationId = ApLocationId.MechCrystalCannon,
         },
         new()
         {
@@ -822,8 +1541,9 @@ public static class Data
             RoomId = 30,
             ObjectsToEnable = [],
             ObjectsToDisable = [548],
-            ItemName = "GT Crystal RotA",
-            LocationName = "Gorgon Tomb - Crystal (Ring of the Ancients)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalGtRota,
+            ApLocationId = ApLocationId.GtCrystalRota,
         },
         new()
         {
@@ -831,8 +1551,9 @@ public static class Data
             RoomId = 74,
             ObjectsToEnable = [895, 896],
             ObjectsToDisable = [],
-            ItemName = "GT Switch Upper Path Blocks",
-            LocationName = "Gorgon Tomb - Switch (Upper Path Blocks)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtUpperPathBlocks,
+            ApLocationId = ApLocationId.GtSwitchUpperPathBlocks,
         },
         new()
         {
@@ -840,8 +1561,9 @@ public static class Data
             RoomId = 74,
             ObjectsToEnable = [],
             ObjectsToDisable = [677],
-            ItemName = "GT Switch Upper Path Access",
-            LocationName = "Gorgon Tomb - Switch (Upper Path Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtUpperPathAccess,
+            ApLocationId = ApLocationId.GtSwitchUpperPathAccess,
         },
         new()
         {
@@ -849,8 +1571,9 @@ public static class Data
             RoomId = 343,
             ObjectsToEnable = [],
             ObjectsToDisable = [830],
-            ItemName = "Mech Switch Chains",
-            LocationName = "Mechanism - Switch (Chains)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechChains,
+            ApLocationId = ApLocationId.MechSwitchChains,
         },
         new()
         {
@@ -858,8 +1581,9 @@ public static class Data
             RoomId = 65,
             ObjectsToEnable = [],
             ObjectsToDisable = [9204],
-            ItemName = "HotP Switch Rock",
-            LocationName = "Hall of the Phantoms - Switch (Rock)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpRock,
+            ApLocationId = ApLocationId.HotpSwitchRock,
         },
         new()
         {
@@ -867,8 +1591,9 @@ public static class Data
             RoomId = 2812,
             ObjectsToEnable = [],
             ObjectsToDisable = [889],
-            ItemName = "HotP Switch Below Start",
-            LocationName = "Hall of the Phantoms - Switch (Below Start)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpBelowStart,
+            ApLocationId = ApLocationId.HotpSwitchBelowStart,
         },
         new()
         {
@@ -876,8 +1601,9 @@ public static class Data
             RoomId = 800,
             ObjectsToEnable = [],
             ObjectsToDisable = [989],
-            ItemName = "Mech Switch Boss 1",
-            LocationName = "Mechanism - Switch (Boss Access 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechBoss1,
+            ApLocationId = ApLocationId.MechSwitchBossAccess1,
         },
         new()
         {
@@ -885,8 +1611,9 @@ public static class Data
             RoomId = 800,
             ObjectsToEnable = [],
             ObjectsToDisable = [990],
-            ItemName = "Mech Switch Boss 2",
-            LocationName = "Mechanism - Switch (Boss Access 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechBoss2,
+            ApLocationId = ApLocationId.MechSwitchBossAccess2,
         },
         new()
         {
@@ -894,8 +1621,9 @@ public static class Data
             RoomId = 36,
             ObjectsToEnable = [],
             ObjectsToDisable = [1032],
-            ItemName = "GT Switch Crosses",
-            LocationName = "Gorgon Tomb - Switch (Crosses)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtCrosses,
+            ApLocationId = ApLocationId.GtSwitchCrosses,
         },
         new()
         {
@@ -903,8 +1631,9 @@ public static class Data
             RoomId = 806,
             ObjectsToEnable = [],
             ObjectsToDisable = [1050],
-            ItemName = "Mech Switch Split Path",
-            LocationName = "Mechanism - Switch (Split Path)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechSplitPath,
+            ApLocationId = ApLocationId.MechSwitchSplitPath,
         },
         new()
         {
@@ -912,8 +1641,9 @@ public static class Data
             RoomId = 1,
             ObjectsToEnable = [1066, 1067],
             ObjectsToDisable = [],
-            ItemName = "GT Switch GH Shortcut",
-            LocationName = "Gorgon Tomb - Switch (Gorgonheart Shortcut)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtGhShortcut,
+            ApLocationId = ApLocationId.GtSwitchGhShortcut,
         },
         new()
         {
@@ -921,8 +1651,9 @@ public static class Data
             RoomId = 65,
             ObjectsToEnable = [],
             ObjectsToDisable = [987],
-            ItemName = "HotP Crystal Rock Access",
-            LocationName = "Hall of the Phantoms - Crystal (Rock Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalHotpRockAccess,
+            ApLocationId = ApLocationId.HotpCrystalRockAccess,
         },
         new()
         {
@@ -930,8 +1661,9 @@ public static class Data
             RoomId = 46,
             ObjectsToEnable = [1075, 6131],
             ObjectsToDisable = [],
-            ItemName = "GT Switch Arias",
-            LocationName = "Gorgon Tomb - Switch (Arias's Path)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtArias,
+            ApLocationId = ApLocationId.GtSwitchAriasPath,
         },
         new()
         {
@@ -939,8 +1671,9 @@ public static class Data
             RoomId = 328,
             ObjectsToEnable = [],
             ObjectsToDisable = [1113],
-            ItemName = "Mech Switch Snake 1",
-            LocationName = "Mechanism - Switch (Snake 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechSnake1,
+            ApLocationId = ApLocationId.MechSwitchSnake1,
         },
         new()
         {
@@ -948,8 +1681,9 @@ public static class Data
             RoomId = 331,
             ObjectsToEnable = [],
             ObjectsToDisable = [1185],
-            ItemName = "Mech Switch Boots",
-            LocationName = "Mechanism - Switch (Boots Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechBoots,
+            ApLocationId = ApLocationId.MechSwitchBootsAccess,
         },
         new()
         {
@@ -957,8 +1691,9 @@ public static class Data
             RoomId = 871,
             ObjectsToEnable = [],
             ObjectsToDisable = [1198],
-            ItemName = "HotP Switch Left 2",
-            LocationName = "Hall of the Phantoms - Switch (Left 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpLeft2,
+            ApLocationId = ApLocationId.HotpSwitchLeft2,
         },
         new()
         {
@@ -966,8 +1701,9 @@ public static class Data
             RoomId = 871,
             ObjectsToEnable = [],
             ObjectsToDisable = [1200],
-            ItemName = "HotP Switch Left 1",
-            LocationName = "Hall of the Phantoms - Switch (Left 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpLeft1,
+            ApLocationId = ApLocationId.HotpSwitchLeft1,
         },
         new()
         {
@@ -975,8 +1711,9 @@ public static class Data
             RoomId = 667,
             ObjectsToEnable = [],
             ObjectsToDisable = [1283],
-            ItemName = "Mech Crystal Linus",
-            LocationName = "Mechanism - Crystal (Linus)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechLinus,
+            ApLocationId = ApLocationId.MechCrystalLinus,
         },
         new()
         {
@@ -984,8 +1721,9 @@ public static class Data
             RoomId = 339,
             ObjectsToEnable = [],
             ObjectsToDisable = [1302, 5719],
-            ItemName = "Mech Switch to Upper GT",
-            LocationName = "Mechanism - Switch (Upper GT Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechToUpperGt,
+            ApLocationId = ApLocationId.MechSwitchUpperGtAccess,
         },
         new()
         {
@@ -993,8 +1731,9 @@ public static class Data
             RoomId = 1316,
             ObjectsToEnable = [],
             ObjectsToDisable = [1327, 1330, 1331, 1332],
-            ItemName = "Mech Switch Upper Void Drop",
-            LocationName = "Mechanism - Switch (Upper Void Drop)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechUpperVoidDrop,
+            ApLocationId = ApLocationId.MechSwitchUpperVoidDrop,
         },
         new()
         {
@@ -1002,8 +1741,9 @@ public static class Data
             RoomId = 811,
             ObjectsToEnable = [],
             ObjectsToDisable = [1383],
-            ItemName = "Mech Switch Upper Void",
-            LocationName = "Mechanism - Switch (Upper Void)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechUpperVoid,
+            ApLocationId = ApLocationId.MechSwitchUpperVoid,
         },
         new()
         {
@@ -1011,8 +1751,9 @@ public static class Data
             RoomId = 667,
             ObjectsToEnable = [],
             ObjectsToDisable = [1418],
-            ItemName = "Mech Switch Linus",
-            LocationName = "Mechanism - Switch (Linus)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechLinus,
+            ApLocationId = ApLocationId.MechSwitchLinus,
         },
         new()
         {
@@ -1020,8 +1761,9 @@ public static class Data
             RoomId = 336,
             ObjectsToEnable = [1441, 1442, 1443],
             ObjectsToDisable = [],
-            ItemName = "Mech Crystal Lower",
-            LocationName = "Mechanism - Crystal (Lower)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechLower,
+            ApLocationId = ApLocationId.MechCrystalLower,
         },
         new()
         {
@@ -1029,8 +1771,9 @@ public static class Data
             RoomId = 799,
             ObjectsToEnable = [1527, 1528, 1525, 1526, 1523, 1524, 1529, 1532, 1521, 1522, 1530, 1531],
             ObjectsToDisable = [],
-            ItemName = "Mech Crystal To Boss 3",
-            LocationName = "Mechanism - Crystal (To Boss 3)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechToBoss3,
+            ApLocationId = ApLocationId.MechCrystalToBoss3,
         },
         new()
         {
@@ -1038,8 +1781,9 @@ public static class Data
             RoomId = 73,
             ObjectsToEnable = [],
             ObjectsToDisable = [1558],
-            ItemName = "GT Switch Sword Access",
-            LocationName = "Gorgon Tomb - Switch (Sword Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtSwordAccess,
+            ApLocationId = ApLocationId.GtSwitchSwordAccess,
         },
         new()
         {
@@ -1047,8 +1791,9 @@ public static class Data
             RoomId = 73,
             ObjectsToEnable = [1561, 2359],
             ObjectsToDisable = [],
-            ItemName = "GT Switch Sword Backtrack",
-            LocationName = "Gorgon Tomb - Switch (Sword Backtrack)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtSwordBacktrack,
+            ApLocationId = ApLocationId.GtSwitchSwordBacktrack,
         },
         new()
         {
@@ -1056,8 +1801,9 @@ public static class Data
             RoomId = 799,
             ObjectsToEnable = [],
             ObjectsToDisable = [1605],
-            ItemName = "Mech Switch To Boss 2",
-            LocationName = "Mechanism - Switch (To Boss 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechToBoss2,
+            ApLocationId = ApLocationId.MechSwitchToBoss2,
         },
         new()
         {
@@ -1065,8 +1811,9 @@ public static class Data
             RoomId = 1216,
             ObjectsToEnable = [],
             ObjectsToDisable = [6380, 1619],
-            ItemName = "Mech Switch Pots",
-            LocationName = "Mechanism - Switch (Pots)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechPots,
+            ApLocationId = ApLocationId.MechSwitchPots,
         },
         new()
         {
@@ -1074,8 +1821,9 @@ public static class Data
             RoomId = 1622,
             ObjectsToEnable = [],
             ObjectsToDisable = [1620],
-            ItemName = "HotP Switch Lower Shortcut",
-            LocationName = "Hall of the Phantoms - Switch (Lower Shortcut)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpLowerShortcut,
+            ApLocationId = ApLocationId.HotpSwitchLowerShortcut,
         },
         new()
         {
@@ -1083,8 +1831,9 @@ public static class Data
             RoomId = 1632,
             ObjectsToEnable = [1642, 1640, 1638, 1637, 1639, 1641],
             ObjectsToDisable = [],
-            ItemName = "Mech Switch Maze Backdoor",
-            LocationName = "Mechanism - Switch (Maze Backdoor)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechMazeBackdoor,
+            ApLocationId = ApLocationId.MechSwitchMazeBackdoor,
         },
         new()
         {
@@ -1092,8 +1841,9 @@ public static class Data
             RoomId = 1630,
             ObjectsToEnable = [],
             ObjectsToDisable = [1714],
-            ItemName = "Mech Crystal Triple 1",
-            LocationName = "Mechanism - Crystal (Triple 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechTriple1,
+            ApLocationId = ApLocationId.MechCrystalTriple1,
         },
         new()
         {
@@ -1101,8 +1851,9 @@ public static class Data
             RoomId = 1630,
             ObjectsToEnable = [],
             ObjectsToDisable = [1715],
-            ItemName = "Mech Crystal Triple 2",
-            LocationName = "Mechanism - Crystal (Triple 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechTriple2,
+            ApLocationId = ApLocationId.MechCrystalTriple2,
         },
         new()
         {
@@ -1110,8 +1861,9 @@ public static class Data
             RoomId = 1630,
             ObjectsToEnable = [],
             ObjectsToDisable = [1716],
-            ItemName = "Mech Crystal Triple 3",
-            LocationName = "Mechanism - Crystal (Triple 3)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechTriple3,
+            ApLocationId = ApLocationId.MechCrystalTriple3,
         },
         new()
         {
@@ -1119,8 +1871,9 @@ public static class Data
             RoomId = 799,
             ObjectsToEnable = [],
             ObjectsToDisable = [1722, 1723],
-            ItemName = "Mech Switch To Boss 1",
-            LocationName = "Mechanism - Switch (To Boss 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechToBoss1,
+            ApLocationId = ApLocationId.MechSwitchToBoss1,
         },
         new()
         {
@@ -1128,8 +1881,9 @@ public static class Data
             RoomId = 1633,
             ObjectsToEnable = [1743],
             ObjectsToDisable = [],
-            ItemName = "Mech Crystal Top",
-            LocationName = "Mechanism - Crystal (Top)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechTop,
+            ApLocationId = ApLocationId.MechCrystalTop,
         },
         new()
         {
@@ -1137,8 +1891,9 @@ public static class Data
             RoomId = 34,
             ObjectsToEnable = [1910, 1911, 2612, 2613],
             ObjectsToDisable = [],
-            ItemName = "Caves Face 1st Room",
-            LocationName = "Caves - Face (1st Room)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceCaves1stRoom,
+            ApLocationId = ApLocationId.CavesFace1stRoom,
         },
         new()
         {
@@ -1146,8 +1901,9 @@ public static class Data
             RoomId = 1353,
             ObjectsToEnable = [1934, 6742, 6743, 6744],
             ObjectsToDisable = [],
-            ItemName = "Mech Switch Block Stairs",
-            LocationName = "Mechanism - Switch (Block Stairs)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechBlockStairs,
+            ApLocationId = ApLocationId.MechSwitchBlockStairs,
         },
         new()
         {
@@ -1155,8 +1911,9 @@ public static class Data
             RoomId = 53,
             ObjectsToEnable = [],
             ObjectsToDisable = [2050],
-            ItemName = "Caves Switch Skeletons",
-            LocationName = "Caves - Switch (Skeletons)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCavesSkeletons,
+            ApLocationId = ApLocationId.CavesSwitchSkeletons,
         },
         new()
         {
@@ -1164,8 +1921,9 @@ public static class Data
             RoomId = 54,
             ObjectsToEnable = [],
             ObjectsToDisable = [2059],
-            ItemName = "Caves Switch Cata 1",
-            LocationName = "Caves - Switch (Catacombs Access 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCavesCata1,
+            ApLocationId = ApLocationId.CavesSwitchCataAccess1,
         },
         new()
         {
@@ -1173,8 +1931,9 @@ public static class Data
             RoomId = 54,
             ObjectsToEnable = [],
             ObjectsToDisable = [2061],
-            ItemName = "Caves Switch Cata 2",
-            LocationName = "Caves - Switch (Catacombs Access 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCavesCata2,
+            ApLocationId = ApLocationId.CavesSwitchCataAccess2,
         },
         new()
         {
@@ -1182,8 +1941,9 @@ public static class Data
             RoomId = 54,
             ObjectsToEnable = [],
             ObjectsToDisable = [2063],
-            ItemName = "Caves Switch Cata 3",
-            LocationName = "Caves - Switch (Catacombs Access 3)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCavesCata3,
+            ApLocationId = ApLocationId.CavesSwitchCataAccess3,
         },
         new()
         {
@@ -1191,8 +1951,9 @@ public static class Data
             RoomId = 66,
             ObjectsToEnable = [2142],
             ObjectsToDisable = [],
-            ItemName = "GT Switch Sword",
-            LocationName = "Gorgon Tomb - Switch (Sword)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtSword,
+            ApLocationId = ApLocationId.GtSwitchSword,
         },
         new()
         {
@@ -1200,8 +1961,9 @@ public static class Data
             RoomId = 1631,
             ObjectsToEnable = [],
             ObjectsToDisable = [2278],
-            ItemName = "Mech Switch Arias Cyclops",
-            LocationName = "Mechanism - Switch (Arias Cyclops)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechAriasCyclops,
+            ApLocationId = ApLocationId.MechSwitchAriasCyclops,
         },
         new()
         {
@@ -1209,8 +1971,9 @@ public static class Data
             RoomId = 713,
             ObjectsToEnable = [],
             ObjectsToDisable = [2367, 2688, 2362, 2363, 2364, 2365, 2366],
-            ItemName = "Mech Switch Boots Lower",
-            LocationName = "Mechanism - Switch (Boots Lower)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechBootsLower,
+            ApLocationId = ApLocationId.MechSwitchBootsLower,
         },
         new()
         {
@@ -1218,8 +1981,9 @@ public static class Data
             RoomId = 797,
             ObjectsToEnable = [1354, 1357, 1358],
             ObjectsToDisable = [],
-            ItemName = "Mech Switch Chains Gap",
-            LocationName = "Mechanism - Switch (Chains Gap)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechChainsGap,
+            ApLocationId = ApLocationId.MechSwitchChainsGap,
         },
         new()
         {
@@ -1227,8 +1991,9 @@ public static class Data
             RoomId = 338,
             ObjectsToEnable = [],
             ObjectsToDisable = [2378],
-            ItemName = "Mech Switch Lower Key",
-            LocationName = "Mechanism - Switch (Lower Key)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechLowerKey,
+            ApLocationId = ApLocationId.MechSwitchLowerKey,
         },
         new()
         {
@@ -1236,8 +2001,9 @@ public static class Data
             RoomId = 58,
             ObjectsToEnable = [],
             ObjectsToDisable = [2415],
-            ItemName = "Cata Switch Elevator",
-            LocationName = "Catacombs - Switch (Elevator)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataElevator,
+            ApLocationId = ApLocationId.CataSwitchElevator,
         },
         new()
         {
@@ -1245,8 +2011,9 @@ public static class Data
             RoomId = 979,
             ObjectsToEnable = [2437, 2435, 2436, 2434],
             ObjectsToDisable = [],
-            ItemName = "Cata Face After Bow",
-            LocationName = "Catacombs - Face (After Bow)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceCataAfterBow,
+            ApLocationId = ApLocationId.CataFaceAfterBow,
         },
         new()
         {
@@ -1254,8 +2021,9 @@ public static class Data
             RoomId = 2416,
             ObjectsToEnable = [],
             ObjectsToDisable = [2471],
-            ItemName = "Cata Switch Vertical Shortcut",
-            LocationName = "Catacombs - Switch (Vertical Shortcut)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataVerticalShortcut,
+            ApLocationId = ApLocationId.CataSwitchShortcut,
         },
         new()
         {
@@ -1263,8 +2031,9 @@ public static class Data
             RoomId = 977,
             ObjectsToEnable = [],
             ObjectsToDisable = [2504, 2505, 7065],
-            ItemName = "Cata Switch Top",
-            LocationName = "Catacombs - Switch (Top)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataTop,
+            ApLocationId = ApLocationId.CataSwitchTop,
         },
         new()
         {
@@ -1272,8 +2041,9 @@ public static class Data
             RoomId = 981,
             ObjectsToEnable = [],
             ObjectsToDisable = [2533],
-            ItemName = "Cata Switch Claw 1",
-            LocationName = "Catacombs - Switch (Claw 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataClaw1,
+            ApLocationId = ApLocationId.CataSwitchClaw1,
         },
         new()
         {
@@ -1281,8 +2051,9 @@ public static class Data
             RoomId = 981,
             ObjectsToEnable = [],
             ObjectsToDisable = [2535],
-            ItemName = "Cata Switch Claw 2",
-            LocationName = "Catacombs - Switch (Claw 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataClaw2,
+            ApLocationId = ApLocationId.CataSwitchClaw2,
         },
         new()
         {
@@ -1290,8 +2061,9 @@ public static class Data
             RoomId = 2531,
             ObjectsToEnable = [],
             ObjectsToDisable = [2537],
-            ItemName = "Cata Switch Water 1",
-            LocationName = "Catacombs - Switch (Water 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataWater1,
+            ApLocationId = ApLocationId.CataSwitchWater1,
         },
         new()
         {
@@ -1299,8 +2071,9 @@ public static class Data
             RoomId = 2531,
             ObjectsToEnable = [],
             ObjectsToDisable = [2538],
-            ItemName = "Cata Switch Water 2",
-            LocationName = "Catacombs - Switch (Water 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataWater2,
+            ApLocationId = ApLocationId.CataSwitchWater2,
         },
         new()
         {
@@ -1308,8 +2081,9 @@ public static class Data
             RoomId = 2573,
             ObjectsToEnable = [2584],
             ObjectsToDisable = [],
-            ItemName = "Cata Switch Dev Room",
-            LocationName = "Catacombs - Switch (Dev Room)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataDevRoom,
+            ApLocationId = ApLocationId.CataSwitchDevRoom,
         },
         new()
         {
@@ -1317,8 +2091,9 @@ public static class Data
             RoomId = 828,
             ObjectsToEnable = [],
             ObjectsToDisable = [2847],
-            ItemName = "HotP Crystal Bottom",
-            LocationName = "Hall of the Phantoms - Crystal (Bottom)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalHotpBottom,
+            ApLocationId = ApLocationId.HotpCrystalBottom,
         },
         new()
         {
@@ -1326,8 +2101,9 @@ public static class Data
             RoomId = 1622,
             ObjectsToEnable = [2855, 2857, 2853, 2856],
             ObjectsToDisable = [],
-            ItemName = "HotP Crystal Lower",
-            LocationName = "Hall of the Phantoms - Crystal (Lower)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalHotpLower,
+            ApLocationId = ApLocationId.HotpCrystalLower,
         },
         new()
         {
@@ -1335,8 +2111,9 @@ public static class Data
             RoomId = 2802,
             ObjectsToEnable = [2868, 2869, 2864, 2867],
             ObjectsToDisable = [],
-            ItemName = "HotP Switch Bell",
-            LocationName = "Hall of the Phantoms - Switch (Bell)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpBell,
+            ApLocationId = ApLocationId.HotpSwitchBell,
         },
         new()
         {
@@ -1344,8 +2121,9 @@ public static class Data
             RoomId = 2892,
             ObjectsToEnable = [],
             ObjectsToDisable = [2907],
-            ItemName = "HotP Switch Ghost Blood",
-            LocationName = "Hall of the Phantoms - Switch (Ghost Blood)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpGhostBlood,
+            ApLocationId = ApLocationId.HotpSwitchGhostBlood,
         },
         new()
         {
@@ -1353,8 +2131,9 @@ public static class Data
             RoomId = 2891,
             ObjectsToEnable = [],
             ObjectsToDisable = [3024],
-            ItemName = "HotP Switch Teleports",
-            LocationName = "Hall of the Phantoms - Switch (Teleports)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpTeleports,
+            ApLocationId = ApLocationId.HotpSwitchTeleports,
         },
         new()
         {
@@ -1362,8 +2141,9 @@ public static class Data
             RoomId = 2893,
             ObjectsToEnable = [],
             ObjectsToDisable = [3072],
-            ItemName = "HotP Switch Worm Pillar",
-            LocationName = "Hall of the Phantoms - Switch (Worm Pillar)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpWormPillar,
+            ApLocationId = ApLocationId.HotpSwitchWormPillar,
         },
         new()
         {
@@ -1371,8 +2151,9 @@ public static class Data
             RoomId = 3216,
             ObjectsToEnable = [],
             ObjectsToDisable = [3213],
-            ItemName = "HotP Crystal After Claw",
-            LocationName = "Hall of the Phantoms - Crystal (After Claw)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalHotpAfterClaw,
+            ApLocationId = ApLocationId.HotpCrystalAfterClaw,
         },
         new()
         {
@@ -1380,8 +2161,9 @@ public static class Data
             RoomId = 2905,
             ObjectsToEnable = [],
             ObjectsToDisable = [3224],
-            ItemName = "Mech Switch Arias",
-            LocationName = "Mechanism - Switch (Arias)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechArias,
+            ApLocationId = ApLocationId.MechSwitchArias,
         },
         new()
         {
@@ -1389,8 +2171,9 @@ public static class Data
             RoomId = 3091,
             ObjectsToEnable = [],
             ObjectsToDisable = [3314],
-            ItemName = "Mech Crystal Cloak",
-            LocationName = "Mechanism - Crystal (Cloak)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechCloak,
+            ApLocationId = ApLocationId.MechCrystalCloak,
         },
         new()
         {
@@ -1398,8 +2181,9 @@ public static class Data
             RoomId = 1932,
             ObjectsToEnable = [3543, 3542],
             ObjectsToDisable = [],
-            ItemName = "Mech Crystal Slimes",
-            LocationName = "Mechanism - Crystal (Slimes)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechSlimes,
+            ApLocationId = ApLocationId.MechCrystalSlimes,
         },
         new()
         {
@@ -1407,8 +2191,9 @@ public static class Data
             RoomId = 3650,
             ObjectsToEnable = [3655, 3653],
             ObjectsToDisable = [],
-            ItemName = "GT Crystal Old Man 1",
-            LocationName = "Gorgon Tomb - Crystal (Old Man 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalGtOldMan1,
+            ApLocationId = ApLocationId.GtCrystalOldMan1,
         },
         new()
         {
@@ -1416,8 +2201,9 @@ public static class Data
             RoomId = 3650,
             ObjectsToEnable = [3654],
             ObjectsToDisable = [],
-            ItemName = "GT Crystal Old Man 2",
-            LocationName = "Gorgon Tomb - Crystal (Old Man 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalGtOldMan2,
+            ApLocationId = ApLocationId.GtCrystalOldMan2,
         },
         new()
         {
@@ -1425,8 +2211,9 @@ public static class Data
             RoomId = 3617,
             ObjectsToEnable = [],
             ObjectsToDisable = [3670, 3671, 3672, 3673, 3674],
-            ItemName = "HotP Face Old Man",
-            LocationName = "Hall of the Phantoms - Face (Old Man)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceHotpOldMan,
+            ApLocationId = ApLocationId.HotpFaceOldMan,
         },
         new()
         {
@@ -1434,8 +2221,9 @@ public static class Data
             RoomId = 2472,
             ObjectsToEnable = [9519, 9520, 9517, 9518, 9515, 9516, 9513, 9514],
             ObjectsToDisable = [],
-            ItemName = "Cata Face Bow",
-            LocationName = "Catacombs - Face (Bow)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceCataBow,
+            ApLocationId = ApLocationId.CataFaceBow,
         },
         new()
         {
@@ -1443,8 +2231,9 @@ public static class Data
             RoomId = 1054,
             ObjectsToEnable = [],
             ObjectsToDisable = [4120],
-            ItemName = "RoA Crystal 1st Room",
-            LocationName = "Ruins of Ash - Crystal (1st Room)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoa1stRoom,
+            ApLocationId = ApLocationId.RoaCrystal1stRoom,
         },
         new()
         {
@@ -1452,8 +2241,9 @@ public static class Data
             RoomId = 3938,
             ObjectsToEnable = [],
             ObjectsToDisable = [4171],
-            ItemName = "RoA Crystal Baby Gorgon",
-            LocationName = "Ruins of Ash - Crystal (Baby Gorgon)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaBabyGorgon,
+            ApLocationId = ApLocationId.RoaCrystalBabyGorgon,
         },
         new()
         {
@@ -1461,8 +2251,9 @@ public static class Data
             RoomId = 3273,
             ObjectsToEnable = [4244],
             ObjectsToDisable = [],
-            ItemName = "RoA Switch Ascend",
-            LocationName = "Ruins of Ash - Switch (Ascend)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaAscend,
+            ApLocationId = ApLocationId.RoaSwitchAscend,
         },
         new()
         {
@@ -1470,8 +2261,9 @@ public static class Data
             RoomId = 984,
             ObjectsToEnable = [4319],
             ObjectsToDisable = [],
-            ItemName = "Cata Switch After Blue Door",
-            LocationName = "Catacombs - Switch (After Blue Door)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataAfterBlueDoor,
+            ApLocationId = ApLocationId.CataSwitchAfterBlueDoor,
         },
         new()
         {
@@ -1479,8 +2271,9 @@ public static class Data
             RoomId = 2672,
             ObjectsToEnable = [],
             ObjectsToDisable = [4331],
-            ItemName = "Cata Face x4",
-            LocationName = "Catacombs - Face (x4)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceCataX4,
+            ApLocationId = ApLocationId.CataFaceX4,
         },
         new()
         {
@@ -1488,8 +2281,9 @@ public static class Data
             RoomId = 2655,
             ObjectsToEnable = [],
             ObjectsToDisable = [4339, 4340, 4341, 4342],
-            ItemName = "Cata Face Campfire",
-            LocationName = "Catacombs - Face (Campfire)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceCataCampfire,
+            ApLocationId = ApLocationId.CataFaceCampfire,
         },
         new()
         {
@@ -1497,8 +2291,9 @@ public static class Data
             RoomId = 2674,
             ObjectsToEnable = [],
             ObjectsToDisable = [4384],
-            ItemName = "Cata Face Double Door",
-            LocationName = "Catacombs - Face (Double Door)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceCataDoubleDoor,
+            ApLocationId = ApLocationId.CataFaceDoubleDoor,
         },
         new()
         {
@@ -1506,8 +2301,9 @@ public static class Data
             RoomId = 3272,
             ObjectsToEnable = [],
             ObjectsToDisable = [4447, 4448],
-            ItemName = "RoA Switch After Worms",
-            LocationName = "Ruins of Ash - Switch (After Worms)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaAfterWorms,
+            ApLocationId = ApLocationId.RoaSwitchAfterWorms,
         },
         new()
         {
@@ -1515,8 +2311,9 @@ public static class Data
             RoomId = 4085,
             ObjectsToEnable = [4466, 4467],
             ObjectsToDisable = [],
-            ItemName = "RoA Crystal Ladder Right",
-            LocationName = "Ruins of Ash - Crystal (Ladder Right)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaLadderR,
+            ApLocationId = ApLocationId.RoaCrystalLadderR,
         },
         new()
         {
@@ -1524,8 +2321,9 @@ public static class Data
             RoomId = 4085,
             ObjectsToEnable = [4468, 4469],
             ObjectsToDisable = [],
-            ItemName = "RoA Crystal Ladder Left",
-            LocationName = "Ruins of Ash - Crystal (Ladder Left)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaLadderL,
+            ApLocationId = ApLocationId.RoaCrystalLadderL,
         },
         new()
         {
@@ -1533,8 +2331,9 @@ public static class Data
             RoomId = 4084,
             ObjectsToEnable = [],
             ObjectsToDisable = [4487, 4488],
-            ItemName = "RoA Switch Right Path",
-            LocationName = "Ruins of Ash - Switch (Right Path)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaRightPath,
+            ApLocationId = ApLocationId.RoaSwitchRightPath,
         },
         new()
         {
@@ -1542,8 +2341,9 @@ public static class Data
             RoomId = 2653,
             ObjectsToEnable = [],
             ObjectsToDisable = [4548],
-            ItemName = "Cata Switch Shortcut Access",
-            LocationName = "Catacombs - Switch (Shortcut Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataShortcutAccess,
+            ApLocationId = ApLocationId.CataSwitchShortcutAccess,
         },
         new()
         {
@@ -1551,8 +2351,9 @@ public static class Data
             RoomId = 2653,
             ObjectsToEnable = [],
             ObjectsToDisable = [4549, 4552, 4553],
-            ItemName = "Cata Switch Ladder Blocks",
-            LocationName = "Catacombs - Switch (Ladder Blocks)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataLadderBlocks,
+            ApLocationId = ApLocationId.CataSwitchLadderBlocks,
         },
         new()
         {
@@ -1560,8 +2361,9 @@ public static class Data
             RoomId = 4108,
             ObjectsToEnable = [],
             ObjectsToDisable = [4639, 10020, 10021, 10022],
-            ItemName = "RoA Switch Apex Access",
-            LocationName = "Ruins of Ash - Switch (Apex Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaApexAccess,
+            ApLocationId = ApLocationId.RoaSwitchApexAccess,
         },
         new()
         {
@@ -1569,8 +2371,9 @@ public static class Data
             RoomId = 4107,
             ObjectsToEnable = [],
             ObjectsToDisable = [4663, 4664, 4665, 4666, 4667, 4668, 4669, 4670],
-            ItemName = "RoA Crystal Centaur",
-            LocationName = "Ruins of Ash - Crystal (Centaur)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaCentaur,
+            ApLocationId = ApLocationId.RoaCrystalCentaur,
         },
         new()
         {
@@ -1578,8 +2381,9 @@ public static class Data
             RoomId = 4101,
             ObjectsToEnable = [],
             ObjectsToDisable = [4677, 4682, 4681, 4683],
-            ItemName = "RoA Switch Icarus",
-            LocationName = "Ruins of Ash - Switch (Icarus Emblem)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaIcarus,
+            ApLocationId = ApLocationId.RoaSwitchIcarus,
         },
         new()
         {
@@ -1587,8 +2391,9 @@ public static class Data
             RoomId = 4093,
             ObjectsToEnable = [4694],
             ObjectsToDisable = [],
-            ItemName = "RoA Switch Shaft Left",
-            LocationName = "Ruins of Ash - Switch (Shaft Left)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaShaftL,
+            ApLocationId = ApLocationId.RoaSwitchShaftL,
         },
         new()
         {
@@ -1596,8 +2401,9 @@ public static class Data
             RoomId = 4093,
             ObjectsToEnable = [4695],
             ObjectsToDisable = [],
-            ItemName = "RoA Switch Shaft Right",
-            LocationName = "Ruins of Ash - Switch (Shaft Right)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaShaftR,
+            ApLocationId = ApLocationId.RoaSwitchShaftR,
         },
         new()
         {
@@ -1605,8 +2411,9 @@ public static class Data
             RoomId = 4105,
             ObjectsToEnable = [4741],
             ObjectsToDisable = [9465, 4761, 4759, 4760, 4758, 4757, 4756],
-            ItemName = "RoA Switch Elevator",
-            LocationName = "Ruins of Ash - Switch (Elevator)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaElevator,
+            ApLocationId = ApLocationId.RoaSwitchElevator,
         },
         new()
         {
@@ -1614,8 +2421,9 @@ public static class Data
             RoomId = 4096,
             ObjectsToEnable = [4848, 4849, 4850, 4851, 4852, 4853, 4854],
             ObjectsToDisable = [],
-            ItemName = "RoA Crystal Spike Balls",
-            LocationName = "Ruins of Ash - Crystal (Spike Balls)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaSpikeBalls,
+            ApLocationId = ApLocationId.RoaCrystalSpikeBalls,
         },
         new()
         {
@@ -1623,8 +2431,9 @@ public static class Data
             RoomId = 4097,
             ObjectsToEnable = [4889, 4890, 4891, 4892, 4893, 10476, 10477, 10478, 10479, 10480],
             ObjectsToDisable = [],
-            ItemName = "RoA Switch Shaft Downwards",
-            LocationName = "Ruins of Ash - Switch (Shaft Downwards)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaShaftDownwards,
+            ApLocationId = ApLocationId.RoaSwitchShaftDownwards,
         },
         new()
         {
@@ -1632,8 +2441,9 @@ public static class Data
             RoomId = 4247,
             ObjectsToEnable = [],
             ObjectsToDisable = [4935, 4934, 4933],
-            ItemName = "RoA Switch Spiders",
-            LocationName = "Ruins of Ash - Switch (Spiders)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaSpiders,
+            ApLocationId = ApLocationId.RoaSwitchSpiders,
         },
         new()
         {
@@ -1641,8 +2451,9 @@ public static class Data
             RoomId = 4248,
             ObjectsToEnable = [],
             ObjectsToDisable = [4943, 4944, 4945, 4946],
-            ItemName = "RoA Face Spiders",
-            LocationName = "Ruins of Ash - Face (Spiders)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceRoaSpiders,
+            ApLocationId = ApLocationId.RoaFaceSpiders,
         },
         new()
         {
@@ -1650,8 +2461,9 @@ public static class Data
             RoomId = 4305,
             ObjectsToEnable = [9931, 5375, 9930],
             ObjectsToDisable = [5376, 5372, 5374],
-            ItemName = "RoA Switch Dark Room",
-            LocationName = "Ruins of Ash - Switch (Dark Room)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaDarkRoom,
+            ApLocationId = ApLocationId.RoaSwitchDarkRoom,
         },
         new()
         {
@@ -1659,8 +2471,9 @@ public static class Data
             RoomId = 4620,
             ObjectsToEnable = [4253, 4254, 4251, 4252],
             ObjectsToDisable = [],
-            ItemName = "Apex Switch",
-            LocationName = "The Apex - Switch",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchApex,
+            ApLocationId = ApLocationId.ApexSwitch,
         },
         new()
         {
@@ -1668,8 +2481,9 @@ public static class Data
             RoomId = 2896,
             ObjectsToEnable = [],
             ObjectsToDisable = [5568],
-            ItemName = "HotP Switch To Claw 1",
-            LocationName = "Hall of the Phantoms - Switch (To Claw 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpToClaw1,
+            ApLocationId = ApLocationId.HotpSwitchToClaw1,
         },
         new()
         {
@@ -1677,8 +2491,9 @@ public static class Data
             RoomId = 2896,
             ObjectsToEnable = [5573, 5574, 5575, 10461, 10460],
             ObjectsToDisable = [],
-            ItemName = "HotP Switch To Claw 2",
-            LocationName = "Hall of the Phantoms - Switch (To Claw 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpToClaw2,
+            ApLocationId = ApLocationId.HotpSwitchToClaw2,
         },
         new()
         {
@@ -1686,8 +2501,9 @@ public static class Data
             RoomId = 3940,
             ObjectsToEnable = [],
             ObjectsToDisable = [10483, 10485, 10484, 10486, 5812, 8662, 8664, 8661, 8663, 8665],
-            ItemName = "RoA Switch Ascend Shortcut",
-            LocationName = "Ruins of Ash - Switch (Ascend Shortcut)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaAscendShortcut,
+            ApLocationId = ApLocationId.RoaSwitchAscendShortcut,
         },
         new()
         {
@@ -1695,8 +2511,9 @@ public static class Data
             RoomId = 3196,
             ObjectsToEnable = [],
             ObjectsToDisable = [5834, 5835],
-            ItemName = "HotP Switch Claw Access",
-            LocationName = "Hall of the Phantoms - Switch (Claw Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpClawAccess,
+            ApLocationId = ApLocationId.HotpSwitchClawAccess,
         },
         new()
         {
@@ -1704,8 +2521,9 @@ public static class Data
             RoomId = 874,
             ObjectsToEnable = [],
             ObjectsToDisable = [5853],
-            ItemName = "HotP Switch Ghosts",
-            LocationName = "Hall of the Phantoms - Switch (Ghosts)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpGhosts,
+            ApLocationId = ApLocationId.HotpSwitchGhosts,
         },
         new()
         {
@@ -1713,8 +2531,9 @@ public static class Data
             RoomId = 328,
             ObjectsToEnable = [],
             ObjectsToDisable = [6155],
-            ItemName = "Mech Switch Snake 2",
-            LocationName = "Mechanism - Switch (Snake 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechSnake2,
+            ApLocationId = ApLocationId.MechSwitchSnake2,
         },
         new()
         {
@@ -1722,8 +2541,9 @@ public static class Data
             RoomId = 3727,
             ObjectsToEnable = [3730, 3731, 3732, 3733],
             ObjectsToDisable = [],
-            ItemName = "Mech Crystal To CD",
-            LocationName = "Mechanism - Crystal (To CD)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechToCd,
+            ApLocationId = ApLocationId.MechCrystalToCd,
         },
         new()
         {
@@ -1731,8 +2551,9 @@ public static class Data
             RoomId = 797,
             ObjectsToEnable = [],
             ObjectsToDisable = [6321, 6322, 6323, 6324, 6320, 6319, 6318],
-            ItemName = "Mech Switch Key Blocks",
-            LocationName = "Mechanism - Switch (Key Blocks)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechKeyBlocks,
+            ApLocationId = ApLocationId.MechSwitchKeyBlocks,
         },
         new()
         {
@@ -1740,8 +2561,9 @@ public static class Data
             RoomId = 871,
             ObjectsToEnable = [],
             ObjectsToDisable = [6333, 6336, 6337, 6338, 6339, 6340],
-            ItemName = "HotP Switch Left 3",
-            LocationName = "Hall of the Phantoms - Switch (Left 3)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpLeft3,
+            ApLocationId = ApLocationId.HotpSwitchLeft3,
         },
         new()
         {
@@ -1749,8 +2571,9 @@ public static class Data
             RoomId = 302,
             ObjectsToEnable = [],
             ObjectsToDisable = [6404],
-            ItemName = "Mech Switch Cannon",
-            LocationName = "Mechanism - Switch (Cannon)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechCannon,
+            ApLocationId = ApLocationId.MechSwitchCannon,
         },
         new()
         {
@@ -1758,8 +2581,9 @@ public static class Data
             RoomId = 3666,
             ObjectsToEnable = [],
             ObjectsToDisable = [6431],
-            ItemName = "HotP Switch Above Old Man",
-            LocationName = "Hall of the Phantoms - Switch (Above Old Man)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpAboveOldMan,
+            ApLocationId = ApLocationId.HotpSwitchAboveOldMan,
         },
         new()
         {
@@ -1767,8 +2591,9 @@ public static class Data
             RoomId = 3624,
             ObjectsToEnable = [6445, 6447],
             ObjectsToDisable = [],
-            ItemName = "HotP Crystal Maiden 1",
-            LocationName = "Hall of the Phantoms - Crystal (Dead Maiden 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalHotpMaiden1,
+            ApLocationId = ApLocationId.HotpCrystalMaiden1,
         },
         new()
         {
@@ -1776,8 +2601,9 @@ public static class Data
             RoomId = 3625,
             ObjectsToEnable = [],
             ObjectsToDisable = [6467],
-            ItemName = "HotP Crystal Maiden 2",
-            LocationName = "Hall of the Phantoms - Crystal (Dead Maiden 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalHotpMaiden2,
+            ApLocationId = ApLocationId.HotpCrystalMaiden2,
         },
         new()
         {
@@ -1785,8 +2611,9 @@ public static class Data
             RoomId = 2898,
             ObjectsToEnable = [6529, 6527, 6528, 6530],
             ObjectsToDisable = [],
-            ItemName = "HotP Switch To Above Old Man",
-            LocationName = "Hall of the Phantoms - Switch (To Above Old Man)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpToAboveOldMan,
+            ApLocationId = ApLocationId.HotpSwitchToAboveOldMan,
         },
         new()
         {
@@ -1794,8 +2621,9 @@ public static class Data
             RoomId = 3256,
             ObjectsToEnable = [],
             ObjectsToDisable = [6548],
-            ItemName = "HotP Switch TP Puzzle",
-            LocationName = "Hall of the Phantoms - Switch (Teleport Puzzle)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpTpPuzzle,
+            ApLocationId = ApLocationId.HotpSwitchTpPuzzle,
         },
         new()
         {
@@ -1803,8 +2631,9 @@ public static class Data
             RoomId = 2874,
             ObjectsToEnable = [],
             ObjectsToDisable = [9801, 9432, 9800, 9431],
-            ItemName = "Mech Face Volantis",
-            LocationName = "Mechanism - Face (Above Volantis)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceMechVolantis,
+            ApLocationId = ApLocationId.MechFaceAboveVolantis,
         },
         new()
         {
@@ -1812,8 +2641,9 @@ public static class Data
             RoomId = 2892,
             ObjectsToEnable = [6695],
             ObjectsToDisable = [6694, 6693, 6692, 6691],
-            ItemName = "HotP Switch Eyeball Shortcut",
-            LocationName = "Hall of the Phantoms - Switch (Eyeball Shortcut)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpEyeballShortcut,
+            ApLocationId = ApLocationId.HotpSwitchEyeballShortcut,
         },
         new()
         {
@@ -1821,8 +2651,9 @@ public static class Data
             RoomId = 3272,
             ObjectsToEnable = [6790, 6791],
             ObjectsToDisable = [],
-            ItemName = "RoA Switch 1st Shortcut",
-            LocationName = "Ruins of Ash - Switch (1st Shortcut)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoa1stShortcut,
+            ApLocationId = ApLocationId.RoaSwitch1stShortcut,
         },
         new()
         {
@@ -1830,8 +2661,9 @@ public static class Data
             RoomId = 6785,
             ObjectsToEnable = [],
             ObjectsToDisable = [6792],
-            ItemName = "RoA Switch Spike Climb",
-            LocationName = "Ruins of Ash - Switch (Spike Climb)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaSpikeClimb,
+            ApLocationId = ApLocationId.RoaSwitchSpikeClimb,
         },
         new()
         {
@@ -1839,8 +2671,9 @@ public static class Data
             RoomId = 2800,
             ObjectsToEnable = [6863, 6865, 6872],
             ObjectsToDisable = [],
-            ItemName = "HotP Crystal Bell Access",
-            LocationName = "Hall of the Phantoms - Crystal (Bell Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalHotpBellAccess,
+            ApLocationId = ApLocationId.HotpCrystalBellAccess,
         },
         new()
         {
@@ -1848,8 +2681,9 @@ public static class Data
             RoomId = 3217,
             ObjectsToEnable = [6882, 6883, 6884, 6885],
             ObjectsToDisable = [],
-            ItemName = "HotP Crystal Heart",
-            LocationName = "Hall of the Phantoms - Crystal (Heart)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalHotpHeart,
+            ApLocationId = ApLocationId.HotpCrystalHeart,
         },
         new()
         {
@@ -1857,8 +2691,9 @@ public static class Data
             RoomId = 2801,
             ObjectsToEnable = [],
             ObjectsToDisable = [6870, 6871],
-            ItemName = "HotP Switch Bell Access",
-            LocationName = "Hall of the Phantoms - Switch (Bell Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpBellAccess,
+            ApLocationId = ApLocationId.HotpSwitchBellAccess,
         },
         new()
         {
@@ -1866,8 +2701,9 @@ public static class Data
             RoomId = 6787,
             ObjectsToEnable = [],
             ObjectsToDisable = [6903, 6904, 6905],
-            ItemName = "RoA Face Blue Key",
-            LocationName = "Ruins of Ash - Face (Blue Key)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceRoaBlueKey,
+            ApLocationId = ApLocationId.RoaFaceBlueKey,
         },
         new()
         {
@@ -1875,8 +2711,9 @@ public static class Data
             RoomId = 3588,
             ObjectsToEnable = [],
             ObjectsToDisable = [6925, 6926],
-            ItemName = "RoA Crystal Left Ascend",
-            LocationName = "Ruins of Ash - Crystal (Left Ascend)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaLeftAscend,
+            ApLocationId = ApLocationId.RoaCrystalLeftAscend,
         },
         new()
         {
@@ -1884,8 +2721,9 @@ public static class Data
             RoomId = 4095,
             ObjectsToEnable = [],
             ObjectsToDisable = [8718],
-            ItemName = "RoA Crystal Shaft",
-            LocationName = "Ruins of Ash - Crystal (Shaft)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaShaft,
+            ApLocationId = ApLocationId.RoaCrystalShaft,
         },
         new()
         {
@@ -1893,8 +2731,9 @@ public static class Data
             RoomId = 4083,
             ObjectsToEnable = [6948, 6949],
             ObjectsToDisable = [],
-            ItemName = "RoA Crystal Branch Right",
-            LocationName = "Ruins of Ash - Crystal (Branch Right)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaBranchR,
+            ApLocationId = ApLocationId.RoaCrystalBranchR,
         },
         new()
         {
@@ -1902,8 +2741,9 @@ public static class Data
             RoomId = 4083,
             ObjectsToEnable = [6950, 6951],
             ObjectsToDisable = [],
-            ItemName = "RoA Crystal Branch Left",
-            LocationName = "Ruins of Ash - Crystal (Branch Left)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaBranchL,
+            ApLocationId = ApLocationId.RoaCrystalBranchL,
         },
         new()
         {
@@ -1911,8 +2751,9 @@ public static class Data
             RoomId = 2473,
             ObjectsToEnable = [6982],
             ObjectsToDisable = [],
-            ItemName = "Cata Switch Mid Shortcut",
-            LocationName = "Catacombs - Switch (Mid Shortcut)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataMidShortcut,
+            ApLocationId = ApLocationId.CataSwitchMidShortcut,
         },
         new()
         {
@@ -1920,8 +2761,9 @@ public static class Data
             RoomId = 334,
             ObjectsToEnable = [],
             ObjectsToDisable = [7120],
-            ItemName = "GT Switch Upper Arias",
-            LocationName = "Gorgon Tomb - Switch (Upper Arias)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchGtUpperArias,
+            ApLocationId = ApLocationId.GtSwitchUpperArias,
         },
         new()
         {
@@ -1929,8 +2771,9 @@ public static class Data
             RoomId = 1215,
             ObjectsToEnable = [],
             ObjectsToDisable = [7132],
-            ItemName = "Mech Switch Eyeball",
-            LocationName = "Mechanism - Switch (Eyeball)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechEyeball,
+            ApLocationId = ApLocationId.MechSwitchEyeball,
         },
         new()
         {
@@ -1938,8 +2781,9 @@ public static class Data
             RoomId = 341,
             ObjectsToEnable = [],
             ObjectsToDisable = [7208],
-            ItemName = "Mech Crystal Campfire",
-            LocationName = "Mechanism - Crystal (Campfire)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechCampfire,
+            ApLocationId = ApLocationId.MechCrystalCampfire,
         },
         new()
         {
@@ -1947,8 +2791,9 @@ public static class Data
             RoomId = 7256,
             ObjectsToEnable = [],
             ObjectsToDisable = [7285],
-            ItemName = "Cath Crystal 1st Room",
-            LocationName = "Cathedral - Crystal (1st Room)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCath1stRoom,
+            ApLocationId = ApLocationId.CathCrystal1stRoom,
         },
         new()
         {
@@ -1956,8 +2801,9 @@ public static class Data
             RoomId = 7260,
             ObjectsToEnable = [],
             ObjectsToDisable = [7317, 7318, 10184, 10187, 10188, 10185, 10186, 10189],
-            ItemName = "Cath Switch Bottom",
-            LocationName = "Cathedral - Switch (Bottom)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCathBottom,
+            ApLocationId = ApLocationId.CathSwitchBottom,
         },
         new()
         {
@@ -1965,8 +2811,9 @@ public static class Data
             RoomId = 7264,
             ObjectsToEnable = [],
             ObjectsToDisable = [7325],
-            ItemName = "Cath Crystal Shaft",
-            LocationName = "Cathedral - Crystal (Shaft)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCathShaft,
+            ApLocationId = ApLocationId.CathCrystalShaft,
         },
         new()
         {
@@ -1974,8 +2821,9 @@ public static class Data
             RoomId = 59,
             ObjectsToEnable = [],
             ObjectsToDisable = [1101],
-            ItemName = "Cata Switch 1st Room",
-            LocationName = "Catacombs - Switch (1st Room)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCata1stRoom,
+            ApLocationId = ApLocationId.CataSwitch1stRoom,
         },
         new()
         {
@@ -1983,8 +2831,9 @@ public static class Data
             RoomId = 7361,
             ObjectsToEnable = [],
             ObjectsToDisable = [10474, 10475, 10471, 10473],
-            ItemName = "CD Crystal Backtrack",
-            LocationName = "Cyclops Den - Crystal (Backtrack)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCdBacktrack,
+            ApLocationId = ApLocationId.CdCrystalBacktrack,
         },
         new()
         {
@@ -1992,8 +2841,9 @@ public static class Data
             RoomId = 187,
             ObjectsToEnable = [2272],
             ObjectsToDisable = [],
-            ItemName = "Mech Crystal 1st Room",
-            LocationName = "Mechanism - Crystal (1st Room)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMech1stRoom,
+            ApLocationId = ApLocationId.MechCrystal1stRoom,
         },
         new()
         {
@@ -2001,8 +2851,9 @@ public static class Data
             RoomId = 6160,
             ObjectsToEnable = [7351, 7352, 7353, 7349],
             ObjectsToDisable = [],
-            ItemName = "Mech Crystal Old Man",
-            LocationName = "Mechanism - Crystal (Old Man)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechOldMan,
+            ApLocationId = ApLocationId.MechCrystalOldMan,
         },
         new()
         {
@@ -2010,8 +2861,9 @@ public static class Data
             RoomId = 7383,
             ObjectsToEnable = [7430, 7429, 7431, 7432, 7433],
             ObjectsToDisable = [7419, 7420, 7421, 7422, 7423, 7424, 7425, 7426, 7427, 7428],
-            ItemName = "SP Crystal Blocks",
-            LocationName = "Serpent Path - Crystal (Blocks)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalSpBlocks,
+            ApLocationId = ApLocationId.SpCrystalBlocks,
         },
         new()
         {
@@ -2019,8 +2871,9 @@ public static class Data
             RoomId = 7360,
             ObjectsToEnable = [],
             ObjectsToDisable = [7512],
-            ItemName = "CD Crystal Start",
-            LocationName = "Cyclops Den - Crystal (Start)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCdStart,
+            ApLocationId = ApLocationId.CdCrystalStart,
         },
         new()
         {
@@ -2028,8 +2881,9 @@ public static class Data
             RoomId = 7361,
             ObjectsToEnable = [],
             ObjectsToDisable = [7536],
-            ItemName = "CD Switch 1",
-            LocationName = "Cyclops Den - Switch 1",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCd1,
+            ApLocationId = ApLocationId.CdSwitch1,
         },
         new()
         {
@@ -2037,8 +2891,9 @@ public static class Data
             RoomId = 7362,
             ObjectsToEnable = [],
             ObjectsToDisable = [7547, 7548],
-            ItemName = "CD Switch 2",
-            LocationName = "Cyclops Den - Switch 2",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCd2,
+            ApLocationId = ApLocationId.CdSwitch2,
         },
         new()
         {
@@ -2046,8 +2901,9 @@ public static class Data
             RoomId = 7364,
             ObjectsToEnable = [],
             ObjectsToDisable = [7557, 7556, 7555],
-            ItemName = "CD Switch 3",
-            LocationName = "Cyclops Den - Switch 3",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCd3,
+            ApLocationId = ApLocationId.CdSwitch3,
         },
         new()
         {
@@ -2055,8 +2911,9 @@ public static class Data
             RoomId = 7368,
             ObjectsToEnable = [7581],
             ObjectsToDisable = [],
-            ItemName = "CD Switch Campfire",
-            LocationName = "Cyclops Den - Switch (Campfire)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCdCampfire,
+            ApLocationId = ApLocationId.CdSwitchCampfire,
         },
         new()
         {
@@ -2064,8 +2921,9 @@ public static class Data
             RoomId = 7371,
             ObjectsToEnable = [],
             ObjectsToDisable = [7707],
-            ItemName = "CD Crystal Campfire",
-            LocationName = "Cyclops Den - Crystal (Campfire)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCdCampfire,
+            ApLocationId = ApLocationId.CdCrystalCampfire,
         },
         new()
         {
@@ -2073,8 +2931,9 @@ public static class Data
             RoomId = 7374,
             ObjectsToEnable = [],
             ObjectsToDisable = [7735],
-            ItemName = "CD Crystal Steps",
-            LocationName = "Cyclops Den - Crystal (Steps)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCdSteps,
+            ApLocationId = ApLocationId.CdCrystalSteps,
         },
         new()
         {
@@ -2082,8 +2941,9 @@ public static class Data
             RoomId = 7377,
             ObjectsToEnable = [7744, 7745],
             ObjectsToDisable = [],
-            ItemName = "CD Switch Top",
-            LocationName = "Cyclops Den - Switch (Top)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCdTop,
+            ApLocationId = ApLocationId.CdSwitchTop,
         },
         new()
         {
@@ -2091,8 +2951,9 @@ public static class Data
             RoomId = 7393,
             ObjectsToEnable = [],
             ObjectsToDisable = [7820, 10597],
-            ItemName = "SP Switch Double Doors",
-            LocationName = "Serpent Path - Switch (Double Doors)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchSpDoubleDoors,
+            ApLocationId = ApLocationId.SpSwitchDoubleDoors,
         },
         new()
         {
@@ -2100,8 +2961,9 @@ public static class Data
             RoomId = 7387,
             ObjectsToEnable = [],
             ObjectsToDisable = [8005],
-            ItemName = "SP Switch Bubbles",
-            LocationName = "Serpent Path - Switch (Bubbles)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchSpBubbles,
+            ApLocationId = ApLocationId.SpSwitchBubbles,
         },
         new()
         {
@@ -2109,8 +2971,9 @@ public static class Data
             RoomId = 8090,
             ObjectsToEnable = [],
             ObjectsToDisable = [8154, 8156],
-            ItemName = "SP Crystal Star",
-            LocationName = "Serpent Path - Crystal (Star)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalSpStar,
+            ApLocationId = ApLocationId.SpCrystalStar,
         },
         new()
         {
@@ -2118,8 +2981,9 @@ public static class Data
             RoomId = 7309,
             ObjectsToEnable = [],
             ObjectsToDisable = [8242],
-            ItemName = "Cath Crystal Spike Pit",
-            LocationName = "Cathedral - Crystal (Spike Pit)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCathSpikePit,
+            ApLocationId = ApLocationId.CathCrystalSpikePit,
         },
         new()
         {
@@ -2127,8 +2991,9 @@ public static class Data
             RoomId = 8219,
             ObjectsToEnable = [8384],
             ObjectsToDisable = [],
-            ItemName = "Cath Crystal Top Left",
-            LocationName = "Cathedral - Crystal (Top Left)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCathTopL,
+            ApLocationId = ApLocationId.CathCrystalTopL,
         },
         new()
         {
@@ -2136,8 +3001,9 @@ public static class Data
             RoomId = 8219,
             ObjectsToEnable = [8386, 8388],
             ObjectsToDisable = [],
-            ItemName = "Cath Crystal Top Right",
-            LocationName = "Cathedral - Crystal (Top Right)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCathTopR,
+            ApLocationId = ApLocationId.CathCrystalTopR,
         },
         new()
         {
@@ -2145,8 +3011,9 @@ public static class Data
             RoomId = 8427,
             ObjectsToEnable = [],
             ObjectsToDisable = [8460],
-            ItemName = "Cath Crystal Shaft Access",
-            LocationName = "Cathedral - Crystal (Shaft Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCathShaftAccess,
+            ApLocationId = ApLocationId.CathCrystalShaftAccess,
         },
         new()
         {
@@ -2154,8 +3021,9 @@ public static class Data
             RoomId = 8427,
             ObjectsToEnable = [],
             ObjectsToDisable = [8467, 8466],
-            ItemName = "Cath Switch Beside Shaft",
-            LocationName = "Cathedral - Switch (Beside Shaft)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCathBesideShaft,
+            ApLocationId = ApLocationId.CathSwitchBesideShaft,
         },
         new()
         {
@@ -2163,8 +3031,9 @@ public static class Data
             RoomId = 3583,
             ObjectsToEnable = [],
             ObjectsToDisable = [8656],
-            ItemName = "RoA Crystal 3 Reapers",
-            LocationName = "Ruins of Ash - Crystal (3 Reapers)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoa3Reapers,
+            ApLocationId = ApLocationId.RoaCrystal3Reapers,
         },
         new()
         {
@@ -2172,8 +3041,9 @@ public static class Data
             RoomId = 4098,
             ObjectsToEnable = [8697, 9479, 9480, 9481, 9482, 9483, 9484, 9485, 9486, 9487, 9488, 9489, 9490],
             ObjectsToDisable = [],
-            ItemName = "RoA Switch Above Centaur",
-            LocationName = "Ruins of Ash - Switch (Above Centaur)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaAboveCentaur,
+            ApLocationId = ApLocationId.RoaSwitchAboveCentaur,
         },
         new()
         {
@@ -2181,8 +3051,9 @@ public static class Data
             RoomId = 4106,
             ObjectsToEnable = [8769, 8770],
             ObjectsToDisable = [10684, 10682, 10683, 10685, 10686, 10687],
-            ItemName = "RoA Switch Blood Pot",
-            LocationName = "Ruins of Ash - Switch (Blood Pot)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaBloodPot,
+            ApLocationId = ApLocationId.RoaSwitchBloodPot,
         },
         new()
         {
@@ -2190,8 +3061,9 @@ public static class Data
             RoomId = 806,
             ObjectsToEnable = [],
             ObjectsToDisable = [9233, 9234, 9235],
-            ItemName = "Mech Crystal Top Chains",
-            LocationName = "Mechanism - Crystal (Top Chains)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechTopChains,
+            ApLocationId = ApLocationId.MechCrystalTopChains,
         },
         new()
         {
@@ -2199,8 +3071,9 @@ public static class Data
             RoomId = 820,
             ObjectsToEnable = [],
             ObjectsToDisable = [9241, 9242, 9243],
-            ItemName = "HotP Switch 1st Room",
-            LocationName = "Hall of the Phantoms - Switch (1st Room)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotp1stRoom,
+            ApLocationId = ApLocationId.HotpSwitch1stRoom,
         },
         new()
         {
@@ -2208,8 +3081,9 @@ public static class Data
             RoomId = 875,
             ObjectsToEnable = [],
             ObjectsToDisable = [9270, 9269],
-            ItemName = "HotP Switch Left Backtrack",
-            LocationName = "Hall of the Phantoms - Switch (Left Backtrack)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpLeftBacktrack,
+            ApLocationId = ApLocationId.HotpSwitchLeftBacktrack,
         },
         new()
         {
@@ -2217,8 +3091,9 @@ public static class Data
             RoomId = 4139,
             ObjectsToEnable = [],
             ObjectsToDisable = [9411],
-            ItemName = "RoA Switch Worms",
-            LocationName = "Ruins of Ash - Switch (Worms)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaWorms,
+            ApLocationId = ApLocationId.RoaSwitchWorms,
         },
         new()
         {
@@ -2226,8 +3101,9 @@ public static class Data
             RoomId = 342,
             ObjectsToEnable = [],
             ObjectsToDisable = [2274, 2275],
-            ItemName = "Mech Crystal BK",
-            LocationName = "Mechanism - Crystal (Black Knight)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalMechBk,
+            ApLocationId = ApLocationId.MechCrystalBk,
         },
         new()
         {
@@ -2235,8 +3111,9 @@ public static class Data
             RoomId = 3941,
             ObjectsToEnable = [],
             ObjectsToDisable = [9497, 9498, 9499, 9500],
-            ItemName = "RoA Switch Triple 1",
-            LocationName = "Ruins of Ash - Switch (Triple 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaTriple1,
+            ApLocationId = ApLocationId.RoaSwitchTriple1,
         },
         new()
         {
@@ -2244,8 +3121,9 @@ public static class Data
             RoomId = 3941,
             ObjectsToEnable = [],
             ObjectsToDisable = [9502],
-            ItemName = "RoA Crystal Triple 2",
-            LocationName = "Ruins of Ash - Crystal (Triple 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalRoaTriple2,
+            ApLocationId = ApLocationId.RoaCrystalTriple2,
         },
         new()
         {
@@ -2253,8 +3131,9 @@ public static class Data
             RoomId = 3941,
             ObjectsToEnable = [],
             ObjectsToDisable = [9504],
-            ItemName = "RoA Switch Triple 3",
-            LocationName = "Ruins of Ash - Switch (Triple 3)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaTriple3,
+            ApLocationId = ApLocationId.RoaSwitchTriple3,
         },
         new()
         {
@@ -2262,8 +3141,9 @@ public static class Data
             RoomId = 4172,
             ObjectsToEnable = [],
             ObjectsToDisable = [10044, 10045],
-            ItemName = "RoA Switch Baby Gorgon",
-            LocationName = "Ruins of Ash - Switch (Baby Gorgon)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaBabyGorgon,
+            ApLocationId = ApLocationId.RoaSwitchBabyGorgon,
         },
         new()
         {
@@ -2271,8 +3151,9 @@ public static class Data
             RoomId = 9739,
             ObjectsToEnable = [],
             ObjectsToDisable = [9742],
-            ItemName = "TR Switch Adorned Left",
-            LocationName = "Tower Roots - Switch (Adorned Key Left)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchTrAdornedL,
+            ApLocationId = ApLocationId.TrSwitchAdornedL,
         },
         new()
         {
@@ -2280,8 +3161,9 @@ public static class Data
             RoomId = 9739,
             ObjectsToEnable = [],
             ObjectsToDisable = [9744],
-            ItemName = "TR Switch Adorned Middle",
-            LocationName = "Tower Roots - Switch (Adorned Key Middle)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchTrAdornedM,
+            ApLocationId = ApLocationId.TrSwitchAdornedM,
         },
         new()
         {
@@ -2289,8 +3171,9 @@ public static class Data
             RoomId = 9739,
             ObjectsToEnable = [],
             ObjectsToDisable = [9746],
-            ItemName = "TR Switch Adorned Right",
-            LocationName = "Tower Roots - Switch (Adorned Key Right)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchTrAdornedR,
+            ApLocationId = ApLocationId.TrSwitchAdornedR,
         },
         new()
         {
@@ -2298,8 +3181,9 @@ public static class Data
             RoomId = 9719,
             ObjectsToEnable = [],
             ObjectsToDisable = [9769],
-            ItemName = "TR Crystal Gold",
-            LocationName = "Tower Roots - Crystal (Gold)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalTrGold,
+            ApLocationId = ApLocationId.TrCrystalGold,
         },
         new()
         {
@@ -2307,8 +3191,9 @@ public static class Data
             RoomId = 3257,
             ObjectsToEnable = [],
             ObjectsToDisable = [9905, 9908, 9907, 9909],
-            ItemName = "HotP Crystal Below Puzzle",
-            LocationName = "Hall of the Phantoms - Crystal (Below Puzzle)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalHotpBelowPuzzle,
+            ApLocationId = ApLocationId.HotpCrystalBelowPuzzle,
         },
         new()
         {
@@ -2316,8 +3201,9 @@ public static class Data
             RoomId = 811,
             ObjectsToEnable = [9933, 9932],
             ObjectsToDisable = [9934],
-            ItemName = "Mech Switch Invisible",
-            LocationName = "Mechanism - Switch (Invisible)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechInvisible,
+            ApLocationId = ApLocationId.MechSwitchInvisible,
         },
         new()
         {
@@ -2325,8 +3211,9 @@ public static class Data
             RoomId = 10014,
             ObjectsToEnable = [],
             ObjectsToDisable = [10028, 10029, 10030, 10031],
-            ItemName = "RoA Switch Boss Access",
-            LocationName = "Ruins of Ash - Switch (Boss Access)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaBossAccess,
+            ApLocationId = ApLocationId.RoaSwitchBossAccess,
         },
         new()
         {
@@ -2334,8 +3221,9 @@ public static class Data
             RoomId = 8860,
             ObjectsToEnable = [],
             ObjectsToDisable = [10067],
-            ItemName = "Darkness Switch",
-            LocationName = "Darkness - Switch",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchDarkness,
+            ApLocationId = ApLocationId.DarkSwitch,
         },
         new()
         {
@@ -2343,8 +3231,9 @@ public static class Data
             RoomId = 2667,
             ObjectsToEnable = [],
             ObjectsToDisable = [10139, 10141, 10142],
-            ItemName = "Cata Switch Flames 2",
-            LocationName = "Catacombs - Switch (Flames 2)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataFlames2,
+            ApLocationId = ApLocationId.CataSwitchFlames2,
         },
         new()
         {
@@ -2352,8 +3241,9 @@ public static class Data
             RoomId = 2667,
             ObjectsToEnable = [10145, 10147, 10148, 10149],
             ObjectsToDisable = [],
-            ItemName = "Cata Switch Flames 1",
-            LocationName = "Catacombs - Switch (Flames 1)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCataFlames1,
+            ApLocationId = ApLocationId.CataSwitchFlames1,
         },
         new()
         {
@@ -2361,8 +3251,9 @@ public static class Data
             RoomId = 7259,
             ObjectsToEnable = [],
             ObjectsToDisable = [10166, 10165, 10164, 10162, 10163, 10156, 10157, 10155],
-            ItemName = "Cath Face Left",
-            LocationName = "Cathedral - Face (Left)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceCathL,
+            ApLocationId = ApLocationId.CathFaceLeft,
         },
         new()
         {
@@ -2370,8 +3261,9 @@ public static class Data
             RoomId = 7259,
             ObjectsToEnable = [],
             ObjectsToDisable = [10161, 10160, 10159],
-            ItemName = "Cath Face Right",
-            LocationName = "Cathedral - Face (Right)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceCathR,
+            ApLocationId = ApLocationId.CathFaceRight,
         },
         new()
         {
@@ -2379,8 +3271,9 @@ public static class Data
             RoomId = 8425,
             ObjectsToEnable = [],
             ObjectsToDisable = [10249],
-            ItemName = "Cath Crystal Orbs",
-            LocationName = "Cathedral - Crystal (Orbs)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCathOrbs,
+            ApLocationId = ApLocationId.CathCrystalOrbs,
         },
         new()
         {
@@ -2388,8 +3281,9 @@ public static class Data
             RoomId = 7310,
             ObjectsToEnable = [],
             ObjectsToDisable = [10268],
-            ItemName = "Cath Switch Top Campfire",
-            LocationName = "Cathedral - Switch (Top Campfire)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchCathTopCampfire,
+            ApLocationId = ApLocationId.CathSwitchTopCampfire,
         },
         new()
         {
@@ -2397,8 +3291,9 @@ public static class Data
             RoomId = 2696,
             ObjectsToEnable = [],
             ObjectsToDisable = [10288],
-            ItemName = "TR Switch Elevator",
-            LocationName = "Tower Roots - Switch (Elevator)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchTrElevator,
+            ApLocationId = ApLocationId.TrSwitchElevator,
         },
         new()
         {
@@ -2406,8 +3301,9 @@ public static class Data
             RoomId = 9717,
             ObjectsToEnable = [],
             ObjectsToDisable = [10310, 10311],
-            ItemName = "TR Switch Bottom",
-            LocationName = "Tower Roots - Switch (Bottom)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchTrBottom,
+            ApLocationId = ApLocationId.TrSwitchBottom,
         },
         new()
         {
@@ -2415,8 +3311,9 @@ public static class Data
             RoomId = 2608,
             ObjectsToEnable = [10442],
             ObjectsToDisable = [],
-            ItemName = "Cata Crystal Poison Roots",
-            LocationName = "Catacombs - Crystal (Poison Roots)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalCataPoisonRoots,
+            ApLocationId = ApLocationId.CataCrystalPoisonRoots,
         },
         new()
         {
@@ -2424,8 +3321,9 @@ public static class Data
             RoomId = 9718,
             ObjectsToEnable = [10490, 10492],
             ObjectsToDisable = [],
-            ItemName = "TR Crystal Dark Arias",
-            LocationName = "Tower Roots - Crystal (Dark Arias)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.CrystalTrDarkArias,
+            ApLocationId = ApLocationId.TrCrystalDarkArias,
         },
         new()
         {
@@ -2433,8 +3331,9 @@ public static class Data
             RoomId = 2793,
             ObjectsToEnable = [],
             ObjectsToDisable = [10579, 10578, 10577],
-            ItemName = "Cata Face Bottom",
-            LocationName = "Catacombs - Face (Bottom)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.FaceCataBottom,
+            ApLocationId = ApLocationId.CataFaceBottom,
         },
         new()
         {
@@ -2442,8 +3341,9 @@ public static class Data
             RoomId = 8093,
             ObjectsToEnable = [],
             ObjectsToDisable = [10596],
-            ItemName = "SP Switch After Star",
-            LocationName = "Serpent Path - Switch (After Star)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchSpAfterStar,
+            ApLocationId = ApLocationId.SpSwitchAfterStar,
         },
         new()
         {
@@ -2451,8 +3351,9 @@ public static class Data
             RoomId = 4116,
             ObjectsToEnable = [],
             ObjectsToDisable = [10678],
-            ItemName = "RoA Switch Blood Pot Left",
-            LocationName = "Ruins of Ash - Switch (Blood Pot Left)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaBloodPotL,
+            ApLocationId = ApLocationId.RoaSwitchBloodPotL,
         },
         new()
         {
@@ -2460,8 +3361,9 @@ public static class Data
             RoomId = 4116,
             ObjectsToEnable = [],
             ObjectsToDisable = [10680],
-            ItemName = "RoA Switch Blood Pot Right",
-            LocationName = "Ruins of Ash - Switch (Blood Pot Right)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaBloodPotR,
+            ApLocationId = ApLocationId.RoaSwitchBloodPotR,
         },
         new()
         {
@@ -2469,43 +3371,44 @@ public static class Data
             RoomId = 7437,
             ObjectsToEnable = [],
             ObjectsToDisable = [10756],
-            ItemName = "RoA Switch Lower Void",
-            LocationName = "Ruins of Ash - Switch (Lower Void)",
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchRoaLowerVoid,
+            ApLocationId = ApLocationId.RoaSwitchLowerVoid,
         },
     ];
 
-    public static readonly Dictionary<(int, string), string> LinkToLocation =
-        Switches.ToDictionary((data) => (data.RoomId, data.Id), (data) => data.LocationName);
+    public static readonly Dictionary<(int, string), ApLocationId> LinkToLocation =
+        Switches.ToDictionary((data) => (data.RoomId, data.Id), (data) => data.ApLocationId);
 
-    public static readonly Dictionary<string, SwitchData> ItemToLink = Switches.ToDictionary((data) => data.ItemName);
+    public static readonly Dictionary<ApItemId, SwitchData> ItemToLink = Switches.ToDictionary((data) => data.ApItemId);
 
-    public static readonly Dictionary<int, string> ElevatorToLocation = new()
+    public static readonly Dictionary<int, ApLocationId> ElevatorToLocation = new()
     {
-        //{ 6629, "Gorgon Tomb - Elevator 1" },
-        { 248, "Gorgon Tomb - Elevator 2" },
-        { 3947, "Mechanism - Elevator 1" },
-        { 803, "Mechanism - Elevator 2" },
-        { 10535, "Hall of the Phantoms - Elevator" },
-        { 1080, "Ruins of Ash - Elevator 1" },
-        { 8771, "Ruins of Ash - Elevator 2" },
-        { 4109, "The Apex - Elevator" },
-        { 61, "Catacombs - Elevator 1" },
-        { 2574, "Catacombs - Elevator 2" },
-        { 2705, "Tower Roots - Elevator" },
+        // { 6629, ApLocationId.GtElevator1 },
+        { 248, ApLocationId.GtElevator2 },
+        { 3947, ApLocationId.MechElevator1 },
+        { 803, ApLocationId.MechElevator2 },
+        { 10535, ApLocationId.HotpElevator },
+        { 1080, ApLocationId.RoaElevator1 },
+        { 8771, ApLocationId.RoaElevator2 },
+        { 4109, ApLocationId.ApexElevator },
+        { 61, ApLocationId.CataElevator1 },
+        { 2574, ApLocationId.CataElevator2 },
+        { 2705, ApLocationId.TrElevator },
     };
 
-    public static readonly Dictionary<string, int> ItemToElevator = new()
+    public static readonly Dictionary<ApItemId, int> ItemToElevator = new()
     {
-        //{ "GT 1 Elevator", 6629 },
-        { "GT 2 Elevator", 248 },
-        { "Mech 1 Elevator", 3947 },
-        { "Mech 2 Elevator", 803 },
-        { "HotP Elevator", 10535 },
-        { "RoA 1 Elevator", 1080 },
-        { "RoA 2 Elevator", 8771 },
-        { "Apex Elevator", 4109 },
-        { "Cata 1 Elevator", 61 },
-        { "Cata 2 Elevator", 2574 },
-        { "TR Elevator", 2705 },
+        // { ApItemId.ElevatorGt1, 6629 },
+        { ApItemId.ElevatorGt2, 248 },
+        { ApItemId.ElevatorMech1, 3947 },
+        { ApItemId.ElevatorMech2, 803 },
+        { ApItemId.ElevatorHotp, 10535 },
+        { ApItemId.ElevatorRoa1, 1080 },
+        { ApItemId.ElevatorRoa2, 8771 },
+        { ApItemId.ElevatorApex, 4109 },
+        { ApItemId.ElevatorCata1, 61 },
+        { ApItemId.ElevatorCata2, 2574 },
+        { ApItemId.ElevatorTr, 2705 },
     };
 }

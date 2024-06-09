@@ -1,11 +1,23 @@
 using System;
 using System.Collections.Generic;
 using Archipelago.MultiClient.Net.Enums;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace Astalon.Randomizer.Archipelago;
+
+public class ItemInfo
+{
+    public long Id { get; set; }
+    public string Name { get; set; }
+    public ItemFlags Flags { get; set; }
+    public int Player { get; set; }
+    public string PlayerName { get; set; }
+    public bool IsLocal { get; set; }
+    public long LocationId { get; set; }
+    public bool Receiving { get; set; }
+    public int Index { get; set; }
+    public bool IsAstalon { get; set; }
+}
 
 public enum Campaign
 {
@@ -28,18 +40,7 @@ public enum ApexElevator
     Removed = 2,
 }
 
-[JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-public struct ShopItem
-{
-    public long Id { get; set; }
-    public string Name { get; set; }
-    public string PlayerName { get; set; }
-    public string Game { get; set; }
-    public ItemFlags Flags { get; set; }
-    public bool IsLocal { get; set; }
-}
-
-public class ArchipelagoSlotData
+public class SlotData
 {
     public Campaign Campaign { get; set; }
     public Goal Goal { get; set; }
@@ -65,16 +66,9 @@ public class ArchipelagoSlotData
     public bool CampfireWarp { get; set; }
     public bool CheapKyuliRay { get; set; }
     public bool DeathLink { get; set; }
-    public Dictionary<string, ShopItem> ShopItems { get; set; }
-    public string[] StartingCharacters { get; set; }
+    public string[] StartingCharacters { get; set; } = [];
 
-    public ArchipelagoSlotData()
-    {
-        ShopItems = [];
-        StartingCharacters = [];
-    }
-
-    public ArchipelagoSlotData(IReadOnlyDictionary<string, object> slotData)
+    public SlotData(IReadOnlyDictionary<string, object> slotData)
     {
         var settings = (JObject)slotData["settings"];
 
@@ -105,17 +99,6 @@ public class ArchipelagoSlotData
 
         try
         {
-            var shopItems = (JObject)slotData["shop_items"];
-            ShopItems = shopItems.ToObject<Dictionary<string, ShopItem>>();
-        }
-        catch (Exception e)
-        {
-            Plugin.Logger.LogError($"Error parsing slot_data.shop_items: {e.Message}");
-            ShopItems = [];
-        }
-
-        try
-        {
             var startingCharacters = (JArray)slotData["starting_characters"];
             StartingCharacters = startingCharacters.ToObject<string[]>();
         }
@@ -136,7 +119,7 @@ public class ArchipelagoSlotData
             }
             catch (Exception e)
             {
-                Plugin.Logger.LogError($"Error parsing slot_data.{key}: {e.Message}");
+                Plugin.Logger.LogError($"Error parsing slot_data.settings.{key}: {e.Message}");
                 return defaultValue;
             }
         }
@@ -154,7 +137,7 @@ public class ArchipelagoSlotData
             }
             catch (Exception e)
             {
-                Plugin.Logger.LogError($"Error parsing slot_data.{key}: {e.Message}");
+                Plugin.Logger.LogError($"Error parsing slot_data.settings.{key}: {e.Message}");
                 return defaultValue;
             }
         }
@@ -172,7 +155,7 @@ public class ArchipelagoSlotData
             }
             catch (Exception e)
             {
-                Plugin.Logger.LogError($"Error parsing slot_data.{key}: {e.Message}");
+                Plugin.Logger.LogError($"Error parsing slot_data.settings.{key}: {e.Message}");
                 return defaultValue;
             }
         }
@@ -181,38 +164,50 @@ public class ArchipelagoSlotData
     }
 }
 
-public class ArchipelagoData
+public class State
 {
+    public bool Valid;
+
     public string Uri;
     public string SlotName;
     public string Password;
-
-    /// <summary>
-    ///     seed for this archipelago data. Can be used when loading a file to verify the session the player is trying to
-    ///     load is valid to the room it's connecting to.
-    /// </summary>
     public string Seed;
+    public SlotData SlotData;
+    public Dictionary<long, ItemInfo> LocationInfos = [];
 
-    public ArchipelagoSlotData SlotData;
+    public int ItemIndex { get; set; }
+    public bool ReceivedCyclopsKey { get; set; }
+    public bool ReceivedCrown { get; set; }
+    public bool CheckedCyclopsIdol { get; set; }
+    public bool CheckedZeek { get; set; }
+    public bool CheckedBram { get; set; }
+    public int CollectedGoldEyes { get; set; }
+    public List<long> CheckedLocations { get; set; } = [];
+    public List<DealProperties.DealID> ReceivedDeals { get; set; } = [];
+    public List<int> ReceivedElevators { get; set; } = [];
+    public List<int> CheckedElevators { get; set; } = [];
+    public List<int> VisitedCampfires { get; set; } = [];
 
-    public ArchipelagoData()
+    public State()
     {
         Uri = "localhost";
         SlotName = "Player1";
     }
 
-    public ArchipelagoData(string uri, string slotName, string password)
+    public State(string uri, string slotName, string password)
     {
         Uri = uri;
         SlotName = slotName;
         Password = password;
     }
 
-    /// <summary>
-    ///     assigns the slot data and seed to our data handler. any necessary setup using this data can be done here.
-    /// </summary>
-    /// <param name="roomSlotData">slot data of your slot from the room</param>
-    /// <param name="roomSeed">seed name of this session</param>
+    public void UpdateConnection(string uri, string slotName, string password)
+    {
+        Uri = uri;
+        SlotName = slotName;
+        Password = password;
+    }
+
     public bool SetupSession(Dictionary<string, object> roomSlotData, string roomSeed)
     {
         SlotData = new(roomSlotData);
@@ -222,7 +217,23 @@ public class ArchipelagoData
 
     public void Clear()
     {
+        Valid = false;
+
         Seed = "";
         SlotData = null;
+        LocationInfos.Clear();
+
+        ItemIndex = 0;
+        ReceivedCyclopsKey = false;
+        ReceivedCrown = false;
+        CheckedCyclopsIdol = false;
+        CheckedZeek = false;
+        CheckedBram = false;
+        CollectedGoldEyes = 0;
+        CheckedLocations.Clear();
+        ReceivedDeals.Clear();
+        ReceivedElevators.Clear();
+        CheckedElevators.Clear();
+        VisitedCampfires.Clear();
     }
 }

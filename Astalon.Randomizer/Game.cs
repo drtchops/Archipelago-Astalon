@@ -8,7 +8,6 @@ using Archipelago.MultiClient.Net.Enums;
 using Astalon.Randomizer.Archipelago;
 using BepInEx.Unity.IL2CPP.Utils;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using PathologicalGames;
 using UnityEngine;
 
@@ -27,7 +26,7 @@ public struct SaveData
 {
     public string Seed { get; set; }
     public int ItemIndex { get; set; }
-    public ArchipelagoSlotData SlotData { get; set; }
+    public SlotData SlotData { get; set; }
     public List<string> PendingLocations { get; set; }
     public List<DealProperties.DealID> ReceivedDeals { get; set; }
     public List<int> ReceivedElevators { get; set; }
@@ -41,37 +40,9 @@ public struct SaveData
     public int CollectedGoldEyes { get; set; }
 }
 
-[JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-public struct RoomData
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Type { get; set; }
-    public int Area { get; set; }
-    public int Floor { get; set; }
-    public bool IsRocks { get; set; }
-    public bool PreventBellUse { get; set; }
-    public bool SavePoint { get; set; }
-    public bool TitanStatue { get; set; }
-    public bool VoidPortal { get; set; }
-    public string InitialPosition { get; set; }
-    public int[] Switches { get; set; }
-    public int[] Switchables { get; set; }
-}
-
-public struct SwitchDump
-{
-    public string Id { get; set; }
-    public int RoomId { get; set; }
-    public int[] ObjectsToEnable { get; set; }
-    public int[] ObjectsToDisable { get; set; }
-    public string ItemName { get; set; }
-    public string LocationName { get; set; }
-}
-
 public static class Game
 {
-    public const string Name = "Astalon";
+    public const string Name = "Astalon Tears of the Earth";
     public const int SaveObjectId = 333000;
     public const int SaveRoomId = -1;
 
@@ -225,7 +196,7 @@ public static class Game
             return;
         }
 
-        if (Data.LocationMap.TryGetValue(item.itemProperties.itemID, out var location))
+        if (Data.ItemToApLocationId.TryGetValue(item.itemProperties.itemID, out var location))
         {
             UpdateEntityAppearance(item.gameObject, location);
         }
@@ -238,7 +209,7 @@ public static class Game
             return;
         }
 
-        string location = null;
+        ApLocationId? location = null;
 
         if (_saveData.SlotData.RandomizeHealthPickups &&
             Data.HealthMap.TryGetValue(actorId, out var healthLocation))
@@ -267,9 +238,8 @@ public static class Game
         if (actorId == 0 &&
             Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedLocation))
         {
-            if ((spawnedLocation.Contains("White Key") && _saveData.SlotData.RandomizeWhiteKeys) ||
-                (spawnedLocation.Contains("Blue Key") && _saveData.SlotData.RandomizeBlueKeys) ||
-                (spawnedLocation.Contains("Red Key") && _saveData.SlotData.RandomizeRedKeys))
+            if ((spawnedLocation == ApLocationId.MechWhiteKeyArena && _saveData.SlotData.RandomizeWhiteKeys) ||
+                (spawnedLocation != ApLocationId.MechWhiteKeyArena && _saveData.SlotData.RandomizeBlueKeys))
             {
                 location = spawnedLocation;
             }
@@ -283,13 +253,13 @@ public static class Game
 
         if (location != null)
         {
-            UpdateEntityAppearance(gameObject, location);
+            UpdateEntityAppearance(gameObject, (ApLocationId)location);
         }
     }
 
-    public static void UpdateEntityAppearance(GameObject gameObject, string location)
+    public static void UpdateEntityAppearance(GameObject gameObject, ApLocationId location)
     {
-        var itemInfo = Plugin.ArchipelagoClient.ScoutLocation(location);
+        var itemInfo = Plugin.State.LocationInfos.GetValueOrDefault((long)location);
         var itemName = itemInfo != null && itemInfo.IsAstalon ? itemInfo.Name : "";
         var itemFlags = itemInfo?.Flags ?? ItemFlags.None;
         var icon = GetIcon(itemName, itemFlags);
@@ -339,149 +309,6 @@ public static class Game
         _saveLoaded = true;
         _saveValid = false;
         _saveDataFilled = false;
-
-        //List<SwitchDump> switchDumps = [];
-
-        //foreach (var room in GameManager.Instance.gameRooms)
-        //{
-        //    Dictionary<string, List<int>> objectsToEnable = [];
-        //    Dictionary<string, List<int>> objectsToDisable = [];
-        //    List<string> switches = [];
-
-        //    foreach (var entityData in room.roomEntitiesData)
-        //    {
-        //        var switchId = entityData.GetValue("switchID");
-        //        if (!string.IsNullOrWhiteSpace(switchId) && switchId != "-1")
-        //        {
-        //            switches.Add(switchId);
-        //            if (!objectsToEnable.ContainsKey(switchId))
-        //            {
-        //                objectsToEnable[switchId] = [];
-        //                objectsToDisable[switchId] = [];
-        //            }
-        //        }
-
-        //        var linkId = entityData.GetValue("linkID");
-        //        if (!string.IsNullOrWhiteSpace(linkId))
-        //        {
-        //            if (!objectsToEnable.ContainsKey(linkId))
-        //            {
-        //                objectsToEnable[linkId] = [];
-        //                objectsToDisable[linkId] = [];
-        //            }
-
-        //            var isOn = entityData.GetValue("objectOn");
-        //            if (isOn == "True")
-        //            {
-        //                objectsToDisable[linkId].Add(entityData.ID);
-        //            }
-        //            else if (isOn == "False")
-        //            {
-        //                objectsToEnable[linkId].Add(entityData.ID);
-        //            }
-        //        }
-        //    }
-
-        //    var itemName = "Switch";
-        //    var locationName = "Switch";
-        //    switch (room.GetRoomArea())
-        //    {
-        //        case 1:
-        //            itemName = "GT Switch";
-        //            locationName = "Gorgon Tomb - Switch";
-        //            break;
-        //        case 2:
-        //            itemName = "Mech Switch";
-        //            locationName = "Mechanism - Switch";
-        //            break;
-        //        case 11:
-        //            itemName = "CD Switch";
-        //            locationName = "Cyclops Den - Switch";
-        //            break;
-        //        case 3:
-        //            itemName = "HotP Switch";
-        //            locationName = "Hall of the Phantoms - Switch";
-        //            break;
-        //        case 7:
-        //            itemName = "Cath Switch";
-        //            locationName = "Cathedral - Switch";
-        //            break;
-        //        case 5:
-        //            itemName = "RoA Switch";
-        //            locationName = "Ruins of Ash - Switch";
-        //            break;
-        //        case 8:
-        //            itemName = "SP Switch";
-        //            locationName = "Serpent Path - Switch";
-        //            break;
-        //        case 21:
-        //            itemName = "Caves Switch";
-        //            locationName = "Caves - Switch";
-        //            break;
-        //        case 4:
-        //            itemName = "Cata Switch";
-        //            locationName = "Catacombs - Switch";
-        //            break;
-        //        case 19:
-        //            itemName = "TR Switch";
-        //            locationName = "Tower Roots - Switch";
-        //            break;
-        //    }
-
-        //    foreach (var switchId in switches)
-        //    {
-        //        switchDumps.Add(new()
-        //        {
-        //            Id = switchId,
-        //            RoomId = room.roomID,
-        //            ObjectsToEnable = objectsToEnable[switchId].ToArray(),
-        //            ObjectsToDisable = objectsToDisable[switchId].ToArray(),
-        //            ItemName = itemName,
-        //            LocationName = locationName,
-        //        });
-        //    }
-        //}
-
-        //Plugin.Logger.LogMessage(JsonConvert.SerializeObject(switchDumps.OrderBy((s) => int.Parse(s.Id)).ToArray()));
-
-        //List<RoomData> rooms = [];
-        //foreach (var room in GameManager.Instance.gameRooms)
-        //{
-        //    List<int> switches = [];
-        //    List<int> switchables = [];
-
-        //    foreach (var entityData in room.roomEntitiesData)
-        //    {
-        //        if (entityData.GetValue("wasActivated") != "")
-        //        {
-        //            switches.Add(entityData.ID);
-        //        }
-
-        //        if (entityData.GetValue("objectOn") != "")
-        //        {
-        //            switchables.Add(entityData.ID);
-        //        }
-        //    }
-
-        //    rooms.Add(new()
-        //    {
-        //        Id = room.roomID,
-        //        Name = room.name,
-        //        Type = room.roomType,
-        //        Area = room.GetRoomArea(),
-        //        Floor = room.GetCurrentRoomFloor(),
-        //        IsRocks = room.isRocks,
-        //        PreventBellUse = room.preventBellUse,
-        //        SavePoint = room.savePoint,
-        //        TitanStatue = room.titanStatue,
-        //        VoidPortal = room.voidPortal,
-        //        InitialPosition = room.roomInitialPosition.ToString(),
-        //        Switches = switches.ToArray(),
-        //        Switchables = switchables.ToArray(),
-        //    });
-        //}
-
-        //Plugin.Logger.LogMessage(JsonConvert.SerializeObject(rooms));
 
         var serializedData = SaveManager.CurrentSave.GetObjectData(SaveObjectId);
         if (string.IsNullOrWhiteSpace(serializedData))
@@ -550,8 +377,8 @@ public static class Game
             return true;
         }
 
-        var seed = ArchipelagoClient.ServerData.Seed;
-        var slotData = ArchipelagoClient.ServerData.SlotData;
+        var seed = Plugin.State.Seed;
+        var slotData = Plugin.State.SlotData;
 
         if (_saveNew)
         {
@@ -592,10 +419,9 @@ public static class Game
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Bram, false);
                 }
 
-                if (!slotData.StartingCharacters.Contains(
-                        Data.CharacterToItem[Player.PlayerDataLocal.currentCharacter]))
+                if (!slotData.StartingCharacters.Contains(Data.CharacterToName[Player.PlayerDataLocal.currentCharacter]))
                 {
-                    Player.Instance.CycleCharacterTo(Data.ItemToCharacter[slotData.StartingCharacters[0]]);
+                    Player.Instance.CycleCharacterTo(Data.NameToCharacter[slotData.StartingCharacters[0]]);
                 }
             }
 
@@ -608,7 +434,7 @@ public static class Game
         }
         else
         {
-            _saveData.SlotData = ArchipelagoClient.ServerData.SlotData;
+            _saveData.SlotData = Plugin.State.SlotData;
         }
 
         SyncLocations();
@@ -812,49 +638,41 @@ public static class Game
         return Player.PlayerDataLocal.unlockedCharacters.Count > 1;
     }
 
-    public static string GetIcon(string itemName, ItemFlags flags = ItemFlags.None)
+    public static string GetIcon(ApItemId itemId, ItemFlags flags = ItemFlags.None)
     {
-        if (Data.IconMap.TryGetValue(itemName, out var icon))
+        if (Data.ApItemIdToIcon.TryGetValue(itemId, out var icon))
         {
             return icon;
         }
 
-        if (itemName.Contains("White Door"))
+        var itemName = itemId.ToString();
+
+        if (itemName.StartsWith("WhiteDoor"))
         {
             return "WhiteKey_1";
         }
 
-        if (itemName.Contains("Blue Door"))
+        if (itemName.StartsWith("BlueDoor"))
         {
             return "BlueKey_1";
         }
 
-        if (itemName.StartsWith("Red Door"))
+        if (itemName.StartsWith("RedDoor"))
         {
             return "RedKey_1";
         }
 
-        if (Regex.IsMatch(itemName, HealthRegex))
-        {
-            return "Item_HealthStone_1";
-        }
-
-        if (Regex.IsMatch(itemName, AttackRegex))
-        {
-            return "Item_PowerStone_1";
-        }
-
-        if (Regex.IsMatch(itemName, OrbsRegex))
+        if (itemName.StartsWith("Orbs"))
         {
             return "SoulOrb_Big";
         }
 
-        if (itemName.EndsWith("Elevator") && !itemName.Contains("Switch"))
+        if (itemName.StartsWith("Elevator"))
         {
             return "ElevatorMenu_Icon_OldMan";
         }
 
-        if (itemName.Contains("Switch") || itemName.Contains("Crystal") || itemName.Contains("Face"))
+        if (itemName.StartsWith("Switch") || itemName.StartsWith("Crystal") || itemName.StartsWith("Face"))
         {
             return "Frog";
         }
@@ -898,7 +716,15 @@ public static class Game
             message = itemInfo.Receiving ? $"{message} from {playerName}" : $"{playerName}'s {message}";
         }
 
-        var icon = GetIcon(itemInfo.Name, itemInfo.Flags);
+        string icon;
+        if (itemInfo.IsAstalon) {
+            icon = GetIcon((ApItemId)itemInfo.Id, itemInfo.Flags);
+        } else {
+            icon = itemInfo.Flags switch {
+                ItemFlags.Advancement => "BlueOrb_1",
+                _ => "Orb_Idle_1",
+            };
+        }
 
         var sound = itemInfo.Flags switch
         {
@@ -940,6 +766,7 @@ public static class Game
 
         ReceivingItem = true;
 
+        var apItemId = (ApItemId)itemInfo.Id;
         var itemName = itemInfo.Name;
         Plugin.Logger.LogDebug($"Giving item: {itemName}");
 
@@ -963,7 +790,7 @@ public static class Game
             var amount = int.Parse(match.Groups[1].ToString());
             Player.Instance.CollectOrbs(amount);
         }
-        else if (Data.ItemMap.TryGetValue(itemName, out var itemId))
+        else if (Data.ApItemIdToItem.TryGetValue(apItemId, out var itemId))
         {
             Player.PlayerDataLocal.CollectItem(itemId);
             Player.PlayerDataLocal.EnableItem(itemId);
@@ -991,25 +818,25 @@ public static class Game
                     break;
             }
         }
-        else if (Data.WhiteDoorMap.TryGetValue(itemName, out var whiteIds))
+        else if (Data.WhiteDoorMap.TryGetValue(apItemId, out var whiteIds))
         {
             var result = OpenDoor(whiteIds);
             ReceivingItem = false;
             return result;
         }
-        else if (Data.BlueDoorMap.TryGetValue(itemName, out var blueIds))
+        else if (Data.BlueDoorMap.TryGetValue(apItemId, out var blueIds))
         {
             var result = OpenDoor(blueIds);
             ReceivingItem = false;
             return result;
         }
-        else if (Data.RedDoorMap.TryGetValue(itemName, out var redIds))
+        else if (Data.RedDoorMap.TryGetValue(apItemId, out var redIds))
         {
             var result = OpenDoor(redIds);
             ReceivingItem = false;
             return result;
         }
-        else if (Data.ItemToDeal.TryGetValue(itemName, out var dealId))
+        else if (Data.ItemToDeal.TryGetValue(apItemId, out var dealId))
         {
             if (_saveData.SlotData.RandomizeShop)
             {
@@ -1026,11 +853,11 @@ public static class Game
                 Player.PlayerDataLocal.EnableItem(ItemProperties.ItemID.MarkOfEpimetheus);
             }
         }
-        else if (Data.ItemToLink.TryGetValue(itemName, out var switchData))
+        else if (Data.ItemToLink.TryGetValue(apItemId, out var switchData))
         {
             ToggleSwitchLink(switchData);
         }
-        else if (Data.ItemToElevator.TryGetValue(itemName, out var elevatorId))
+        else if (Data.ItemToElevator.TryGetValue(apItemId, out var elevatorId))
         {
             if (_saveData.SlotData.RandomizeElevator)
             {
@@ -1044,38 +871,38 @@ public static class Game
         }
         else
         {
-            switch (itemName)
+            switch (apItemId)
             {
-                case "Gorgon Eye (Gold)":
+                case ApItemId.EyeGold:
                     _saveData.CollectedGoldEyes += 1;
                     break;
-                case "Algus":
+                case ApItemId.CharacterAlgus:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Algus);
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Algus, false);
                     break;
-                case "Arias":
+                case ApItemId.CharacterArias:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Arias);
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Arias, false);
                     break;
-                case "Kyuli":
+                case ApItemId.CharacterKyuli:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Kyuli);
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Kyuli, false);
                     break;
-                case "Zeek":
+                case ApItemId.CharacterZeek:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Zeek);
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Zeek, false);
                     break;
-                case "Bram":
+                case ApItemId.CharacterBram:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
                     Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Bram, false);
                     break;
-                case "White Key":
+                case ApItemId.KeyWhite:
                     Player.PlayerDataLocal.AddKey(Key.KeyType.White);
                     break;
-                case "Blue Key":
+                case ApItemId.KeyBlue:
                     Player.PlayerDataLocal.AddKey(Key.KeyType.Blue);
                     break;
-                case "Red Key":
+                case ApItemId.KeyRed:
                     Player.PlayerDataLocal.AddKey(Key.KeyType.Red);
                     break;
                 default:
@@ -1204,7 +1031,7 @@ public static class Game
             return false;
         }
 
-        return Data.LocationMap.TryGetValue(itemId, out location);
+        return Data.ItemToApLocationId.TryGetValue(itemId, out location);
     }
 
     public static bool TryGetEntityLocation(int entityId, out string location)
@@ -1246,8 +1073,7 @@ public static class Game
         if (entityId == 0 &&
             Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedKeyLocation))
         {
-            if ((spawnedKeyLocation.Contains("White Key") &&
-                 _saveData.SlotData.RandomizeWhiteKeys) ||
+            if ((spawnedKeyLocation.Contains("White Key") && _saveData.SlotData.RandomizeWhiteKeys) ||
                 (spawnedKeyLocation.Contains("Blue Key") && _saveData.SlotData.RandomizeBlueKeys) ||
                 (spawnedKeyLocation.Contains("Red Key") && _saveData.SlotData.RandomizeRedKeys))
             {
@@ -1280,7 +1106,7 @@ public static class Game
         }
 
         if (_saveData.SlotData.RandomizeShop && Data.DealToLocation.TryGetValue(dealId, out var location) &&
-            _saveData.SlotData.ShopItems.TryGetValue(location, out var shopItem))
+            Plugin.State.LocationInfos.TryGetValue(location, out var shopItem))
         {
             name = shopItem.Name;
             playerName = shopItem.IsLocal ? null : shopItem.PlayerName;
@@ -1714,11 +1540,11 @@ public static class Game
         }
     }
 
-    public static void SendLocation(string location)
+    public static void SendLocation(ApLocationId location)
     {
         if (Plugin.ArchipelagoClient.Connected)
         {
-            Plugin.ArchipelagoClient.SendLocation(location);
+            Plugin.ArchipelagoClient.SendLocation((long)location);
         }
         else if (!_saveLoaded)
         {
@@ -1997,6 +1823,7 @@ public static class Game
             (GameplayUIManager.Instance?.FullMapOpen ?? false) ||
             _isWarping)
         {
+            // TODO: check not in elevator menu
             return;
         }
 

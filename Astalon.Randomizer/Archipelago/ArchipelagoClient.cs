@@ -12,20 +12,6 @@ using Archipelago.MultiClient.Net.Packets;
 
 namespace Astalon.Randomizer.Archipelago;
 
-public class ItemInfo
-{
-    public long Id { get; set; }
-    public string Name { get; set; }
-    public ItemFlags Flags { get; set; }
-    public int Player { get; set; }
-    public string PlayerName { get; set; }
-    public bool IsLocal { get; set; }
-    public long LocationId { get; set; }
-    public bool Receiving { get; set; }
-    public int Index { get; set; }
-    public bool IsAstalon { get; set; }
-}
-
 public class ArchipelagoClient
 {
     private const string MinArchipelagoVersion = "0.4.4";
@@ -33,18 +19,9 @@ public class ArchipelagoClient
     public bool Connected => _session?.Socket.Connected ?? false;
     private bool _attemptingConnection;
 
-    public static ArchipelagoData ServerData { get; } = new();
     private DeathLinkHandler _deathLinkHandler;
     private ArchipelagoSession _session;
     private bool _ignoreLocations;
-    private readonly Dictionary<long, ItemInfo> _locationCache = [];
-
-    public ArchipelagoClient(string uri, string slotName, string password)
-    {
-        ServerData.Uri = uri;
-        ServerData.SlotName = slotName;
-        ServerData.Password = password;
-    }
 
     public void Connect()
     {
@@ -53,14 +30,14 @@ public class ArchipelagoClient
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(ServerData.Uri))
+        if (string.IsNullOrWhiteSpace(Plugin.State.Uri) || string.IsNullOrWhiteSpace(Plugin.State.SlotName))
         {
             return;
         }
 
         try
         {
-            _session = ArchipelagoSessionFactory.CreateSession(ServerData.Uri);
+            _session = ArchipelagoSessionFactory.CreateSession(Plugin.State.Uri);
             SetupSession();
         }
         catch (Exception e)
@@ -90,10 +67,10 @@ public class ArchipelagoClient
         {
             loginResult = _session.TryConnectAndLogin(
                 Game.Name,
-                ServerData.SlotName,
+                Plugin.State.SlotName,
                 ItemsHandlingFlags.AllItems,
                 new(MinArchipelagoVersion),
-                password: ServerData.Password,
+                password: Plugin.State.Password,
                 requestSlotData: true);
         }
         catch (Exception e)
@@ -110,19 +87,19 @@ public class ArchipelagoClient
         }
 
         var login = loginResult as LoginSuccessful;
-        Plugin.Logger.LogInfo($"Successfully connected to {ServerData.Uri} as {ServerData.SlotName}");
+        Plugin.Logger.LogInfo($"Successfully connected to {Plugin.State.Uri} as {Plugin.State.SlotName}");
         OnConnect(login);
     }
 
     private void OnConnect(LoginSuccessful login)
     {
-        if (!ServerData.SetupSession(login.SlotData, _session.RoomState.Seed))
+        if (!Plugin.State.SetupSession(login.SlotData, _session.RoomState.Seed))
         {
             return;
         }
 
         _ignoreLocations = false;
-        _deathLinkHandler = new(_session.CreateDeathLinkService(), ServerData.SlotName, ServerData.SlotData.DeathLink);
+        _deathLinkHandler = new(_session.CreateDeathLinkService(), Plugin.State.SlotName, Plugin.State.SlotData.DeathLink);
         _attemptingConnection = false;
     }
 
@@ -137,8 +114,6 @@ public class ArchipelagoClient
         Task.Run(() => { _session.Socket.DisconnectAsync(); }).Wait();
         _deathLinkHandler = null;
         _session = null;
-        ServerData.Clear();
-        _locationCache.Clear();
     }
 
     public void Session_SocketClosed(string reason)
@@ -164,7 +139,7 @@ public class ArchipelagoClient
         ArchipelagoConsole.LogMessage(message.ToString());
     }
 
-    public void SendLocation(string location)
+    public void SendLocation(long location)
     {
         if (!Connected)
         {
@@ -172,75 +147,51 @@ public class ArchipelagoClient
             return;
         }
 
-        var id = _session.Locations.GetLocationIdFromName(Game.Name, location);
-        if (id == -1)
-        {
-            Plugin.Logger.LogError($"Cannot find location: {location}");
-            return;
-        }
-
-        _session.Locations.CompleteLocationChecksAsync(id);
+        _session.Locations.CompleteLocationChecksAsync(location);
     }
 
-    public bool SyncLocations(List<string> locations)
+    public bool SyncLocations(List<long> locations)
     {
         if (!Connected || locations == null || locations.Count == 0)
         {
             return false;
         }
 
-        List<long> ids = [];
-        foreach (var location in locations)
-        {
-            ids.Add(_session.Locations.GetLocationIdFromName(Game.Name, location));
-        }
-
         Plugin.Logger.LogInfo($"Sending location checks: {string.Join(", ", locations)}");
-        _session.Locations.CompleteLocationChecksAsync(ids.ToArray());
+        _session.Locations.CompleteLocationChecksAsync(locations.ToArray());
         return true;
     }
 
-    public ItemInfo ScoutLocation(string name)
+    public Dictionary<long, ItemInfo> ScoutAllLocations()
     {
         if (!Connected)
         {
             return null;
         }
 
-        var id = _session.Locations.GetLocationIdFromName(Game.Name, name);
-        return ScoutLocation(id);
-    }
-
-    public ItemInfo ScoutLocation(long id)
-    {
-        if (_locationCache.TryGetValue(id, out var cachedInfo))
+        List<long> locations = new(_session.Locations.AllLocations);
+        var scouts = _session.Locations.ScoutLocationsAsync(locations.ToArray()).ContinueWith(task =>
         {
-            return cachedInfo;
-        }
-
-        if (!Connected)
-        {
-            return null;
-        }
-
-        var scout = _session.Locations.ScoutLocationsAsync(id);
-        scout.Wait();
-        var networkItem = scout.Result.Locations[0];
-        var itemName = _session.Items.GetItemName(networkItem.Item);
-        var name = GetPlayerName(networkItem.Player);
-        var itemInfo = new ItemInfo
-        {
-            Id = id,
-            Name = itemName,
-            Flags = networkItem.Flags,
-            Player = networkItem.Player,
-            PlayerName = name,
-            IsLocal = networkItem.Player == GetCurrentPlayer(),
-            LocationId = id,
-            IsAstalon = GetPlayerGame(networkItem.Player) == Game.Name,
-        };
-        _locationCache[id] = itemInfo;
-        return itemInfo;
+            Dictionary<long, ItemInfo> itemInfos = [];
+            foreach (var networkItem in task.Result.Locations)
+            {
+                var itemName = _session.Items.GetItemName(networkItem.Item);
+                itemInfos[networkItem.Item] = new ItemInfo
+                {
+                    Id = networkItem.Item,
+                    Name = itemName,
+                    Flags = networkItem.Flags,
+                    Player = networkItem.Player,
+                    PlayerName = GetPlayerName(networkItem.Player),
+                    IsLocal = networkItem.Player == GetCurrentPlayer(),
+                    LocationId = networkItem.Location,
+                    IsAstalon = GetPlayerGame(networkItem.Player) == Game.Name,
+                };
+            }
+            return itemInfos;
+        });
+        scouts.Wait();
+        return scouts.Result;
     }
 
     public void SendCompletion()
@@ -289,18 +240,20 @@ public class ArchipelagoClient
         Plugin.Logger.LogDebug($"New locations checked: {string.Join(", ", newCheckedLocations)}");
         foreach (var id in newCheckedLocations)
         {
-            var itemInfo = ScoutLocation(id);
-            if (itemInfo == null)
+            if (Plugin.State.LocationInfos.TryGetValue(id, out var itemInfo))
+            {
+                Plugin.Logger.LogInfo($"Checked location: {id} - {itemInfo.Name} for {itemInfo.PlayerName}");
+                if (!itemInfo.IsLocal)
+                {
+                    Game.IncomingMessages.Enqueue(itemInfo);
+                }
+            }
+            else
             {
                 Plugin.Logger.LogWarning($"Scouting failed for location {id}");
                 continue;
             }
 
-            Plugin.Logger.LogInfo($"Checked location: {id} - {itemInfo.Name} for {itemInfo.PlayerName}");
-            if (!itemInfo.IsLocal)
-            {
-                Game.IncomingMessages.Enqueue(itemInfo);
-            }
         }
     }
 
@@ -311,7 +264,7 @@ public class ArchipelagoClient
             return "";
         }
 
-        var name = _session.Players.GetPlayerName(slot);
+        var name = _session.Players.GetPlayerAliasAndName(slot);
         if (string.IsNullOrWhiteSpace(name))
         {
             name = "Server";
@@ -327,8 +280,7 @@ public class ArchipelagoClient
             return "";
         }
 
-        return _session.Players.Players[_session.ConnectionInfo.Team].FirstOrDefault((p) => p.Slot == slot)
-            ?.Game;
+        return _session.Players.Players[_session.ConnectionInfo.Team].FirstOrDefault((p) => p.Slot == slot)?.Game;
     }
 
     public int GetCurrentPlayer()
