@@ -78,7 +78,7 @@ internal class Item_PlayerHeart_Gather_Routine_Patch
     [HarmonyPrefix]
     public static bool MoveNext(Item_PlayerHeart._Gather_Routine_d__11 __instance)
     {
-        if (!Game.ShouldSkipCutscenes())
+        if (!Plugin.State.ShouldSkipCutscenes())
         {
             return true;
         }
@@ -133,7 +133,7 @@ internal class Item_PlayerStrength_Gather_Routine_Patch
     [HarmonyPrefix]
     public static bool MoveNext(Item_PlayerStrength._Gather_Routine_d__11 __instance)
     {
-        if (!Game.ShouldSkipCutscenes())
+        if (!Plugin.State.ShouldSkipCutscenes())
         {
             return true;
         }
@@ -478,7 +478,7 @@ internal class EnemyMiniboss_ColorScroll_Patch
     [HarmonyPrefix]
     public static bool MoveNext(ref bool __result)
     {
-        if (Game.ShouldSkipCutscenes())
+        if (Plugin.State.ShouldSkipCutscenes())
         {
             GameManager.ResetTimeScale();
             __result = false;
@@ -707,7 +707,7 @@ class CS_Scene3_PlayScene_Patch
     {
         Plugin.Logger.LogDebug("CS_Scene3._PlayScene_d__4.MoveNext()");
 
-        if (Game.ShouldSkipCutscenes())
+        if (Plugin.State.ShouldSkipCutscenes())
         {
             __result = false;
             return false;

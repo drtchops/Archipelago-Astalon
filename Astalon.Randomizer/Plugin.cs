@@ -73,7 +73,14 @@ public class Plugin : BasePlugin
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} is loaded!");
     }
 
-    public static void UpdateConfig(string uri, string slotName, string password)
+    public static void UpdateConnectionInfo()
+    {
+        State.Uri = _configUri.Value;
+        State.SlotName = _configSlotName.Value;
+        State.Password = _configPassword.Value;
+    }
+
+    public static void UpdateConnectionInfo(string uri, string slotName, string password)
     {
         _configUri.Value = uri;
         _configSlotName.Value = slotName;
@@ -173,7 +180,7 @@ public class Il2CppBase : MonoBehaviour
         var slotName = GUI.TextField(new(134, 60, 150, 20), Plugin.State.SlotName);
         GUI.SetNextControlName("password");
         var password = GUI.PasswordField(new(134, 80, 150, 20), Plugin.State.Password, "*"[0]);
-        Plugin.UpdateConfig(uri, slotName, password);
+        Plugin.UpdateConnectionInfo(uri, slotName, password);
 
         var pressedButton = GUI.Button(new(4, 100, 100, 20), "Connect");
         if (pressedEnter || pressedButton)

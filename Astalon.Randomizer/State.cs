@@ -236,4 +236,14 @@ public class State
         CheckedElevators.Clear();
         VisitedCampfires.Clear();
     }
+
+    public bool ShouldSkipCutscenes() => Valid && SlotData.SkipCutscenes;
+
+    public bool CampfireWarpsEnabled() => Valid && SlotData.CampfireWarp;
+
+    public bool IsEyeHunt() => Valid && SlotData.Goal == Goal.EyeHunt;
+
+    public int GoldEyeRequirement() => Valid ? SlotData.AdditionalEyesRequired : 0;
+
+    public int GoldEyesCollected() => Valid ? CollectedGoldEyes : 0;
 }

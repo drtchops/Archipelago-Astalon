@@ -22,24 +22,6 @@ public class ItemBox
     public bool DisableController { get; set; } = false;
 }
 
-public struct SaveData
-{
-    public string Seed { get; set; }
-    public int ItemIndex { get; set; }
-    public SlotData SlotData { get; set; }
-    public List<string> PendingLocations { get; set; }
-    public List<DealProperties.DealID> ReceivedDeals { get; set; }
-    public List<int> ReceivedElevators { get; set; }
-    public List<int> CheckedElevators { get; set; }
-    public List<int> VisitedCampfires { get; set; }
-    public bool ReceivedCyclopsKey { get; set; }
-    public bool ReceivedCrown { get; set; }
-    public bool CheckedCyclopsIdol { get; set; }
-    public bool CheckedZeek { get; set; }
-    public bool CheckedBram { get; set; }
-    public int CollectedGoldEyes { get; set; }
-}
-
 public static class Game
 {
     public const string Name = "Astalon Tears of the Earth";
@@ -70,9 +52,7 @@ public static class Game
     private static bool _saveNew;
     private static bool _saveLoaded;
     private static bool _saveValid;
-    private static bool _saveDataFilled;
     private static bool _saveInitialized;
-    private static SaveData _saveData;
     private static int _deathCounter = -1;
     private static int _warpCooldown;
     private static bool _isWarping;
@@ -191,7 +171,7 @@ public static class Game
 
     public static void UpdateItem(Item item)
     {
-        if (!_saveDataFilled || !_saveData.SlotData.RandomizeKeyItems || item.itemProperties?.itemID == null)
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeKeyItems || item.itemProperties?.itemID == null)
         {
             return;
         }
@@ -204,32 +184,32 @@ public static class Game
 
     public static void UpdateEntity(GameObject gameObject, int actorId)
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return;
         }
 
         ApLocationId? location = null;
 
-        if (_saveData.SlotData.RandomizeHealthPickups &&
+        if (Plugin.State.SlotData.RandomizeHealthPickups &&
             Data.HealthMap.TryGetValue(actorId, out var healthLocation))
         {
             location = healthLocation;
         }
 
-        if (_saveData.SlotData.RandomizeAttackPickups &&
+        if (Plugin.State.SlotData.RandomizeAttackPickups &&
             Data.AttackMap.TryGetValue(actorId, out var attackLocation))
         {
             location = attackLocation;
         }
 
-        if (_saveData.SlotData.RandomizeWhiteKeys &&
+        if (Plugin.State.SlotData.RandomizeWhiteKeys &&
             Data.WhiteKeyMap.TryGetValue(actorId, out var whiteLocation))
         {
             location = whiteLocation;
         }
 
-        if (_saveData.SlotData.RandomizeBlueKeys &&
+        if (Plugin.State.SlotData.RandomizeBlueKeys &&
             Data.BlueKeyMap.TryGetValue(actorId, out var blueLocation))
         {
             location = blueLocation;
@@ -238,14 +218,14 @@ public static class Game
         if (actorId == 0 &&
             Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedLocation))
         {
-            if ((spawnedLocation == ApLocationId.MechWhiteKeyArena && _saveData.SlotData.RandomizeWhiteKeys) ||
-                (spawnedLocation != ApLocationId.MechWhiteKeyArena && _saveData.SlotData.RandomizeBlueKeys))
+            if ((spawnedLocation == ApLocationId.MechWhiteKeyArena && Plugin.State.SlotData.RandomizeWhiteKeys) ||
+                (spawnedLocation != ApLocationId.MechWhiteKeyArena && Plugin.State.SlotData.RandomizeBlueKeys))
             {
                 location = spawnedLocation;
             }
         }
 
-        if (_saveData.SlotData.RandomizeRedKeys &&
+        if (Plugin.State.SlotData.RandomizeRedKeys &&
             Data.RedKeyMap.TryGetValue(actorId, out var redLocation))
         {
             location = redLocation;
@@ -260,9 +240,7 @@ public static class Game
     public static void UpdateEntityAppearance(GameObject gameObject, ApLocationId location)
     {
         var itemInfo = Plugin.State.LocationInfos.GetValueOrDefault((long)location);
-        var itemName = itemInfo != null && itemInfo.IsAstalon ? itemInfo.Name : "";
-        var itemFlags = itemInfo?.Flags ?? ItemFlags.None;
-        var icon = GetIcon(itemName, itemFlags);
+        var icon = GetIcon(itemInfo);
         var animationName = GetClip(icon);
 
         var animator = gameObject.GetComponent<tk2dSpriteAnimator>();
@@ -308,7 +286,6 @@ public static class Game
         _saveNew = false;
         _saveLoaded = true;
         _saveValid = false;
-        _saveDataFilled = false;
 
         var serializedData = SaveManager.CurrentSave.GetObjectData(SaveObjectId);
         if (string.IsNullOrWhiteSpace(serializedData))
@@ -320,7 +297,7 @@ public static class Game
 
         try
         {
-            _saveData = JsonConvert.DeserializeObject<SaveData>(serializedData);
+            Plugin.State = JsonConvert.DeserializeObject<State>(serializedData);
         }
         catch (Exception e)
         {
@@ -330,14 +307,20 @@ public static class Game
             return;
         }
 
-        _saveData.PendingLocations ??= [];
-        _saveData.ReceivedDeals ??= [];
-        _saveData.ReceivedElevators ??= [];
-        _saveData.CheckedElevators ??= [];
-        _saveData.VisitedCampfires ??= [];
+        Plugin.State.CheckedLocations ??= [];
+        Plugin.State.ReceivedDeals ??= [];
+        Plugin.State.ReceivedElevators ??= [];
+        Plugin.State.CheckedElevators ??= [];
+        Plugin.State.VisitedCampfires ??= [];
 
         _saveValid = true;
-        _saveDataFilled = true;
+        Plugin.State.Valid = true;
+
+        if (!Plugin.ArchipelagoClient.Connected)
+        {
+            Plugin.UpdateConnectionInfo(Plugin.State.Uri, Plugin.State.SlotName, Plugin.State.Password);
+            Plugin.ArchipelagoClient.Connect();
+        }
 
         InitializeSave();
         ConnectSave();
@@ -348,15 +331,7 @@ public static class Game
         _saveNew = true;
         _saveLoaded = true;
         _saveValid = true;
-        _saveDataFilled = false;
-        _saveData = new()
-        {
-            PendingLocations = [],
-            ReceivedDeals = [],
-            ReceivedElevators = [],
-            CheckedElevators = [],
-            VisitedCampfires = [],
-        };
+        Plugin.State.Clear();
     }
 
     public static bool ConnectSave()
@@ -383,9 +358,9 @@ public static class Game
         if (_saveNew)
         {
             _saveNew = false;
-            _saveData.Seed = seed;
-            _saveData.SlotData = slotData;
-            _saveDataFilled = true;
+            Plugin.State.Seed = seed;
+            Plugin.State.SlotData = slotData;
+            Plugin.State.Valid = true;
 
             if (slotData.RandomizeCharacters)
             {
@@ -427,17 +402,17 @@ public static class Game
 
             UpdateSaveData();
         }
-        else if (seed != _saveData.Seed)
+        else if (seed != Plugin.State.Seed)
         {
             Plugin.Logger.LogError("Mismatched seed detected. Did you load the right save?");
             Plugin.ArchipelagoClient.Disconnect();
         }
         else
         {
-            _saveData.SlotData = Plugin.State.SlotData;
+            Plugin.UpdateConnectionInfo();
         }
 
-        SyncLocations();
+        Plugin.ArchipelagoClient.SyncLocations(Plugin.State.CheckedLocations);
         InitializeSave();
 
         return true;
@@ -445,7 +420,7 @@ public static class Game
 
     public static void UpdateSaveData()
     {
-        var data = JsonConvert.SerializeObject(_saveData);
+        var data = JsonConvert.SerializeObject(Plugin.State);
         SaveManager.SaveObject(SaveObjectId, data, SaveRoomId);
     }
 
@@ -456,7 +431,7 @@ public static class Game
             return;
         }
 
-        if (_saveData.SlotData.SkipCutscenes)
+        if (Plugin.State.SlotData.SkipCutscenes)
         {
             Player.PlayerDataLocal.cs_bkbossfinal1 = true;
             Player.PlayerDataLocal.cs_bkbossintro1 = true;
@@ -523,22 +498,22 @@ public static class Game
             UpdateObjectData(9114, 985, "talkZeek", "True");
         }
 
-        if (_saveData.SlotData.CostMultiplier != 100 && GameManager.Instance.itemManager
+        if (Plugin.State.SlotData.CostMultiplier != 100 && GameManager.Instance.itemManager
                 .GetDealProperties(DealProperties.DealID.Deal_Gift).DealPrice == 666)
         {
-            var mul = _saveData.SlotData.CostMultiplier / 100f;
+            var mul = Plugin.State.SlotData.CostMultiplier / 100f;
             foreach (var deal in GameManager.Instance.itemManager.gameDeals)
             {
                 deal.dealPrice = (int)Math.Round(deal.dealPrice * mul);
             }
         }
 
-        if (_saveData.SlotData.FastBloodChalice)
+        if (Plugin.State.SlotData.FastBloodChalice)
         {
             Player.Instance.regenInterval = 0.2f;
         }
 
-        if (_saveData.SlotData.CheapKyuliRay)
+        if (Plugin.State.SlotData.CheapKyuliRay)
         {
             Player.Instance.shiningRayCost = 50;
         }
@@ -556,16 +531,15 @@ public static class Game
         _saveNew = false;
         _saveLoaded = false;
         _saveValid = false;
-        _saveDataFilled = false;
         _saveInitialized = false;
-        _saveData = new();
+        Plugin.State.Clear();
     }
 
     #endregion
 
     public static bool CanGetItem()
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return false;
         }
@@ -630,7 +604,7 @@ public static class Game
 
     public static bool CanCycleCharacter()
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return false;
         }
@@ -638,8 +612,26 @@ public static class Game
         return Player.PlayerDataLocal.unlockedCharacters.Count > 1;
     }
 
-    public static string GetIcon(ApItemId itemId, ItemFlags flags = ItemFlags.None)
+    public static string GetDefaultIcon(ItemFlags flags = ItemFlags.None) => flags switch
     {
+        ItemFlags.Advancement => "BlueOrb_1",
+        _ => "Orb_Idle_1",
+    };
+
+    public static string GetIcon(ItemInfo itemInfo)
+    {
+        if (itemInfo == null)
+        {
+            return "Orb_Idle_1";
+        }
+
+        if (!itemInfo.IsAstalon)
+        {
+            return GetDefaultIcon(itemInfo.Flags);
+        }
+
+        var itemId = (ApItemId)itemInfo.Id;
+
         if (Data.ApItemIdToIcon.TryGetValue(itemId, out var icon))
         {
             return icon;
@@ -677,7 +669,7 @@ public static class Game
             return "Frog";
         }
 
-        return flags == ItemFlags.Advancement ? "BlueOrb_1" : "Orb_Idle_1";
+        return GetDefaultIcon(itemInfo.Flags);
     }
 
     public static string GetClip(string icon)
@@ -716,16 +708,7 @@ public static class Game
             message = itemInfo.Receiving ? $"{message} from {playerName}" : $"{playerName}'s {message}";
         }
 
-        string icon;
-        if (itemInfo.IsAstalon) {
-            icon = GetIcon((ApItemId)itemInfo.Id, itemInfo.Flags);
-        } else {
-            icon = itemInfo.Flags switch {
-                ItemFlags.Advancement => "BlueOrb_1",
-                _ => "Orb_Idle_1",
-            };
-        }
-
+        var icon = GetIcon(itemInfo);
         var sound = itemInfo.Flags switch
         {
             //ItemFlags.Advancement => "applause",
@@ -808,10 +791,10 @@ public static class Game
                     break;
                 case ItemProperties.ItemID.ZeekItem:
                     Player.PlayerDataLocal.cyclopsDenKey = true;
-                    _saveData.ReceivedCyclopsKey = true;
+                    Plugin.State.ReceivedCyclopsKey = true;
                     break;
                 case ItemProperties.ItemID.PrincesCrown:
-                    _saveData.ReceivedCrown = true;
+                    Plugin.State.ReceivedCrown = true;
                     break;
                 case ItemProperties.ItemID.AthenasBell:
                     Player.Instance.SetCanChangeCharacterTo(true);
@@ -838,9 +821,9 @@ public static class Game
         }
         else if (Data.ItemToDeal.TryGetValue(apItemId, out var dealId))
         {
-            if (_saveData.SlotData.RandomizeShop)
+            if (Plugin.State.SlotData.RandomizeShop)
             {
-                _saveData.ReceivedDeals.Add(dealId);
+                Plugin.State.ReceivedDeals.Add(dealId);
             }
             else
             {
@@ -859,9 +842,9 @@ public static class Game
         }
         else if (Data.ItemToElevator.TryGetValue(apItemId, out var elevatorId))
         {
-            if (_saveData.SlotData.RandomizeElevator)
+            if (Plugin.State.SlotData.RandomizeElevator)
             {
-                _saveData.ReceivedElevators.Add(elevatorId);
+                Plugin.State.ReceivedElevators.Add(elevatorId);
                 UpdateElevatorList();
             }
             else
@@ -874,7 +857,7 @@ public static class Game
             switch (apItemId)
             {
                 case ApItemId.EyeGold:
-                    _saveData.CollectedGoldEyes += 1;
+                    Plugin.State.CollectedGoldEyes += 1;
                     break;
                 case ApItemId.CharacterAlgus:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Algus);
@@ -918,39 +901,39 @@ public static class Game
 
     public static void ElevatorUnlocked(int roomId)
     {
-        if (!_saveDataFilled || !_saveData.SlotData.RandomizeElevator)
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeElevator)
         {
             return;
         }
 
-        if ((roomId != 4109 || _saveData.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.TryGetValue(roomId, out var location))
+        if ((roomId != 4109 || Plugin.State.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.TryGetValue(roomId, out var location))
         {
             SendLocation(location);
-            _saveData.CheckedElevators.Add(roomId);
+            Plugin.State.CheckedElevators.Add(roomId);
         }
     }
 
     public static void UpdateElevatorList()
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return;
         }
 
-        if (_saveData.SlotData.RandomizeElevator)
+        if (Plugin.State.SlotData.RandomizeElevator)
         {
             var existingElevators = Player.PlayerDataLocal.elevatorsFound ?? new();
             var elevators = existingElevators.Clone();
 
             foreach (var elevatorId in existingElevators)
             {
-                if (elevatorId != 6629 && (elevatorId != 4109 || _saveData.SlotData.ApexElevator != ApexElevator.Vanilla) && !_saveData.ReceivedElevators.Contains(elevatorId))
+                if (elevatorId != 6629 && (elevatorId != 4109 || Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla) && !Plugin.State.ReceivedElevators.Contains(elevatorId))
                 {
                     elevators.Remove(elevatorId);
                 }
             }
 
-            foreach (var elevatorId in _saveData.ReceivedElevators)
+            foreach (var elevatorId in Plugin.State.ReceivedElevators)
             {
                 if (!existingElevators.Contains(elevatorId))
                 {
@@ -963,14 +946,14 @@ public static class Game
                 elevators.Add(6629);
             }
 
-            if (_saveData.SlotData.ApexElevator == ApexElevator.Vanilla && !existingElevators.Contains(4109))
+            if (Plugin.State.SlotData.ApexElevator == ApexElevator.Vanilla && !existingElevators.Contains(4109))
             {
                 elevators.Add(4109);
             }
 
             Player.PlayerDataLocal.elevatorsFound = elevators;
         }
-        else if (Player.PlayerDataLocal.elevatorsFound != null && _saveData.SlotData.ApexElevator != ApexElevator.Vanilla && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
+        else if (Player.PlayerDataLocal.elevatorsFound != null && Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
         {
             Player.PlayerDataLocal.elevatorsFound.Remove(4109);
         }
@@ -978,32 +961,32 @@ public static class Game
 
     public static void CampfireVisited(int id)
     {
-        if (!_saveDataFilled || _saveData.VisitedCampfires.Contains(id))
+        if (!Plugin.State.Valid || Plugin.State.VisitedCampfires.Contains(id))
         {
             return;
         }
 
-        _saveData.VisitedCampfires.Add(id);
+        Plugin.State.VisitedCampfires.Add(id);
     }
 
     public static bool CharacterUnlocked(CharacterProperties.Character character)
     {
-        if (!_saveDataFilled || !_saveInitialized || ReceivingItem || !_saveData.SlotData.RandomizeCharacters)
+        if (!Plugin.State.Valid || !_saveInitialized || ReceivingItem || !Plugin.State.SlotData.RandomizeCharacters)
         {
             return false;
         }
 
-        if (character == CharacterProperties.Character.Zeek && !_saveData.SlotData.StartingCharacters.Contains("Zeek"))
+        if (character == CharacterProperties.Character.Zeek && !Plugin.State.SlotData.StartingCharacters.Contains("Zeek"))
         {
-            SendLocation("Mechanism - Zeek");
-            _saveData.CheckedZeek = true;
+            SendLocation(ApLocationId.MechZeek);
+            Plugin.State.CheckedZeek = true;
             return true;
         }
 
-        if (character == CharacterProperties.Character.Bram && !_saveData.SlotData.StartingCharacters.Contains("Bram"))
+        if (character == CharacterProperties.Character.Bram && !Plugin.State.SlotData.StartingCharacters.Contains("Bram"))
         {
-            SendLocation("Tower Roots - Bram");
-            _saveData.CheckedBram = true;
+            SendLocation(ApLocationId.TrBram);
+            Plugin.State.CheckedBram = true;
             return true;
         }
 
@@ -1023,47 +1006,53 @@ public static class Game
         DeathSource = source;
     }
 
-    public static bool TryGetItemLocation(ItemProperties.ItemID itemId, out string location)
+    public static bool TryGetItemLocation(ItemProperties.ItemID itemId, out ApLocationId? location)
     {
-        if (!_saveDataFilled || !_saveData.SlotData.RandomizeKeyItems)
+        location = null;
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeKeyItems)
         {
-            location = null;
             return false;
         }
 
-        return Data.ItemToApLocationId.TryGetValue(itemId, out location);
+        if (Data.ItemToApLocationId.TryGetValue(itemId, out var apLocation))
+        {
+            location = apLocation;
+            return true;
+        }
+
+        return false;
     }
 
-    public static bool TryGetEntityLocation(int entityId, out string location)
+    public static bool TryGetEntityLocation(int entityId, out ApLocationId? location)
     {
-        if (!_saveDataFilled)
+        location = null;
+        if (!Plugin.State.Valid)
         {
-            location = null;
             return false;
         }
 
-        if (_saveData.SlotData.RandomizeHealthPickups &&
+        if (Plugin.State.SlotData.RandomizeHealthPickups &&
             Data.HealthMap.TryGetValue(entityId, out var healthLocation))
         {
             location = healthLocation;
             return true;
         }
 
-        if (_saveData.SlotData.RandomizeAttackPickups &&
+        if (Plugin.State.SlotData.RandomizeAttackPickups &&
             Data.AttackMap.TryGetValue(entityId, out var attackLocation))
         {
             location = attackLocation;
             return true;
         }
 
-        if (_saveData.SlotData.RandomizeWhiteKeys &&
+        if (Plugin.State.SlotData.RandomizeWhiteKeys &&
             Data.WhiteKeyMap.TryGetValue(entityId, out var whiteKeyLocation))
         {
             location = whiteKeyLocation;
             return true;
         }
 
-        if (_saveData.SlotData.RandomizeBlueKeys &&
+        if (Plugin.State.SlotData.RandomizeBlueKeys &&
             Data.BlueKeyMap.TryGetValue(entityId, out var blueKeyLocation))
         {
             location = blueKeyLocation;
@@ -1073,16 +1062,15 @@ public static class Game
         if (entityId == 0 &&
             Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedKeyLocation))
         {
-            if ((spawnedKeyLocation.Contains("White Key") && _saveData.SlotData.RandomizeWhiteKeys) ||
-                (spawnedKeyLocation.Contains("Blue Key") && _saveData.SlotData.RandomizeBlueKeys) ||
-                (spawnedKeyLocation.Contains("Red Key") && _saveData.SlotData.RandomizeRedKeys))
+            if ((spawnedKeyLocation == ApLocationId.MechWhiteKeyArena && Plugin.State.SlotData.RandomizeWhiteKeys) ||
+                (spawnedKeyLocation != ApLocationId.MechWhiteKeyArena && Plugin.State.SlotData.RandomizeBlueKeys))
             {
                 location = spawnedKeyLocation;
                 return true;
             }
         }
 
-        if (_saveData.SlotData.RandomizeRedKeys &&
+        if (Plugin.State.SlotData.RandomizeRedKeys &&
             Data.RedKeyMap.TryGetValue(entityId, out var redKeyLocation))
         {
             location = redKeyLocation;
@@ -1093,24 +1081,23 @@ public static class Game
         return false;
     }
 
-    public static bool TryUpdateDeal(DealProperties.DealID dealId, out string sprite, out string name,
-        out string playerName)
+    public static bool TryUpdateDeal(DealProperties.DealID dealId, out string sprite, out string name, out string playerName)
     {
         sprite = null;
         name = null;
         playerName = null;
 
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return false;
         }
 
-        if (_saveData.SlotData.RandomizeShop && Data.DealToLocation.TryGetValue(dealId, out var location) &&
-            Plugin.State.LocationInfos.TryGetValue(location, out var shopItem))
+        if (Plugin.State.SlotData.RandomizeShop && Data.DealToLocation.TryGetValue(dealId, out var location) &&
+            Plugin.State.LocationInfos.TryGetValue((long)location, out var shopItem))
         {
             name = shopItem.Name;
             playerName = shopItem.IsLocal ? null : shopItem.PlayerName;
-            sprite = GetIcon(name, shopItem.Flags);
+            sprite = GetIcon(shopItem);
 
             if (dealId == DealProperties.DealID.Deal_DeathOrb || dealId == DealProperties.DealID.Deal_Gift)
             {
@@ -1127,29 +1114,29 @@ public static class Game
     {
         result = false;
 
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return false;
         }
 
         if (Player.PlayerDataLocal.currentRoomID == 4112 && itemId == ItemProperties.ItemID.GorgonEyeGreen &&
-            _saveData.SlotData.Goal == Goal.EyeHunt && (Player.PlayerDataLocal.collectedItems?.Contains(ItemProperties.ItemID.GorgonEyeGreen) ?? false))
+            Plugin.State.IsEyeHunt() && (Player.PlayerDataLocal.collectedItems?.Contains(ItemProperties.ItemID.GorgonEyeGreen) ?? false))
         {
-            result = _saveData.CollectedGoldEyes >= _saveData.SlotData.AdditionalEyesRequired;
+            result = Plugin.State.CollectedGoldEyes >= Plugin.State.SlotData.AdditionalEyesRequired;
             return true;
         }
 
-        if (_saveData.SlotData.RandomizeKeyItems && _activatingZeekRoom)
+        if (Plugin.State.SlotData.RandomizeKeyItems && _activatingZeekRoom)
         {
             if (itemId == ItemProperties.ItemID.PrincesCrown)
             {
-                if (!_saveData.CheckedCyclopsIdol)
+                if (!Plugin.State.CheckedCyclopsIdol)
                 {
                     result = false;
                 }
                 else
                 {
-                    result = _saveData.ReceivedCrown;
+                    result = Plugin.State.ReceivedCrown;
                 }
 
                 return true;
@@ -1157,7 +1144,7 @@ public static class Game
 
             if (itemId == ItemProperties.ItemID.ZeekItem)
             {
-                result = _saveData.CheckedCyclopsIdol;
+                result = Plugin.State.CheckedCyclopsIdol;
                 return true;
             }
         }
@@ -1169,16 +1156,16 @@ public static class Game
     {
         result = false;
 
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return false;
         }
 
         if (_activatingZeekRoom && character == CharacterProperties.Character.Zeek)
         {
-            if (!_saveData.SlotData.RandomizeCharacters)
+            if (!Plugin.State.SlotData.RandomizeCharacters)
             {
-                if (_saveData.CheckedCyclopsIdol || !_saveData.SlotData.RandomizeKeyItems)
+                if (Plugin.State.CheckedCyclopsIdol || !Plugin.State.SlotData.RandomizeKeyItems)
                 {
                     return false;
                 }
@@ -1189,13 +1176,13 @@ public static class Game
                 }
             }
 
-            result = _saveData.CheckedZeek;
+            result = Plugin.State.CheckedZeek;
             return true;
         }
 
-        if (_activatingBramRoom && character == CharacterProperties.Character.Bram && _saveData.SlotData.RandomizeCharacters)
+        if (_activatingBramRoom && character == CharacterProperties.Character.Bram && Plugin.State.SlotData.RandomizeCharacters)
         {
-            result = _saveData.CheckedBram;
+            result = Plugin.State.CheckedBram;
             return true;
         }
 
@@ -1206,14 +1193,14 @@ public static class Game
     {
         result = false;
 
-        if (!_saveDataFilled || !_saveData.SlotData.RandomizeElevator || _activatingElevator != roomId)
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeElevator || _activatingElevator != roomId)
         {
             return false;
         }
 
-        if ((roomId != 4109 || _saveData.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.ContainsKey(roomId))
+        if ((roomId != 4109 || Plugin.State.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.ContainsKey(roomId))
         {
-            result = _saveData.CheckedElevators.Contains(roomId);
+            result = Plugin.State.CheckedElevators.Contains(roomId);
             return true;
         }
 
@@ -1222,7 +1209,7 @@ public static class Game
 
     public static void MakeCharacterDealsUnavailable()
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return;
         }
@@ -1245,7 +1232,7 @@ public static class Game
 
     public static void UpdateSaveCharacters(SavePoint savePoint)
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return;
         }
@@ -1258,16 +1245,16 @@ public static class Game
             Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Kyuli));
     }
 
-    public static bool IsSwitchRandomized(int roomId, string linkId, out string location)
+    public static bool IsSwitchRandomized(int roomId, string linkId, out ApLocationId? location)
     {
         location = null;
 
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return false;
         }
 
-        if (_saveData.SlotData.RandomizeSwitches &&
+        if (Plugin.State.SlotData.RandomizeSwitches &&
             Data.LinkToLocation.TryGetValue((roomId, linkId), out var switchLocation))
         {
             location = switchLocation;
@@ -1279,46 +1266,46 @@ public static class Game
 
     public static void PressSwitch(int roomId, string linkId)
     {
-        if (IsSwitchRandomized(roomId, linkId, out var location))
+        if (IsSwitchRandomized(roomId, linkId, out var location) && location != null)
         {
-            SendLocation(location);
+            SendLocation((ApLocationId)location);
         }
     }
 
     public static void ExploreRoom(Room room)
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return;
         }
 
-        if (room.roomID == 3728 && _saveData.SlotData.RandomizeKeyItems)
+        if (room.roomID == 3728 && Plugin.State.SlotData.RandomizeKeyItems)
         {
-            Player.PlayerDataLocal.cyclopsDenKey = _saveData.ReceivedCyclopsKey;
+            Player.PlayerDataLocal.cyclopsDenKey = Plugin.State.ReceivedCyclopsKey;
         }
 
-        if (!_saveData.SlotData.RandomizeCharacters)
+        if (!Plugin.State.SlotData.RandomizeCharacters)
         {
             return;
         }
 
         switch (room.roomID)
         {
-            case 6672 when !_saveData.SlotData.StartingCharacters.Contains("Algus"):
-                SendLocation("Gorgon Tomb - Algus");
+            case 6672 when !Plugin.State.SlotData.StartingCharacters.Contains("Algus"):
+                SendLocation(ApLocationId.GtAlgus);
                 break;
-            case 6673 when !_saveData.SlotData.StartingCharacters.Contains("Arias"):
-                SendLocation("Gorgon Tomb - Arias");
+            case 6673 when !Plugin.State.SlotData.StartingCharacters.Contains("Arias"):
+                SendLocation(ApLocationId.GtArias);
                 break;
-            case 6671 when !_saveData.SlotData.StartingCharacters.Contains("Kyuli"):
-                SendLocation("Gorgon Tomb - Kyuli");
+            case 6671 when !Plugin.State.SlotData.StartingCharacters.Contains("Kyuli"):
+                SendLocation(ApLocationId.GtKyuli);
                 break;
         }
     }
 
     public static void ActivateZeekRoom()
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return;
         }
@@ -1333,7 +1320,7 @@ public static class Game
 
     public static void ActivateBramRoom()
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return;
         }
@@ -1348,7 +1335,7 @@ public static class Game
 
     public static void ActivateElevator(int roomId)
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return;
         }
@@ -1363,18 +1350,18 @@ public static class Game
 
     public static bool CollectItem(ItemProperties.ItemID itemId)
     {
-        if (!_saveDataFilled || !_saveData.SlotData.RandomizeKeyItems)
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeKeyItems)
         {
             return false;
         }
 
         if (TryGetItemLocation(itemId, out var location))
         {
-            SendLocation(location);
+            SendLocation((ApLocationId)location);
 
             if (itemId == ItemProperties.ItemID.ZeekItem)
             {
-                _saveData.CheckedCyclopsIdol = true;
+                Plugin.State.CheckedCyclopsIdol = true;
             }
 
             return true;
@@ -1385,14 +1372,14 @@ public static class Game
 
     public static bool CollectEntity(int entityId)
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return false;
         }
 
         if (TryGetEntityLocation(entityId, out var location))
         {
-            SendLocation(location);
+            SendLocation((ApLocationId)location);
             return true;
         }
 
@@ -1401,16 +1388,16 @@ public static class Game
 
     public static bool CanDoorOpen(Key.KeyType keyType)
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return true;
         }
 
         switch (keyType)
         {
-            case Key.KeyType.White when _saveData.SlotData.RandomizeWhiteKeys:
-            case Key.KeyType.Blue when _saveData.SlotData.RandomizeBlueKeys:
-            case Key.KeyType.Red when _saveData.SlotData.RandomizeRedKeys:
+            case Key.KeyType.White when Plugin.State.SlotData.RandomizeWhiteKeys:
+            case Key.KeyType.Blue when Plugin.State.SlotData.RandomizeBlueKeys:
+            case Key.KeyType.Red when Plugin.State.SlotData.RandomizeRedKeys:
                 return false;
             default:
                 return true;
@@ -1419,23 +1406,13 @@ public static class Game
 
     public static bool ShouldCheckDeal(DealProperties.DealID dealId)
     {
-        return _saveDataFilled && _saveData.SlotData.RandomizeShop && !IsInShop &&
+        return Plugin.State.Valid && Plugin.State.SlotData.RandomizeShop && !IsInShop &&
                Data.ItemToDeal.ContainsValue(dealId);
     }
 
-    public static bool ShouldSkipCutscenes() => _saveDataFilled && _saveData.SlotData.SkipCutscenes;
-
-    public static bool CampfireWarpsEnabled() => _saveDataFilled && _saveData.SlotData.CampfireWarp;
-
-    public static bool IsEyeHunt() => _saveDataFilled && _saveData.SlotData.Goal == Goal.EyeHunt;
-
-    public static int GoldEyeRequirement() => _saveDataFilled ? _saveData.SlotData.AdditionalEyesRequired : 0;
-
-    public static int GoldEyesCollected() => _saveDataFilled ? _saveData.CollectedGoldEyes : 0;
-
     public static bool ShouldUnlockDeal(DealProperties.DealID dealId)
     {
-        if (!_saveDataFilled || !_saveData.SlotData.RandomizeCharacters)
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeCharacters)
         {
             return true;
         }
@@ -1450,17 +1427,17 @@ public static class Game
 
     public static bool IsDealReceived(DealProperties.DealID dealId)
     {
-        if (!_saveDataFilled)
+        if (!Plugin.State.Valid)
         {
             return Player.PlayerDataLocal?.purchasedDeals?.Contains(dealId) ?? false;
         }
 
-        return _saveData.ReceivedDeals != null && _saveData.ReceivedDeals.Contains(dealId);
+        return Plugin.State.ReceivedDeals != null && Plugin.State.ReceivedDeals.Contains(dealId);
     }
 
     public static bool PurchaseDeal(DealProperties.DealID dealId)
     {
-        if (_saveDataFilled && _saveData.SlotData.RandomizeShop &&
+        if (Plugin.State.Valid && Plugin.State.SlotData.RandomizeShop &&
             Data.DealToLocation.TryGetValue(dealId, out var location))
         {
             SendLocation(location);
@@ -1553,15 +1530,7 @@ public static class Game
         else
         {
             Plugin.Logger.LogWarning($"No connection, saving location {location} for later");
-            _saveData.PendingLocations.Add(location);
-        }
-    }
-
-    public static void SyncLocations()
-    {
-        if (Plugin.ArchipelagoClient.SyncLocations(_saveData.PendingLocations))
-        {
-            _saveData.PendingLocations.Clear();
+            Plugin.State.CheckedLocations.Add((long)location);
         }
     }
 
@@ -1603,13 +1572,13 @@ public static class Game
 
         if (CanGetItem() && IncomingItems.TryDequeue(out var item))
         {
-            if (item.Index < _saveData.ItemIndex)
+            if (item.Index < Plugin.State.ItemIndex)
             {
                 Plugin.Logger.LogDebug($"Ignoring previously obtained item {item.Id}");
             }
             else
             {
-                _saveData.ItemIndex++;
+                Plugin.State.ItemIndex++;
                 var display = GiveItem(item);
                 // don't show pre-collected items
                 if (display && item.LocationId != -2)
@@ -1829,7 +1798,7 @@ public static class Game
 
         Vector2 targetDestination;
         Room targetRoom;
-        int checkpointId = -1;
+        int checkpointId;
 
         if (destination == "Last Checkpoint")
         {

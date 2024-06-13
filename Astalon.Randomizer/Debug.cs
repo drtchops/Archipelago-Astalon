@@ -1,5 +1,4 @@
 ﻿using System;
-using Astalon.Randomizer.Archipelago;
 using UnityEngine;
 
 namespace Astalon.Randomizer;
@@ -172,12 +171,12 @@ public static class Debug
 
         DebugButtons();
 
-        if (Game.CampfireWarpsEnabled())
+        if (Plugin.State.CampfireWarpsEnabled())
         {
             CampfireWarps();
         }
 
-        if (Game.IsEyeHunt())
+        if (Plugin.State.IsEyeHunt())
         {
             GoalDisplay();
         }
@@ -276,8 +275,8 @@ public static class Debug
 
     private static void GoalDisplay()
     {
-        var eyes = Game.GoldEyesCollected();
-        var goal = Game.GoldEyeRequirement();
+        var eyes = Plugin.State.GoldEyesCollected();
+        var goal = Plugin.State.GoldEyeRequirement();
 
         var style = new GUIStyle("box");
         style.normal.textColor = eyes >= goal ? Color.green : Color.red;
