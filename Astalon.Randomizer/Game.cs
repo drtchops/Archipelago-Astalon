@@ -297,6 +297,7 @@ public static class Game
 
         try
         {
+            Plugin.Logger.LogDebug(serializedData);
             Plugin.State = JsonConvert.DeserializeObject<State>(serializedData);
         }
         catch (Exception e)
@@ -331,7 +332,7 @@ public static class Game
         _saveNew = true;
         _saveLoaded = true;
         _saveValid = true;
-        Plugin.State.Clear();
+        Plugin.State.ClearSave();
     }
 
     public static bool ConnectSave()
@@ -358,9 +359,9 @@ public static class Game
         if (_saveNew)
         {
             _saveNew = false;
-            Plugin.State.Seed = seed;
-            Plugin.State.SlotData = slotData;
             Plugin.State.Valid = true;
+
+            Plugin.State.LocationInfos = Plugin.ArchipelagoClient.ScoutAllLocations();
 
             if (slotData.RandomizeCharacters)
             {
@@ -532,7 +533,8 @@ public static class Game
         _saveLoaded = false;
         _saveValid = false;
         _saveInitialized = false;
-        Plugin.State.Clear();
+        Plugin.State.ClearConnection();
+        Plugin.State.ClearSave();
     }
 
     #endregion
@@ -750,27 +752,24 @@ public static class Game
         ReceivingItem = true;
 
         var apItemId = (ApItemId)itemInfo.Id;
-        var itemName = itemInfo.Name;
+        var itemName = apItemId.ToString();
         Plugin.Logger.LogDebug($"Giving item: {itemName}");
 
-        if (Regex.IsMatch(itemName, AttackRegex))
+        if (itemName.StartsWith("UpgradeAttack"))
         {
-            var match = Regex.Match(itemName, AttackRegex);
-            var bonus = int.Parse(match.Groups[1].ToString());
+            var bonus = int.Parse(itemName[13..]);
             Player.PlayerDataLocal.IncreaseStrengthBonusBy(bonus);
         }
-        else if (Regex.IsMatch(itemName, HealthRegex))
+        else if (itemName.StartsWith("UpgradeMaxHp"))
         {
-            var match = Regex.Match(itemName, HealthRegex);
-            var bonus = int.Parse(match.Groups[1].ToString());
+            var bonus = int.Parse(itemName[12..]);
             Player.PlayerDataLocal.healthItemBonus += bonus;
             Player.PlayerDataLocal.currentHealth += bonus;
             GameplayUIManager.Instance?.UpdateHealthBar(Player.Instance, true);
         }
-        else if (Regex.IsMatch(itemName, OrbsRegex))
+        else if (itemName.StartsWith("Orbs"))
         {
-            var match = Regex.Match(itemName, OrbsRegex);
-            var amount = int.Parse(match.Groups[1].ToString());
+            var amount = int.Parse(itemName[4..]);
             Player.Instance.CollectOrbs(amount);
         }
         else if (Data.ApItemIdToItem.TryGetValue(apItemId, out var itemId))

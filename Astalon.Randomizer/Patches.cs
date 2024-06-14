@@ -705,7 +705,7 @@ class CS_Scene3_PlayScene_Patch
     [HarmonyPrefix]
     static bool MoveNext(ref bool __result)
     {
-        Plugin.Logger.LogDebug("CS_Scene3._PlayScene_d__4.MoveNext()");
+        // Plugin.Logger.LogDebug("CS_Scene3._PlayScene_d__4.MoveNext()");
 
         if (Plugin.State.ShouldSkipCutscenes())
         {

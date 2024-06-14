@@ -42,31 +42,33 @@ public enum ApexElevator
 
 public class SlotData
 {
-    public Campaign Campaign { get; set; }
-    public Goal Goal { get; set; }
-    public int AdditionalEyesRequired { get; set; }
-    public bool RandomizeCharacters { get; set; }
-    public bool RandomizeKeyItems { get; set; }
-    public bool RandomizeAttackPickups { get; set; }
-    public bool RandomizeHealthPickups { get; set; }
-    public bool RandomizeWhiteKeys { get; set; }
-    public bool RandomizeBlueKeys { get; set; }
-    public bool RandomizeRedKeys { get; set; }
-    public bool RandomizeShop { get; set; }
-    public bool RandomizeElevator { get; set; }
-    public bool RandomizeSwitches { get; set; }
-    public bool RandomizeFamiliars { get; set; }
-    public bool RandomizeOrbCrates { get; set; }
-    public bool RandomizeBossOrbRewards { get; set; }
-    public bool RandomizeMinibossOrbRewards { get; set; }
-    public bool SkipCutscenes { get; set; }
-    public ApexElevator ApexElevator { get; set; }
-    public int CostMultiplier { get; set; }
-    public bool FastBloodChalice { get; set; }
-    public bool CampfireWarp { get; set; }
-    public bool CheapKyuliRay { get; set; }
-    public bool DeathLink { get; set; }
+    public Campaign Campaign { get; set; } = Campaign.TearsOfTheEarth;
+    public Goal Goal { get; set; } = Goal.Vanilla;
+    public int AdditionalEyesRequired { get; set; } = 0;
+    public bool RandomizeCharacters { get; set; } = false;
+    public bool RandomizeKeyItems { get; set; } = true;
+    public bool RandomizeAttackPickups { get; set; } = true;
+    public bool RandomizeHealthPickups { get; set; } = true;
+    public bool RandomizeWhiteKeys { get; set; } = false;
+    public bool RandomizeBlueKeys { get; set; } = false;
+    public bool RandomizeRedKeys { get; set; } = false;
+    public bool RandomizeShop { get; set; } = false;
+    public bool RandomizeElevator { get; set; } = false;
+    public bool RandomizeSwitches { get; set; } = false;
+    public bool RandomizeFamiliars { get; set; } = false;
+    public bool RandomizeOrbCrates { get; set; } = false;
+    public bool RandomizeBossOrbRewards { get; set; } = false;
+    public bool RandomizeMinibossOrbRewards { get; set; } = false;
+    public bool SkipCutscenes { get; set; } = true;
+    public ApexElevator ApexElevator { get; set; } = ApexElevator.Vanilla;
+    public int CostMultiplier { get; set; } = 100;
+    public bool FastBloodChalice { get; set; } = true;
+    public bool CampfireWarp { get; set; } = true;
+    public bool CheapKyuliRay { get; set; } = false;
+    public bool DeathLink { get; set; } = false;
     public string[] StartingCharacters { get; set; } = [];
+
+    public SlotData() { }
 
     public SlotData(IReadOnlyDictionary<string, object> slotData)
     {
@@ -215,13 +217,18 @@ public class State
         return Game.ConnectSave();
     }
 
-    public void Clear()
+    public void ClearConnection()
     {
         Valid = false;
 
         Seed = "";
         SlotData = null;
         LocationInfos.Clear();
+    }
+
+    public void ClearSave()
+    {
+        Valid = false;
 
         ItemIndex = 0;
         ReceivedCyclopsKey = false;

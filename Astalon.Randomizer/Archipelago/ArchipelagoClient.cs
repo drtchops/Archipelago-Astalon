@@ -175,8 +175,14 @@ public class ArchipelagoClient
             Dictionary<long, ItemInfo> itemInfos = [];
             foreach (var networkItem in task.Result.Locations)
             {
-                var itemName = _session.Items.GetItemName(networkItem.Item);
-                itemInfos[networkItem.Item] = new ItemInfo
+                var itemName = _session.Items.GetItemName(networkItem.Item) ?? $"Unknown Item ({networkItem.Item})";
+                var isAstalon = GetPlayerGame(networkItem.Player) == Game.Name;
+                if (isAstalon && Data.ItemNames.TryGetValue((ApItemId)networkItem.Item, out var name))
+                {
+                    itemName = name;
+                }
+
+                itemInfos[networkItem.Location] = new ItemInfo
                 {
                     Id = networkItem.Item,
                     Name = itemName,
@@ -185,7 +191,7 @@ public class ArchipelagoClient
                     PlayerName = GetPlayerName(networkItem.Player),
                     IsLocal = networkItem.Player == GetCurrentPlayer(),
                     LocationId = networkItem.Location,
-                    IsAstalon = GetPlayerGame(networkItem.Player) == Game.Name,
+                    IsAstalon = isAstalon,
                 };
             }
             return itemInfos;
@@ -213,6 +219,12 @@ public class ArchipelagoClient
         var index = helper.Index - 1;
         var itemName = helper.PeekItemName();
         var item = helper.DequeueItem();
+        if (Data.ItemNames.TryGetValue((ApItemId)item.Item, out var name))
+        {
+            itemName = name;
+        }
+        itemName ??= $"Unknown Item ({item.Item})";
+
         Plugin.Logger.LogInfo($"Received item #{index}: {item.Item} - {itemName}");
         var player = item.Player;
         Game.IncomingItems.Enqueue(new()
