@@ -95,6 +95,7 @@ internal class Item_PlayerHeart_Gather_Routine_Patch
         __instance.__4__this.Deactivate();
         Player.Instance.EnableController(false, true);
         Player.Instance.SetPhysicsActive(true);
+        AudioManager.UnPauseMusic();
         return false;
     }
 }
@@ -146,6 +147,7 @@ internal class Item_PlayerStrength_Gather_Routine_Patch
         __instance.__4__this.Deactivate();
         Player.Instance.EnableController(false, true);
         Player.Instance.SetPhysicsActive(true);
+        AudioManager.UnPauseMusic();
         return false;
     }
 }

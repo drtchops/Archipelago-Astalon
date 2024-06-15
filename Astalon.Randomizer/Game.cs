@@ -24,13 +24,9 @@ public class ItemBox
 
 public static class Game
 {
-    public const string Name = "Astalon Tears of the Earth";
+    public const string Name = "Astalon";
     public const int SaveObjectId = 333000;
     public const int SaveRoomId = -1;
-
-    private const string HealthRegex = @"^Max HP \+(\d+)$";
-    private const string AttackRegex = @"^Attack \+(\d+)$";
-    private const string OrbsRegex = @"^(\d+) Orbs$";
 
     public static Queue<ItemInfo> IncomingItems { get; } = new();
     public static Queue<ItemInfo> IncomingMessages { get; } = new();
@@ -1796,6 +1792,7 @@ public static class Game
             (Player.Instance.currentSubWeaponClass?.isAttacking ?? false) ||
             (GameplayUIManager.Instance?.InGameMenuOpen ?? false) ||
             (GameplayUIManager.Instance?.FullMapOpen ?? false) ||
+            (GameplayUIManager.Instance?.elevatorMenuHolder?.activeInHierarchy ?? false) ||
             _isWarping)
         {
             // TODO: check not in elevator menu
