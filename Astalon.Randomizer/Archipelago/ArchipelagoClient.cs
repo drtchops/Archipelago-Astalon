@@ -276,7 +276,7 @@ public class ArchipelagoClient
             return "";
         }
 
-        var name = _session.Players.GetPlayerAliasAndName(slot);
+        var name = _session.Players.GetPlayerName(slot);
         if (string.IsNullOrWhiteSpace(name))
         {
             name = "Server";
