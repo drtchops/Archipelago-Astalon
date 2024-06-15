@@ -297,7 +297,6 @@ public static class Game
 
         try
         {
-            Plugin.Logger.LogDebug(serializedData);
             Plugin.State = JsonConvert.DeserializeObject<State>(serializedData);
         }
         catch (Exception e)
@@ -541,7 +540,7 @@ public static class Game
 
     public static bool CanGetItem()
     {
-        if (!Plugin.State.Valid)
+        if (!Plugin.State.Valid || !_saveInitialized)
         {
             return false;
         }
@@ -782,10 +781,18 @@ public static class Game
                 case ItemProperties.ItemID.AscendantKey:
                     Player.PlayerDataLocal.elevatorsOpened = true;
                     UpdateElevatorList();
-                    foreach (var roomId in Player.PlayerDataLocal.elevatorsFound)
+                    if (Player.PlayerDataLocal.elevatorsFound != null)
                     {
-                        Player.PlayerDataLocal.UnlockElevator(roomId);
+                        foreach (var roomId in Player.PlayerDataLocal.elevatorsFound)
+                        {
+                            Player.PlayerDataLocal.UnlockElevator(roomId);
+                        }
                     }
+                    if (Plugin.State.SlotData.ApexElevator == ApexElevator.Vanilla)
+                    {
+                        Player.PlayerDataLocal.UnlockElevator((int)ElevatorId.Apex);
+                    }
+                    Player.PlayerDataLocal.UnlockElevator((int)ElevatorId.Gt1);
 
                     break;
                 case ItemProperties.ItemID.ZeekItem:
@@ -905,7 +912,7 @@ public static class Game
             return;
         }
 
-        if ((roomId != 4109 || Plugin.State.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.TryGetValue(roomId, out var location))
+        if ((roomId != ((int)ElevatorId.Apex) || Plugin.State.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.TryGetValue(roomId, out var location))
         {
             SendLocation(location);
             Plugin.State.CheckedElevators.Add(roomId);
@@ -926,7 +933,7 @@ public static class Game
 
             foreach (var elevatorId in existingElevators)
             {
-                if (elevatorId != 6629 && (elevatorId != 4109 || Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla) && !Plugin.State.ReceivedElevators.Contains(elevatorId))
+                if (elevatorId != ((int)ElevatorId.Gt1) && (elevatorId != ((int)ElevatorId.Apex) || Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla) && !Plugin.State.ReceivedElevators.Contains(elevatorId))
                 {
                     elevators.Remove(elevatorId);
                 }
@@ -940,21 +947,21 @@ public static class Game
                 }
             }
 
-            if (!existingElevators.Contains(6629))
+            if (!existingElevators.Contains((int)ElevatorId.Gt1))
             {
-                elevators.Add(6629);
+                elevators.Add((int)ElevatorId.Gt1);
             }
 
-            if (Plugin.State.SlotData.ApexElevator == ApexElevator.Vanilla && !existingElevators.Contains(4109))
+            if (Plugin.State.SlotData.ApexElevator == ApexElevator.Vanilla && !existingElevators.Contains((int)ElevatorId.Apex))
             {
-                elevators.Add(4109);
+                elevators.Add((int)ElevatorId.Apex);
             }
 
             Player.PlayerDataLocal.elevatorsFound = elevators;
         }
-        else if (Player.PlayerDataLocal.elevatorsFound != null && Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla && !Player.PlayerDataLocal.discoveredRooms.Contains(4109))
+        else if (Player.PlayerDataLocal.elevatorsFound != null && Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla && !Player.PlayerDataLocal.discoveredRooms.Contains((int)ElevatorId.Apex))
         {
-            Player.PlayerDataLocal.elevatorsFound.Remove(4109);
+            Player.PlayerDataLocal.elevatorsFound.Remove((int)ElevatorId.Apex);
         }
     }
 
@@ -1197,7 +1204,7 @@ public static class Game
             return false;
         }
 
-        if ((roomId != 4109 || Plugin.State.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.ContainsKey(roomId))
+        if ((roomId != ((int)ElevatorId.Apex) || Plugin.State.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.ContainsKey(roomId))
         {
             result = Plugin.State.CheckedElevators.Contains(roomId);
             return true;
@@ -1737,7 +1744,7 @@ public static class Game
 #else
     public static bool CanWarp(string destination)
     {
-        if (Player.PlayerDataLocal == null || !_saveDataFilled)
+        if (Player.PlayerDataLocal == null || !Plugin.State.Valid)
         {
             return false;
         }
@@ -1758,7 +1765,7 @@ public static class Game
             {
                 return false;
             }
-            else if (_saveData.VisitedCampfires.Contains(checkpoint.Id))
+            else if (Plugin.State.VisitedCampfires.Contains(checkpoint.Id))
             {
                 return true;
             }

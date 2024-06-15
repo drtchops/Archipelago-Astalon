@@ -703,6 +703,21 @@ public enum ApItemId
     FaceCathR = 333315,
 }
 
+public enum ElevatorId
+{
+    Gt1 = 6629,
+    Gt2 = 248,
+    Mech1 = 3947,
+    Mech2 = 803,
+    Hotp = 10535,
+    Roa1 = 1080,
+    Roa2 = 8771,
+    Apex = 4109,
+    Cata1 = 61,
+    Cata2 = 2574,
+    Tr = 2705,
+}
+
 public readonly struct CheckpointData
 {
     public int Id { get; init; }
