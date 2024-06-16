@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
-using Archipelago.MultiClient.Net.Packets;
 
 namespace Astalon.Randomizer.Archipelago;
 
 public class ArchipelagoClient
 {
-    private const string MinArchipelagoVersion = "0.4.4";
+    private const string MinArchipelagoVersion = "0.4.6";
 
     public bool Connected => _session?.Socket.Connected ?? false;
     private bool _attemptingConnection;
@@ -162,7 +160,7 @@ public class ArchipelagoClient
         return true;
     }
 
-    public Dictionary<long, ItemInfo> ScoutAllLocations()
+    public Dictionary<long, ApItemInfo> ScoutAllLocations()
     {
         if (!Connected)
         {
@@ -172,25 +170,25 @@ public class ArchipelagoClient
         List<long> locations = new(_session.Locations.AllLocations);
         var scouts = _session.Locations.ScoutLocationsAsync(locations.ToArray()).ContinueWith(task =>
         {
-            Dictionary<long, ItemInfo> itemInfos = [];
-            foreach (var networkItem in task.Result.Locations)
+            Dictionary<long, ApItemInfo> itemInfos = [];
+            foreach (var entry in task.Result)
             {
-                var itemName = _session.Items.GetItemName(networkItem.Item) ?? $"Unknown Item ({networkItem.Item})";
-                var isAstalon = GetPlayerGame(networkItem.Player) == Game.Name;
-                if (isAstalon && Data.ItemNames.TryGetValue((ApItemId)networkItem.Item, out var name))
+                var itemName = entry.Value.ItemDisplayName;
+                var isAstalon = entry.Value.ItemGame == Game.Name;
+                if (isAstalon && Data.ItemNames.TryGetValue((ApItemId)entry.Value.ItemId, out var name))
                 {
                     itemName = name;
                 }
 
-                itemInfos[networkItem.Location] = new ItemInfo
+                itemInfos[entry.Key] = new ApItemInfo
                 {
-                    Id = networkItem.Item,
+                    Id = entry.Value.ItemId,
                     Name = itemName,
-                    Flags = networkItem.Flags,
-                    Player = networkItem.Player,
-                    PlayerName = GetPlayerName(networkItem.Player),
-                    IsLocal = networkItem.Player == GetCurrentPlayer(),
-                    LocationId = networkItem.Location,
+                    Flags = entry.Value.Flags,
+                    Player = entry.Value.Player,
+                    PlayerName = entry.Value.Player.Name,
+                    IsLocal = entry.Value.Player == GetCurrentPlayer(),
+                    LocationId = entry.Key,
                     IsAstalon = isAstalon,
                 };
             }
@@ -207,35 +205,31 @@ public class ArchipelagoClient
             return;
         }
 
-        var packet = new StatusUpdatePacket
-        {
-            Status = ArchipelagoClientState.ClientGoal,
-        };
-        _session.Socket.SendPacket(packet);
+        _session.SetGoalAchieved();
     }
 
-    public void Session_ItemReceived(ReceivedItemsHelper helper)
+    public void Session_ItemReceived(IReceivedItemsHelper helper)
     {
         var index = helper.Index - 1;
-        var itemName = helper.PeekItemName();
         var item = helper.DequeueItem();
-        if (Data.ItemNames.TryGetValue((ApItemId)item.Item, out var name))
+        var itemName = item.ItemName;
+        if (Data.ItemNames.TryGetValue((ApItemId)item.ItemId, out var name))
         {
             itemName = name;
         }
-        itemName ??= $"Unknown Item ({item.Item})";
+        itemName ??= item.ItemDisplayName;
 
-        Plugin.Logger.LogInfo($"Received item #{index}: {item.Item} - {itemName}");
+        Plugin.Logger.LogInfo($"Received item #{index}: {item.ItemId} - {itemName}");
         var player = item.Player;
         Game.IncomingItems.Enqueue(new()
         {
-            Id = item.Item,
+            Id = item.ItemId,
             Name = itemName,
             Flags = item.Flags,
             Player = player,
-            PlayerName = GetPlayerName(player),
+            PlayerName = player.Name,
             IsLocal = player == GetCurrentPlayer(),
-            LocationId = item.Location,
+            LocationId = item.LocationId,
             Receiving = true,
             Index = index,
             IsAstalon = true,
@@ -267,32 +261,6 @@ public class ArchipelagoClient
             }
 
         }
-    }
-
-    public string GetPlayerName(int slot)
-    {
-        if (!Connected)
-        {
-            return "";
-        }
-
-        var name = _session.Players.GetPlayerName(slot);
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            name = "Server";
-        }
-
-        return name;
-    }
-
-    public string GetPlayerGame(int slot)
-    {
-        if (!Connected)
-        {
-            return "";
-        }
-
-        return _session.Players.Players[_session.ConnectionInfo.Team].FirstOrDefault((p) => p.Slot == slot)?.Game;
     }
 
     public int GetCurrentPlayer()
@@ -330,6 +298,6 @@ public class ArchipelagoClient
 
     public void SendMessage(string message)
     {
-        _session?.Socket.SendPacketAsync(new SayPacket { Text = message });
+        _session?.Say(message);
     }
 }

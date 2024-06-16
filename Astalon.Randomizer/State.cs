@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Astalon.Randomizer.Archipelago;
 
-public class ItemInfo
+public class ApItemInfo
 {
     public long Id { get; set; }
     public string Name { get; set; }
@@ -64,6 +64,7 @@ public class SlotData
     public int CostMultiplier { get; set; } = 100;
     public bool FastBloodChalice { get; set; } = true;
     public bool CampfireWarp { get; set; } = true;
+    public bool AllowBlockWarping { get; set; } = false;
     public bool CheapKyuliRay { get; set; } = false;
     public bool DeathLink { get; set; } = false;
     public string[] StartingCharacters { get; set; } = [];
@@ -96,6 +97,7 @@ public class SlotData
         CostMultiplier = ParseInt(settings, "cost_multiplier", 100);
         FastBloodChalice = ParseBool(settings, "fast_blood_chalice", true);
         CampfireWarp = ParseBool(settings, "campfire_warp", true);
+        AllowBlockWarping = ParseBool(settings, "allow_block_warping", false);
         CheapKyuliRay = ParseBool(settings, "cheap_kyuli_ray");
         DeathLink = ParseBool(settings, "death_link");
 
@@ -175,7 +177,7 @@ public class State
     public string Password;
     public string Seed;
     public SlotData SlotData;
-    public Dictionary<long, ItemInfo> LocationInfos = [];
+    public Dictionary<long, ApItemInfo> LocationInfos = [];
 
     public int ItemIndex { get; set; }
     public bool ReceivedCyclopsKey { get; set; }

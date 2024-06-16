@@ -28,8 +28,8 @@ public static class Game
     public const int SaveObjectId = 333000;
     public const int SaveRoomId = -1;
 
-    public static Queue<ItemInfo> IncomingItems { get; } = new();
-    public static Queue<ItemInfo> IncomingMessages { get; } = new();
+    public static Queue<ApItemInfo> IncomingItems { get; } = new();
+    public static Queue<ApItemInfo> IncomingMessages { get; } = new();
     public static string DeathSource { get; private set; }
     public static bool ReceivingItem { get; set; }
     public static bool IsInShop { get; set; }
@@ -615,7 +615,7 @@ public static class Game
         _ => "Orb_Idle_1",
     };
 
-    public static string GetIcon(ItemInfo itemInfo)
+    public static string GetIcon(ApItemInfo itemInfo)
     {
         if (itemInfo == null)
         {
@@ -691,7 +691,7 @@ public static class Game
         };
     }
 
-    public static ItemBox FormatItemBox(ItemInfo itemInfo)
+    public static ItemBox FormatItemBox(ApItemInfo itemInfo)
     {
         var message = itemInfo.Name;
         if (!itemInfo.IsLocal)
@@ -723,7 +723,7 @@ public static class Game
         };
     }
 
-    public static bool DisplayItem(ItemInfo itemInfo)
+    public static bool DisplayItem(ApItemInfo itemInfo)
     {
         if (!CanDisplayMessage())
         {
@@ -737,7 +737,7 @@ public static class Game
         return true;
     }
 
-    public static bool GiveItem(ItemInfo itemInfo)
+    public static bool GiveItem(ApItemInfo itemInfo)
     {
         if (!CanGetItem())
         {
@@ -1790,6 +1790,7 @@ public static class Game
             Player.Instance.meteorInProgress ||
             (Player.Instance.currentSubWeaponClass?.isShooting ?? false) ||
             (Player.Instance.currentSubWeaponClass?.isAttacking ?? false) ||
+            !Player.Instance.ControllerEnabled() ||
             (GameplayUIManager.Instance?.InGameMenuOpen ?? false) ||
             (GameplayUIManager.Instance?.FullMapOpen ?? false) ||
             (GameplayUIManager.Instance?.elevatorMenuHolder?.activeInHierarchy ?? false) ||
@@ -1836,7 +1837,11 @@ public static class Game
     private static IEnumerator Warp_Routine(Vector2 targetDestination, Room targetRoom, int checkpointId)
     {
         var currentRoom = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
-        Player.Instance.liftableObject?.Object_Drop();
+        if (!Plugin.State.SlotData.AllowBlockWarping)
+        {
+            Player.Instance.liftableObject?.Object_Drop();
+        }
+        Player.Instance.SetOffPlatform();
         Player.Instance.SetIsInLadder(false, null);
         Player.Instance.HidePlayer();
         CameraManager.Flash(NESPalette.White, 0.02f, 0f, false);
@@ -1851,9 +1856,9 @@ public static class Game
 
         targetRoom.ActivateInisde();
         targetRoom.ActivateRoomSpecificOptions();
-        CameraManager.MoveCameraTo(targetRoom);
         currentRoom.PreDeactivateInisde();
         currentRoom.DeactivateInisde();
+        CameraManager.MoveCameraTo(targetRoom);
         yield return new WaitForSeconds(0.5f);
 
         var emptyAutoKill = PoolManager.Pools["Particles"].Spawn("EmptyAutoKill");
@@ -1865,7 +1870,6 @@ public static class Game
         yield return new WaitForSeconds(1f);
 
         Player.Instance.AllowRoomTransition(false);
-        Player.Instance.AssignRoom(targetRoom);
         Player.Instance.selfTransform.position = targetDestination;
         CameraManager.Flash(NESPalette.White, 0.02f, 0f, false);
         lightning = PoolManager.Pools["Particles"].Spawn("Lightning");
@@ -1877,6 +1881,7 @@ public static class Game
         AudioManager.Play("wall-gem");
         Player.Instance.ResetMaterial();
         Player.Instance.ShowPlayer(true, true);
+        targetRoom.PlayerEntered();
         yield return new WaitForSeconds(0.1f);
 
         Player.Instance.AllowRoomTransition(true);
