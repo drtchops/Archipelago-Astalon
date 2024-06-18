@@ -800,6 +800,13 @@ public static class Game
                     break;
                 case ItemProperties.ItemID.AthenasBell:
                     Player.Instance.SetCanChangeCharacterTo(true);
+                    Player.Instance.UpdateItems();
+                    break;
+                case ItemProperties.ItemID.BloodChalice:
+                    Player.Instance.UpdateItems();
+                    break;
+                case ItemProperties.ItemID.LunarianBow:
+                    Player.Instance.UpdateWeapon();
                     break;
             }
         }
@@ -1000,6 +1007,11 @@ public static class Game
         if (_deathCounter <= 0)
         {
             Plugin.ArchipelagoClient.SendDeath();
+        }
+
+        if (Plugin.State.SlotData.AlwaysRestoreCandles)
+        {
+            PlayerData.ResetCandles();
         }
     }
 
@@ -1408,8 +1420,17 @@ public static class Game
 
     public static bool ShouldCheckDeal(DealProperties.DealID dealId)
     {
-        return Plugin.State.Valid && Plugin.State.SlotData.RandomizeShop && !IsInShop &&
-               Data.ItemToDeal.ContainsValue(dealId);
+        if (!Plugin.State.Valid || !IsInShop)
+        {
+            return false;
+        }
+
+        if (Plugin.State.SlotData.AlwaysRestoreCandles && dealId == DealProperties.DealID.Deal_Light)
+        {
+            return true;
+        }
+
+        return Plugin.State.SlotData.RandomizeShop && Data.ItemToDeal.ContainsValue(dealId);
     }
 
     public static bool ShouldUnlockDeal(DealProperties.DealID dealId)
@@ -1434,7 +1455,12 @@ public static class Game
             return Player.PlayerDataLocal?.purchasedDeals?.Contains(dealId) ?? false;
         }
 
-        return Plugin.State.ReceivedDeals != null && Plugin.State.ReceivedDeals.Contains(dealId);
+        if (Plugin.State.SlotData.AlwaysRestoreCandles && dealId == DealProperties.DealID.Deal_Light)
+        {
+            return true;
+        }
+
+        return Plugin.State.ReceivedDeals?.Contains(dealId) ?? false;
     }
 
     public static bool PurchaseDeal(DealProperties.DealID dealId)

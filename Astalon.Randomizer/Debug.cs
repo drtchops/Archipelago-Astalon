@@ -33,6 +33,7 @@ public static class Debug
 
     public static bool Hidden { get; private set; } = true;
     private static string _roomWarp = "";
+    private static string _orbs = "";
 
     private static readonly Group[] ButtonGroups = [
         new(
@@ -258,13 +259,27 @@ public static class Debug
             Game.MoveDirection = "right";
         }
 
-        _roomWarp = GUI.TextField(new(950, 540, 50, 20), _roomWarp);
-        if (GUI.Button(new(1000, 540, 50, 20), "Warp"))
+        _roomWarp = GUI.TextField(new(950, 540, 75, 20), _roomWarp);
+        if (GUI.Button(new(1000, 540, 75, 20), "Warp"))
         {
             try
             {
                 var roomId = int.Parse(_roomWarp);
                 Game.RoomWarp = roomId;
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        _orbs = GUI.TextField(new(950, 560, 75, 20), _orbs);
+        if (GUI.Button(new(1000, 560, 75, 20), "Set Orbs"))
+        {
+            try
+            {
+                Player.PlayerDataLocal.currentOrbs = int.Parse(_orbs);
+                GameplayUIManager.UpdateOrbs();
             }
             catch
             {

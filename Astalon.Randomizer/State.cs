@@ -66,6 +66,7 @@ public class SlotData
     public bool CampfireWarp { get; set; } = true;
     public bool AllowBlockWarping { get; set; } = false;
     public bool CheapKyuliRay { get; set; } = false;
+    public bool AlwaysRestoreCandles { get; set; } = false;
     public bool DeathLink { get; set; } = false;
     public string[] StartingCharacters { get; set; } = [];
 
@@ -99,6 +100,7 @@ public class SlotData
         CampfireWarp = ParseBool(settings, "campfire_warp", true);
         AllowBlockWarping = ParseBool(settings, "allow_block_warping", false);
         CheapKyuliRay = ParseBool(settings, "cheap_kyuli_ray");
+        AlwaysRestoreCandles = ParseBool(settings, "always_restore_candles");
         DeathLink = ParseBool(settings, "death_link");
 
         try
