@@ -222,7 +222,7 @@ public class ArchipelagoClient
         Plugin.Logger.LogInfo($"Received item #{index}: {item.ItemId} - {itemName}");
         var player = item.Player;
         var playerName = player.Name;
-        if (player.Alias != null && player.Alias != playerName)
+        if (!string.IsNullOrWhiteSpace(player.Alias) && player.Alias != playerName)
         {
             playerName = $"{player.Alias} ({playerName})";
         }
