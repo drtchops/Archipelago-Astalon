@@ -549,15 +549,15 @@ public static class Game
                         break;
                     case CharacterProperties.Character.Arias:
                         Player.PlayerDataLocal.strengthBonusArias = str;
-                        Player.PlayerDataLocal.defenseBonusArias = def;
+                        Player.PlayerDataLocal.defenseBonusArias = Math.Max(def, 2);
                         break;
                     case CharacterProperties.Character.Kyuli:
-                        Player.PlayerDataLocal.strengthBonusKyuli = str;
+                        Player.PlayerDataLocal.strengthBonusKyuli = Math.Max(str, 2);
                         Player.PlayerDataLocal.defenseBonusKyuli = def;
                         break;
                     case CharacterProperties.Character.Bram:
-                        Player.PlayerDataLocal.strengthBonusBram = str;
-                        Player.PlayerDataLocal.defenseBonusBram = def;
+                        Player.PlayerDataLocal.strengthBonusBram = Math.Max(str, 2);
+                        Player.PlayerDataLocal.defenseBonusBram = Math.Max(def, 1);
                         break;
                     case CharacterProperties.Character.Zeek:
                         Player.PlayerDataLocal.strengthBonusZeek = str;
