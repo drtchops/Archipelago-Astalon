@@ -69,6 +69,7 @@ public class SlotData
     public bool AlwaysRestoreCandles { get; set; } = false;
     public bool DeathLink { get; set; } = false;
     public string[] StartingCharacters { get; set; } = [];
+    public Dictionary<string, float> CharacterStrengths { get; set; } = [];
 
     public SlotData() { }
 
@@ -112,6 +113,17 @@ public class SlotData
         {
             Plugin.Logger.LogError($"Error parsing slot_data.starting_characters: {e.Message}");
             StartingCharacters = [];
+        }
+
+        try
+        {
+            var characterStrengths = (JObject)slotData["character_strengths"];
+            CharacterStrengths = characterStrengths.ToObject<Dictionary<string, float>>();
+        }
+        catch (Exception e)
+        {
+            Plugin.Logger.LogError($"Error parsing slot_data.character_strengths: {e.Message}");
+            CharacterStrengths = [];
         }
     }
 

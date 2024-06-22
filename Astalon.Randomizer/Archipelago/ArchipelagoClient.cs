@@ -221,13 +221,19 @@ public class ArchipelagoClient
 
         Plugin.Logger.LogInfo($"Received item #{index}: {item.ItemId} - {itemName}");
         var player = item.Player;
+        var playerName = player.Name;
+        if (player.Alias != null && player.Alias != playerName)
+        {
+            playerName = $"{player.Alias} ({playerName})";
+        }
+
         Game.IncomingItems.Enqueue(new()
         {
             Id = item.ItemId,
             Name = itemName,
             Flags = item.Flags,
             Player = player,
-            PlayerName = player.Name,
+            PlayerName = playerName,
             IsLocal = player == GetCurrentPlayer(),
             LocationId = item.LocationId,
             Receiving = true,

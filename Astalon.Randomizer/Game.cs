@@ -318,7 +318,7 @@ public static class Game
             Plugin.ArchipelagoClient.Connect();
         }
 
-        InitializeSave();
+        InitializeSave(false);
         ConnectSave();
     }
 
@@ -350,6 +350,7 @@ public static class Game
 
         var seed = Plugin.State.Seed;
         var slotData = Plugin.State.SlotData;
+        var isNew = _saveNew;
 
         if (_saveNew)
         {
@@ -409,7 +410,7 @@ public static class Game
         }
 
         Plugin.ArchipelagoClient.SyncLocations(Plugin.State.CheckedLocations);
-        InitializeSave();
+        InitializeSave(isNew);
 
         return true;
     }
@@ -420,7 +421,7 @@ public static class Game
         SaveManager.SaveObject(SaveObjectId, data, SaveRoomId);
     }
 
-    public static void InitializeSave()
+    public static void InitializeSave(bool isNew)
     {
         if (_saveInitialized)
         {
@@ -512,6 +513,11 @@ public static class Game
         if (Plugin.State.SlotData.CheapKyuliRay)
         {
             Player.Instance.shiningRayCost = 50;
+        }
+
+        if (isNew)
+        {
+            Plugin.Logger.LogDebug(JsonConvert.SerializeObject(Plugin.State.SlotData.CharacterStrengths));
         }
 
         // maybe for future version
