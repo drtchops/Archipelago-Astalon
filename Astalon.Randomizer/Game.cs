@@ -515,9 +515,56 @@ public static class Game
             Player.Instance.shiningRayCost = 50;
         }
 
-        if (isNew)
+        if (isNew && Plugin.State.SlotData.ScaleCharacterStats)
         {
-            Plugin.Logger.LogDebug(JsonConvert.SerializeObject(Plugin.State.SlotData.CharacterStrengths));
+            foreach (var entry in Plugin.State.SlotData.CharacterStrengths)
+            {
+                var character = Data.NameToCharacter[entry.Key];
+                var scaling = entry.Value;
+                var strDeal = Data.CharacterToStrDeal[character];
+                var defDeal = Data.CharacterToDefDeal[character];
+                var strProps = GameManager.Instance.itemManager.GetDealProperties(strDeal);
+                var defProps = GameManager.Instance.itemManager.GetDealProperties(defDeal);
+                var str = (int)Math.Round(20.0 * scaling);
+                var def = (int)Math.Round(10.0 * scaling);
+                str = Math.Min(Math.Max(0, str), strProps.dealMaxLevel);
+                def = Math.Min(Math.Max(0, def), defProps.dealMaxLevel);
+
+                if (str >= strProps.dealMaxLevel)
+                {
+                    Player.PlayerDataLocal.purchasedDeals.Add(strDeal);
+                    Player.PlayerDataLocal.MakeDealNonAvailable(strDeal);
+                }
+                if (def >= defProps.dealMaxLevel)
+                {
+                    Player.PlayerDataLocal.purchasedDeals.Add(defDeal);
+                    Player.PlayerDataLocal.MakeDealNonAvailable(defDeal);
+                }
+
+                switch (character)
+                {
+                    case CharacterProperties.Character.Algus:
+                        Player.PlayerDataLocal.strengthBonusAlgus = str;
+                        Player.PlayerDataLocal.defenseBonusAlgus = def;
+                        break;
+                    case CharacterProperties.Character.Arias:
+                        Player.PlayerDataLocal.strengthBonusArias = str;
+                        Player.PlayerDataLocal.defenseBonusArias = def;
+                        break;
+                    case CharacterProperties.Character.Kyuli:
+                        Player.PlayerDataLocal.strengthBonusKyuli = str;
+                        Player.PlayerDataLocal.defenseBonusKyuli = def;
+                        break;
+                    case CharacterProperties.Character.Bram:
+                        Player.PlayerDataLocal.strengthBonusBram = str;
+                        Player.PlayerDataLocal.defenseBonusBram = def;
+                        break;
+                    case CharacterProperties.Character.Zeek:
+                        Player.PlayerDataLocal.strengthBonusZeek = str;
+                        Player.PlayerDataLocal.defenseBonusZeek = def;
+                        break;
+                }
+            }
         }
 
         // maybe for future version

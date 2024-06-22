@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.15.0] - 2024-06-22
+
+- Add option to modify character starting attack and defence based on what sphere they're unlocked in
+- Fix player alias display
+
 ## [0.14.2] - 2024-06-22
 
 - Fix received deals not working when randomzing the shop

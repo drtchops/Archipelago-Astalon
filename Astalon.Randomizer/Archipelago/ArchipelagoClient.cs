@@ -180,14 +180,17 @@ public class ArchipelagoClient
                     itemName = name;
                 }
 
+                var player = entry.Value.Player;
+                var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
+
                 itemInfos[entry.Key] = new ApItemInfo
                 {
                     Id = entry.Value.ItemId,
                     Name = itemName,
                     Flags = entry.Value.Flags,
-                    Player = entry.Value.Player,
-                    PlayerName = entry.Value.Player.Name,
-                    IsLocal = entry.Value.Player == GetCurrentPlayer(),
+                    Player = player,
+                    PlayerName = playerName,
+                    IsLocal = player == GetCurrentPlayer(),
                     LocationId = entry.Key,
                     IsAstalon = isAstalon,
                 };
@@ -221,11 +224,7 @@ public class ArchipelagoClient
 
         Plugin.Logger.LogInfo($"Received item #{index}: {item.ItemId} - {itemName}");
         var player = item.Player;
-        var playerName = player.Name;
-        if (!string.IsNullOrWhiteSpace(player.Alias) && player.Alias != playerName)
-        {
-            playerName = $"{player.Alias} ({playerName})";
-        }
+        var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
 
         Game.IncomingItems.Enqueue(new()
         {

@@ -1468,6 +1468,24 @@ public static class Data
         { CharacterProperties.Character.Bram, "Bram" },
     };
 
+    public static readonly Dictionary<CharacterProperties.Character, DealProperties.DealID> CharacterToStrDeal = new()
+    {
+        {CharacterProperties.Character.Algus, DealProperties.DealID.Deal_Algus_Strength },
+        {CharacterProperties.Character.Arias, DealProperties.DealID.Deal_Arias_Strength },
+        {CharacterProperties.Character.Kyuli, DealProperties.DealID.Deal_Kyuli_Strength },
+        {CharacterProperties.Character.Zeek, DealProperties.DealID.Deal_Zeek_Strength },
+        {CharacterProperties.Character.Bram, DealProperties.DealID.Deal_Bram_Strength },
+    };
+
+    public static readonly Dictionary<CharacterProperties.Character, DealProperties.DealID> CharacterToDefDeal = new()
+    {
+        {CharacterProperties.Character.Algus, DealProperties.DealID.Deal_Algus_Defense },
+        {CharacterProperties.Character.Arias, DealProperties.DealID.Deal_Arias_Defense },
+        {CharacterProperties.Character.Kyuli, DealProperties.DealID.Deal_Kyuli_Defense },
+        {CharacterProperties.Character.Zeek, DealProperties.DealID.Deal_Zeek_Defense },
+        {CharacterProperties.Character.Bram, DealProperties.DealID.Deal_Bram_Defense },
+    };
+
     public static readonly SwitchData[] Switches =
     [
         new()

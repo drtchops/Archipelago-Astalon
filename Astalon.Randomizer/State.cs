@@ -67,6 +67,7 @@ public class SlotData
     public bool AllowBlockWarping { get; set; } = false;
     public bool CheapKyuliRay { get; set; } = false;
     public bool AlwaysRestoreCandles { get; set; } = false;
+    public bool ScaleCharacterStats { get; set; } = true;
     public bool DeathLink { get; set; } = false;
     public string[] StartingCharacters { get; set; } = [];
     public Dictionary<string, float> CharacterStrengths { get; set; } = [];
@@ -99,9 +100,10 @@ public class SlotData
         CostMultiplier = ParseInt(settings, "cost_multiplier", 100);
         FastBloodChalice = ParseBool(settings, "fast_blood_chalice", true);
         CampfireWarp = ParseBool(settings, "campfire_warp", true);
-        AllowBlockWarping = ParseBool(settings, "allow_block_warping", false);
+        AllowBlockWarping = ParseBool(settings, "allow_block_warping");
         CheapKyuliRay = ParseBool(settings, "cheap_kyuli_ray");
         AlwaysRestoreCandles = ParseBool(settings, "always_restore_candles");
+        ScaleCharacterStats = ParseBool(settings, "scale_character_stats", true);
         DeathLink = ParseBool(settings, "death_link");
 
         try
