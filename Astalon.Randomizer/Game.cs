@@ -1957,4 +1957,23 @@ public static class Game
         }
         yield break;
     }
+
+    public static void ToggleInfiniteJumps()
+    {
+        var enabled = !Settings.InfiniteJumps;
+
+        if (Player.Instance?.PlayerPhysics != null)
+        {
+            if (enabled)
+            {
+                Player.Instance.PlayerPhysics.infiniteJump = true;
+            }
+            else
+            {
+                Player.Instance.PlayerPhysics.infiniteJump = Player.Instance.CharacterProperty.infiniteJump;
+            }
+        }
+
+        Settings.InfiniteJumps = enabled;
+    }
 }

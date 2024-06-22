@@ -84,7 +84,7 @@ public static class Debug
                 ),
                 new(
                     label: () => Settings.InfiniteJumps ? "Disable Infinite Jumps" : "Enable Infinite Jumps",
-                    callback: () => Settings.InfiniteJumps = !Settings.InfiniteJumps
+                    callback: Game.ToggleInfiniteJumps
                 ),
                 new(
                     label: () => "Unlock All Elevators",

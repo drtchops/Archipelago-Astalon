@@ -876,14 +876,14 @@ internal class InputListener_Patch
 [HarmonyPatch(typeof(PlayerPhysics))]
 internal class PlayerPhysics_Patch
 {
-    [HarmonyPatch(nameof(PlayerPhysics.Jump))]
-    [HarmonyPrefix]
-    public static void JumpPre(PlayerPhysics __instance)
+    [HarmonyPatch(nameof(PlayerPhysics.SetCharacterProperties))]
+    [HarmonyPostfix]
+    public static void SetCharacterProperties(PlayerPhysics __instance)
     {
-        //Plugin.Logger.LogDebug("PlayerPhysics.Jump()");
+        Plugin.Logger.LogDebug("PlayerPhysics.SetCharacterProperties()");
         if (Settings.InfiniteJumps)
         {
-            __instance.grounded = true;
+            __instance.infiniteJump = true;
         }
     }
 }
