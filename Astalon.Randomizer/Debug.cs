@@ -260,7 +260,7 @@ public static class Debug
         }
 
         _roomWarp = GUI.TextField(new(950, 540, 75, 20), _roomWarp);
-        if (GUI.Button(new(1000, 540, 75, 20), "Warp"))
+        if (GUI.Button(new(1025, 540, 75, 20), "Warp"))
         {
             try
             {
@@ -274,7 +274,7 @@ public static class Debug
         }
 
         _orbs = GUI.TextField(new(950, 560, 75, 20), _orbs);
-        if (GUI.Button(new(1000, 560, 75, 20), "Set Orbs"))
+        if (GUI.Button(new(1025, 560, 75, 20), "Set Orbs"))
         {
             try
             {

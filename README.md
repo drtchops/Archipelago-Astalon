@@ -4,7 +4,7 @@ Randomizer mod for Astalon: Tears of the Earth that integrates with [Archipelago
 
 ## Installation
 
-Follow the [Setup Guide](https://github.com/drtchops/Archipelago/blob/main/worlds/astalon/docs/setup_en.md)
+Follow the [Setup Guide](https://github.com/drtchops/Archipelago/blob/astalon/worlds/astalon/docs/setup_en.md)
 
 ## Development
 
