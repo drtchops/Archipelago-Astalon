@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Archipelago.MultiClient.Net.Enums;
-using Astalon.Randomizer.Archipelago;
 using BepInEx.Unity.IL2CPP.Utils;
 using Newtonsoft.Json;
 using PathologicalGames;
@@ -428,6 +427,20 @@ public static class Game
             return;
         }
 
+        if (Plugin.State.SlotData.SkipCutscenes || Plugin.State.SlotData.RandomizeCharacters)
+        {
+            // tutorial rooms
+            UpdateObjectData(6729, 6670, "objectOn", "True");
+            UpdateObjectData(6757, 6670, "unlockStep", "3");
+            UpdateObjectData(458, 6671, "wasActivated", "True");
+            UpdateObjectData(459, 6672, "wasActivated", "True");
+            UpdateObjectData(460, 6672, "objectOn", "False");
+            UpdateObjectData(6708, 6672, "wasActivated", "True");
+            UpdateObjectData(6709, 6672, "objectOn", "False");
+            UpdateObjectData(6722, 6672, "wasActivated", "True");
+            UpdateObjectData(454, 6673, "wasActivated", "True");
+        }
+
         if (Plugin.State.SlotData.SkipCutscenes)
         {
             Player.PlayerDataLocal.cs_bkbossfinal1 = true;
@@ -451,17 +464,6 @@ public static class Game
                 {
                     UpdateObjectData(i, 6629, "objectOn", "False");
                 }
-
-                // tutorial rooms
-                UpdateObjectData(6729, 6670, "objectOn", "True");
-                UpdateObjectData(6757, 6670, "unlockStep", "3");
-                UpdateObjectData(458, 6671, "wasActivated", "True");
-                UpdateObjectData(459, 6672, "wasActivated", "True");
-                UpdateObjectData(460, 6672, "objectOn", "False");
-                UpdateObjectData(6708, 6672, "wasActivated", "True");
-                UpdateObjectData(6709, 6672, "objectOn", "False");
-                UpdateObjectData(6722, 6672, "wasActivated", "True");
-                UpdateObjectData(454, 6673, "wasActivated", "True");
             }
 
             // Tauros cutscenes
@@ -656,17 +658,21 @@ public static class Game
     {
         if (!Plugin.State.Valid)
         {
-            return false;
+            return true;
         }
 
         return Player.PlayerDataLocal.unlockedCharacters.Count > 1;
     }
 
-    public static string GetDefaultIcon(ItemFlags flags = ItemFlags.None) => flags switch
+    public static string GetDefaultIcon(ItemFlags flags = ItemFlags.None)
     {
-        ItemFlags.Advancement => "BlueOrb_1",
-        _ => "Orb_Idle_1",
-    };
+        if (flags.HasFlag(ItemFlags.Advancement) || flags.HasFlag(ItemFlags.Trap))
+        {
+            return "BlueOrb_1";
+        }
+
+        return "Orb_Idle_1";
+    }
 
     public static string GetIcon(ApItemInfo itemInfo)
     {
@@ -759,14 +765,15 @@ public static class Game
         }
 
         var icon = GetIcon(itemInfo);
-        var sound = itemInfo.Flags switch
+        var sound = "pickup";
+        if (itemInfo.Flags.HasFlag(ItemFlags.Advancement))
         {
-            //ItemFlags.Advancement => "applause",
-            ItemFlags.Advancement => "secret",
-            //ItemFlags.NeverExclude => "secret",
-            ItemFlags.Trap => "evil-laugh",
-            _ => "pickup",
-        };
+            sound = "secret";
+        }
+        else if (itemInfo.Flags.HasFlag(ItemFlags.Trap))
+        {
+            sound = "evil-laugh";
+        }
 
         return new()
         {

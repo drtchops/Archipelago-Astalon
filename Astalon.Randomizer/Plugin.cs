@@ -85,9 +85,7 @@ public class Plugin : BasePlugin
         _configUri.Value = uri;
         _configSlotName.Value = slotName;
         _configPassword.Value = password;
-        State.Uri = uri;
-        State.SlotName = slotName;
-        State.Password = password;
+        UpdateConnectionInfo();
     }
 
     public static void ToggleConnection()
