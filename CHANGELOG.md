@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.16.0] - 2024-08-20
+
+- Added support for Poptracker inside of Universal Tracker
+- Fixed some inconsistencies with item and location names
+- Slightly improved apworld caching
+
 ## [0.15.3] - 2024-08-04
 
 - Fix generating with item links
