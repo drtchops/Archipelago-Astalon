@@ -1131,3 +1131,15 @@ internal class Room_Bram_Patch
         Game.DeactivateBramRoom();
     }
 }
+
+[HarmonyPatch(typeof(Candle))]
+internal class Candle_Patch
+{
+    [HarmonyPatch(nameof(Candle.DestroyObj))]
+    [HarmonyPrefix]
+    public static void DestroyObj(Candle __instance)
+    {
+        Plugin.Logger.LogDebug($"Candle.DestroyObj({__instance.actorID})");
+        Game.DestroyCandle(__instance.actorID);
+    }
+}

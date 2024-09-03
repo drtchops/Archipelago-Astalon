@@ -59,8 +59,8 @@ public static class Game
     private static tk2dBaseSprite _baseSprite;
     private static tk2dSpriteCollectionData _spriteCollectionData;
     private static tk2dSpriteAnimationClip _spriteAnimationClip;
-    private static bool _injectedSprite;
-    private static int _injectedSpriteId;
+    // private static bool _injectedSprite;
+    // private static int _injectedSpriteId;
     private static bool _injectedAnimation;
 
     #region AnimationExperiments
@@ -744,6 +744,7 @@ public static class Game
             "BlueOrb_1" => "TrapOrb",
             "SoulOrb_Big" => "Orb_Big_UI",
             "Orb_Idle_1" => "SecretsOrb_Idle",
+            "Candle_1_Lit_1_01" => "Candle1_Lit",
             "Frog" => null,
             "AP_ITEM" => null,
             _ => icon,
@@ -956,6 +957,9 @@ public static class Game
                     break;
                 case ApItemId.KeyRed:
                     Player.PlayerDataLocal.AddKey(Key.KeyType.Red);
+                    break;
+                case ApItemId.Heal5:
+                    Player.Instance.Heal(5);
                     break;
                 default:
                     Plugin.Logger.LogWarning($"Item {itemInfo.Id} - {itemName} not found");
@@ -1512,6 +1516,18 @@ public static class Game
     {
         if (Plugin.State.Valid && Plugin.State.SlotData.RandomizeShop &&
             Data.DealToLocation.TryGetValue(dealId, out var location))
+        {
+            SendLocation(location);
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool DestroyCandle(int actorId)
+    {
+        if (Plugin.State.Valid && Plugin.State.SlotData.RandomizeCandles &&
+            Data.CandleToLocation.TryGetValue(actorId, out var location))
         {
             SendLocation(location);
             return true;

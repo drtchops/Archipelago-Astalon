@@ -55,8 +55,9 @@ public class SlotData
     public bool RandomizeShop { get; set; } = false;
     public bool RandomizeElevator { get; set; } = false;
     public bool RandomizeSwitches { get; set; } = false;
-    public bool RandomizeFamiliars { get; set; } = false;
+    public bool RandomizeCandles { get; set; } = false;
     public bool RandomizeOrbCrates { get; set; } = false;
+    public bool RandomizeFamiliars { get; set; } = false;
     public bool RandomizeBossOrbRewards { get; set; } = false;
     public bool RandomizeMinibossOrbRewards { get; set; } = false;
     public bool SkipCutscenes { get; set; } = true;
@@ -91,8 +92,9 @@ public class SlotData
         RandomizeShop = ParseBool(settings, "randomize_shop");
         RandomizeElevator = ParseBool(settings, "randomize_elevator");
         RandomizeSwitches = ParseBool(settings, "randomize_switches");
-        RandomizeFamiliars = ParseBool(settings, "randomize_familiars");
+        RandomizeCandles = ParseBool(settings, "randomize_candles");
         RandomizeOrbCrates = ParseBool(settings, "randomize_orb_crates");
+        RandomizeFamiliars = ParseBool(settings, "randomize_familiars");
         RandomizeBossOrbRewards = ParseBool(settings, "randomize_boss_orb_rewards");
         RandomizeMinibossOrbRewards = ParseBool(settings, "randomize_miniboss_orb_rewards");
         SkipCutscenes = ParseBool(settings, "skip_cutscenes", true);
