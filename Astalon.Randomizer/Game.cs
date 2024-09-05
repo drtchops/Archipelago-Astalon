@@ -1524,16 +1524,26 @@ public static class Game
         return false;
     }
 
-    public static bool DestroyCandle(int actorId)
+    public static bool SpawnParticle(Transform particleParent)
     {
-        if (Plugin.State.Valid && Plugin.State.SlotData.RandomizeCandles &&
-            Data.CandleToLocation.TryGetValue(actorId, out var location))
+        if (!Plugin.State.Valid)
         {
-            SendLocation(location);
             return true;
         }
 
-        return false;
+        var actor = particleParent.GetComponent<Actor>();
+        if (actor == null)
+        {
+            return true;
+        }
+
+        if (Plugin.State.SlotData.RandomizeCandles && Data.CandleToLocation.TryGetValue(actor.actorID, out var candleLocation) && !IsLocationChecked(candleLocation))
+        {
+            SendLocation(candleLocation);
+            return false;
+        }
+
+        return true;
     }
 
     public static string GetValue(string data, string property)
@@ -1612,15 +1622,25 @@ public static class Game
         {
             Plugin.ArchipelagoClient.SendLocation((long)location);
         }
-        else if (!_saveLoaded)
-        {
-            Plugin.Logger.LogWarning($"Trying to send location {location} but save hasn't loaded?");
-        }
         else
         {
             Plugin.Logger.LogWarning($"No connection, saving location {location} for later");
+        }
+
+        if (_saveLoaded)
+        {
             Plugin.State.CheckedLocations.Add((long)location);
         }
+    }
+
+    public static bool IsLocationChecked(ApLocationId location)
+    {
+        if (Plugin.ArchipelagoClient.Connected)
+        {
+            return Plugin.ArchipelagoClient.IsLocationChecked((long)location);
+        }
+
+        return Plugin.State.CheckedLocations.Contains((long)location);
     }
 
     public static void Update()

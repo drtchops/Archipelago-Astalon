@@ -1132,14 +1132,26 @@ internal class Room_Bram_Patch
     }
 }
 
-[HarmonyPatch(typeof(Candle))]
-internal class Candle_Patch
+
+// [HarmonyPatch(typeof(ContainerTile))]
+// internal class ContainerTile_Patch
+// {
+//     [HarmonyPatch(nameof(ContainerTile.TriggerContainerReward))]
+//     [HarmonyPrefix]
+//     public static void TriggerContainerReward(ContainerTile __instance)
+//     {
+//         Plugin.Logger.LogDebug($"ContainerTile.TriggerContainerReward({__instance.actorID})");
+//     }
+// }
+
+[HarmonyPatch(typeof(PE_Splash))]
+internal class PE_Splash_Patch
 {
-    [HarmonyPatch(nameof(Candle.DestroyObj))]
+    [HarmonyPatch(nameof(PE_Splash.SpawnParticle))]
     [HarmonyPrefix]
-    public static void DestroyObj(Candle __instance)
+    public static bool TriggerContainerReward(PE_Splash __instance)
     {
-        Plugin.Logger.LogDebug($"Candle.DestroyObj({__instance.actorID})");
-        Game.DestroyCandle(__instance.actorID);
+        Plugin.Logger.LogDebug("PE_Splash.TriggerContainerReward()");
+        return Game.SpawnParticle(__instance.particleParent);
     }
 }

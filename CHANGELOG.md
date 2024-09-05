@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added candle randomizer
 - More logic fixes
+- Minor optimizations
 
 ## [0.16.0] - 2024-08-20
 

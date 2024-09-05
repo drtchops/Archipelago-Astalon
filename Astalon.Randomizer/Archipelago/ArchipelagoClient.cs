@@ -148,6 +148,16 @@ public class ArchipelagoClient
         _session.Locations.CompleteLocationChecksAsync(location);
     }
 
+    public bool IsLocationChecked(long location)
+    {
+        if (!Connected)
+        {
+            return false;
+        }
+
+        return _session.Locations.AllLocationsChecked.Contains(location);
+    }
+
     public bool SyncLocations(List<long> locations)
     {
         if (!Connected || locations == null || locations.Count == 0)
