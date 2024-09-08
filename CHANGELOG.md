@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.18.0] - 2024-09-08
+
+- Added cutscene and rock traps
+- Added option to configure how much filler is turned into traps
+
 ## [0.17.2] - 2024-09-07
 
 - Fix typo in Hall of the Phantoms switch names

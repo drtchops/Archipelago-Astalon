@@ -32,6 +32,8 @@ public static class Game
     public static string DeathSource { get; private set; }
     public static bool ReceivingItem { get; set; }
     public static bool IsInShop { get; set; }
+    public static int QueuedCutscenes { get; set; }
+    public static int QueuedRocks { get; set; }
 
     public static bool UnlockElevators { get; set; }
     public static bool TriggerDeath { get; set; }
@@ -54,6 +56,7 @@ public static class Game
     private static bool _activatingZeekRoom;
     private static bool _activatingBramRoom;
     private static int _activatingElevator = -1;
+    private static bool _cutscenePlaying;
 
 #if DEBUG
     private static tk2dBaseSprite _baseSprite;
@@ -961,6 +964,12 @@ public static class Game
                 case ApItemId.Heal5:
                     Player.Instance.Heal(5);
                     break;
+                case ApItemId.TrapCutscene:
+                    QueuedCutscenes++;
+                    break;
+                case ApItemId.TrapRocks:
+                    QueuedRocks++;
+                    break;
                 default:
                     Plugin.Logger.LogWarning($"Item {itemInfo.Id} - {itemName} not found");
                     ReceivingItem = false;
@@ -1837,6 +1846,18 @@ public static class Game
                 }
             }
         }
+
+        if (QueuedCutscenes > 0 && IsGameStateNormal())
+        {
+            PlayCutsceneTrap();
+            QueuedCutscenes--;
+        }
+
+        if (QueuedRocks > 0 && CanEnableRocks())
+        {
+            StartRocksTrap();
+            QueuedRocks--;
+        }
     }
 
 #if DEBUG
@@ -1878,6 +1899,30 @@ public static class Game
     }
 #endif
 
+    private static bool IsGameStateNormal()
+    {
+        return (
+            !_cutscenePlaying &&
+            !_isWarping &&
+            Plugin.State.Valid &&
+            GameplayUIManager.Instance != null &&
+            !GameplayUIManager.Instance.InGameMenuOpen &&
+            !GameplayUIManager.Instance.FullMapOpen &&
+            !(GameplayUIManager.Instance.elevatorMenuHolder?.activeInHierarchy ?? false) &&
+            Player.Instance != null &&
+            Player.Instance.PlayerPhysics != null &&
+            Player.Instance.PlayerPhysics.isIdle &&
+            Player.Instance.gameObject.active &&
+            !Player.Instance.isInElevator &&
+            Player.Instance.allowRoomTransition &&
+            !Player.Instance.isDead &&
+            !Player.Instance.meteorInProgress &&
+            !(Player.Instance.currentSubWeaponClass?.isShooting ?? false) &&
+            !(Player.Instance.currentSubWeaponClass?.isAttacking ?? false) &&
+            Player.Instance.ControllerEnabled()
+        );
+    }
+
     private static void CheckWarp()
     {
         if (WarpDestination == null)
@@ -1888,22 +1933,8 @@ public static class Game
         var destination = WarpDestination;
         WarpDestination = null;
 
-        if (Player.Instance == null ||
-            !Player.Instance.gameObject.active ||
-            Player.PlayerDataLocal == null ||
-            Player.Instance.isInElevator ||
-            !Player.Instance.allowRoomTransition ||
-            Player.Instance.isDead ||
-            Player.Instance.meteorInProgress ||
-            (Player.Instance.currentSubWeaponClass?.isShooting ?? false) ||
-            (Player.Instance.currentSubWeaponClass?.isAttacking ?? false) ||
-            !Player.Instance.ControllerEnabled() ||
-            (GameplayUIManager.Instance?.InGameMenuOpen ?? false) ||
-            (GameplayUIManager.Instance?.FullMapOpen ?? false) ||
-            (GameplayUIManager.Instance?.elevatorMenuHolder?.activeInHierarchy ?? false) ||
-            _isWarping)
+        if (!IsGameStateNormal())
         {
-            // TODO: check not in elevator menu
             return;
         }
 
@@ -1963,6 +1994,7 @@ public static class Game
 
         targetRoom.ActivateInisde();
         targetRoom.ActivateRoomSpecificOptions();
+        currentRoom.StopRocksFalling();
         currentRoom.PreDeactivateInisde();
         currentRoom.DeactivateInisde();
         CameraManager.MoveCameraTo(targetRoom);
@@ -1988,10 +2020,10 @@ public static class Game
         AudioManager.Play("wall-gem");
         Player.Instance.ResetMaterial();
         Player.Instance.ShowPlayer(true, true);
+        Player.Instance.AllowRoomTransition(true);
         targetRoom.PlayerEntered();
         yield return new WaitForSeconds(0.1f);
 
-        Player.Instance.AllowRoomTransition(true);
         _isWarping = false;
         foreach (var actor in targetRoom.GetActorsWithID(checkpointId))
         {
@@ -2018,5 +2050,67 @@ public static class Game
         }
 
         Settings.InfiniteJumps = enabled;
+    }
+
+    public static void PlayCutsceneTrap()
+    {
+        if (!IsGameStateNormal())
+        {
+            return;
+        }
+
+        _cutscenePlaying = true;
+        var rand = new System.Random();
+        var lines = Data.FakeCutscenes[rand.Next(0, Data.FakeCutscenes.Length)];
+        var dialogue = new Dialogue[lines.Length];
+        for (var i = 0; i < lines.Length; i++)
+        {
+            dialogue[i] = new(lines[i]);
+        }
+        GameManager.Instance.StartCoroutine(CutsceneTrap_Routine(dialogue));
+    }
+
+    private static IEnumerator CutsceneTrap_Routine(Dialogue[] lines)
+    {
+        GameplayUIManager.HideNotification();
+        Player.Instance.DisableController(true);
+        Player.Instance.SetPhysicsActive(false);
+        Player.Instance.godMode = true;
+        // Player.Instance.HidePlayerSprite();
+        // Player.Instance.Room.DeactivateEnemies();
+        yield return GameManager.Instance.StartCoroutine(GameplayUIManager.Instance.TriggerDialogueSequence_Routine(lines, null, true, true, GameplayUIManager.DBPosition.TopLeft));
+        // Player.Instance.ShowPlayerSprite();
+        Player.Instance.godMode = false;
+        Player.Instance.SetPhysicsActive(true);
+        Player.Instance.EnableController(true, true);
+        // Player.Instance.Room.ActivateEnemies();
+        _cutscenePlaying = false;
+        yield break;
+    }
+
+    public static bool CanEnableRocks()
+    {
+        return (
+            IsGameStateNormal() &&
+            Player.Instance.Room != null &&
+            !Player.Instance.Room.isRocks &&
+            !Player.Instance.Room.savePoint &&
+            !Player.Instance.Room.voidPortal &&
+            !Player.Instance.Room.titanStatue &&
+            Player.Instance.Room.roomType != "elevator" &&
+            Player.Instance.Room.roomType != "boss"
+        );
+    }
+
+    public static void StartRocksTrap()
+    {
+        if (!CanEnableRocks())
+        {
+            return;
+        }
+
+        Player.Instance.Room.isRocks = true;
+        Room.previousRoomWasRocks = false;
+        Player.Instance.Room.ActivatePostTransitionRoomOptions();
     }
 }

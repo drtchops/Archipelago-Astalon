@@ -781,6 +781,8 @@ public enum ApItemId
     KeyItemCrown,
     EyeGold,
     Heal5,
+    TrapCutscene,
+    TrapRocks,
 }
 
 public enum ElevatorId
@@ -3954,4 +3956,45 @@ public static class Data
     ];
 
     public static readonly Dictionary<int, ApLocationId> CandleToLocation = Candles.ToDictionary((candle) => candle.Id, (candle) => candle.ApLocationId);
+
+    public static readonly string[][] FakeCutscenes = [
+        [
+            "{char}Arias{/char}:\nHey Algus, something's been troubling me.",
+            "{char}Algus{/char}:\nWhat is it, Arias?",
+            "{char}Arias{/char}:\nwhy do they call it oven when you of in the cold food of out hot eat the food",
+            "{char}Algus{/char}:\n...",
+            "{char}Algus{/char}:\nArias, what the hell are you talking about?",
+            "{char}Kyuli{/char}:\nBecause you off in the cold food so it gets hot, then you take it out to get it cooled off again.",
+            "{char}Kyuli{/char}:\nLike an offin.",
+            "{char}Arias{/char}:\nOhhh!",
+            "{char}Algus{/char}:\n...",
+            "{char}Algus{/char}:\nMaybe next time I should let them stay dead...",
+        ],
+        [
+            "{char}Zeek{/char}:\nHave you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion up to level 60 for free with no restrictions on playtime!",
+            "{char}Bram{/char}:\nActually, that's not true anymore.",
+            "{char}Bram{/char}:\nNow the critically acclaimed MMORPG Final Fantasy XIV has an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion and also the award-winning Stormblood expansion up to level 70 for free with no restrictions on playtime!",
+            "{char}Zeek{/char}:\nWow, what a steal!",
+        ],
+        [
+            "{char}Algus{/char}:\nWhat is this strange old world device?",
+            "Ring ring!",
+            "{char}Algus{/char}:\nUhh... Hello?",
+            "Hello, We've Been Trying To Reach You About Your Car's Extended Warranty.",
+            "{char}Algus{/char}:\nI think you have the wrong number, sorry.",
+        ],
+        [
+            "{char}Kyuli{/char}:\nZeek, did you just get that block stuck in the wall???",
+            "{char}Zeek{/char}:\nYeah! A cool wizard told me how to do neat tricks and now I can climb walls like you!",
+            "{char}Kyuli{/char}:\nA wizard? The old man that Algus mentioned?",
+            "{char}Zeek{/char}:\nNo, I think he called himself some sort of \"Prize Wizard\".",
+            "{char}Kyuli{/char}:\nMaybe you shouldn't be talking to strange old men...",
+        ],
+        [
+            "{char}Bram{/char}:\nFood $200, Data $150, Rend $800, Candles $3,600, Utility $150.",
+            "{char}Bram{/char}:\nSomeone who is good at the economy please help me budget this. My Family is dying.",
+            "{char}Algus{/char}:\nSpend less on candles.",
+            "{char}Bram{/char}:\nNo.",
+        ],
+    ];
 }

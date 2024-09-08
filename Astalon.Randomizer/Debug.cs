@@ -286,6 +286,15 @@ public static class Debug
                 // ignored
             }
         }
+
+        if (GUI.Button(new(950, 600, 150, 20), "Cutscene"))
+        {
+            Game.QueuedCutscenes++;
+        }
+        if (GUI.Button(new(950, 620, 150, 20), "Rocks"))
+        {
+            Game.QueuedRocks++;
+        }
     }
 
     private static void GoalDisplay()
