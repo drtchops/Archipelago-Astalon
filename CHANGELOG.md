@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added cutscene and rock traps
 - Added option to configure how much filler is turned into traps
+- More logic fixes
 
 ## [0.17.2] - 2024-09-07
 
