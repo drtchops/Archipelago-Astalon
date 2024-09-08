@@ -1,3 +1,6 @@
+global using ActorIds = (int roomId, int actorId);
+global using DialogueLine = (string line, GameplayUIManager.DBPosition pos);
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -1094,7 +1097,7 @@ public static class Data
         { 2671, ApLocationId.CataBlueKeyEyeballs },
     };
 
-    public static readonly Dictionary<ApItemId, (int roomId, int objectId)> WhiteDoorMap = new()
+    public static readonly Dictionary<ApItemId, ActorIds> WhiteDoorMap = new()
     {
         { ApItemId.WhiteDoorGtStart, (3, 9) },
         { ApItemId.WhiteDoorGtMap, (268, 445) },
@@ -1116,7 +1119,7 @@ public static class Data
         { ApItemId.WhiteDoorCataPrison, (4336, 4615) },
     };
 
-    public static readonly Dictionary<ApItemId, (int roomId, int objectId)> BlueDoorMap = new()
+    public static readonly Dictionary<ApItemId, ActorIds> BlueDoorMap = new()
     {
         { ApItemId.BlueDoorGtHunter, (6628, 9467) },
         { ApItemId.BlueDoorGtRing, (30, 6373) },
@@ -1147,7 +1150,7 @@ public static class Data
         { ApItemId.BlueDoorSp, (8088, 8809) },
     };
 
-    public static readonly Dictionary<ApItemId, (int roomId, int objectId)> RedDoorMap = new()
+    public static readonly Dictionary<ApItemId, ActorIds> RedDoorMap = new()
     {
         { ApItemId.RedDoorZeek, (3227, 3288) },
         { ApItemId.RedDoorCath, (7055, 7252) },
@@ -3904,11 +3907,11 @@ public static class Data
         new() { Id=6676, RoomId=3265, ApLocationId=ApLocationId.HotpCandleUpperVoid3 },
         new() { Id=6677, RoomId=3265, ApLocationId=ApLocationId.HotpCandleUpperVoid4 },
         new() { Id=6678, RoomId=4335, ApLocationId=ApLocationId.CataCandlePrison },
-        new() { Id=6679, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden1 },
-        new() { Id=6680, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden2 },
-        new() { Id=6681, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden3 },
-        new() { Id=6682, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden4 },
-        new() { Id=6684, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden5 },
+        new() { Id=6679, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden4 },
+        new() { Id=6680, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden1 },
+        new() { Id=6681, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden2 },
+        new() { Id=6682, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden5 },
+        new() { Id=6684, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden3 },
         new() { Id=6734, RoomId=4307, ApLocationId=ApLocationId.CataCandleAboveRoots1 },
         new() { Id=6735, RoomId=4307, ApLocationId=ApLocationId.CataCandleAboveRoots2 },
         new() { Id=6736, RoomId=4307, ApLocationId=ApLocationId.CataCandleAboveRoots3 },
@@ -3957,44 +3960,44 @@ public static class Data
 
     public static readonly Dictionary<int, ApLocationId> CandleToLocation = Candles.ToDictionary((candle) => candle.Id, (candle) => candle.ApLocationId);
 
-    public static readonly string[][] FakeCutscenes = [
+    public static readonly DialogueLine[][] FakeCutscenes = [
         [
-            "{char}Arias{/char}:\nHey Algus, something's been troubling me.",
-            "{char}Algus{/char}:\nWhat is it, Arias?",
-            "{char}Arias{/char}:\nwhy do they call it oven when you of in the cold food of out hot eat the food",
-            "{char}Algus{/char}:\n...",
-            "{char}Algus{/char}:\nArias, what the hell are you talking about?",
-            "{char}Kyuli{/char}:\nBecause you off in the cold food so it gets hot, then you take it out to get it cooled off again.",
-            "{char}Kyuli{/char}:\nLike an offin.",
-            "{char}Arias{/char}:\nOhhh!",
-            "{char}Algus{/char}:\n...",
-            "{char}Algus{/char}:\nMaybe next time I should let them stay dead...",
+            ("{char}Arias{/char}:\nHey Algus, something's been troubling me.", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Algus{/char}:\nWhat is it, Arias?", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Arias{/char}:\nwhy do they call it oven when you of in the cold food of out hot eat the food", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Algus{/char}:\n...", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Algus{/char}:\nArias, what the hell are you talking about?", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Kyuli{/char}:\nBecause you off in the cold food so it gets hot, then you take it out to get it cooled off again.", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Kyuli{/char}:\nLike an offin.", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Arias{/char}:\nOhhh!", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Algus{/char}:\n...", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Algus{/char}:\nMaybe next time I should let them stay dead...", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
-            "{char}Zeek{/char}:\nHave you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion up to level 60 for free with no restrictions on playtime!",
-            "{char}Bram{/char}:\nActually, that's not true anymore.",
-            "{char}Bram{/char}:\nNow the critically acclaimed MMORPG Final Fantasy XIV has an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion and also the award-winning Stormblood expansion up to level 70 for free with no restrictions on playtime!",
-            "{char}Zeek{/char}:\nWow, what a steal!",
+            ("{char}Zeek{/char}:\nHave you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion up to level 60 for free with no restrictions on playtime!", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Bram{/char}:\nActually, that's not true anymore.", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Bram{/char}:\nNow the critically acclaimed MMORPG Final Fantasy XIV has an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion and also the award-winning Stormblood expansion up to level 70 for free with no restrictions on playtime!", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Zeek{/char}:\nWow, what a steal!", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
-            "{char}Algus{/char}:\nWhat is this strange old world device?",
-            "Ring ring!",
-            "{char}Algus{/char}:\nUhh... Hello?",
-            "Hello, We've Been Trying To Reach You About Your Car's Extended Warranty.",
-            "{char}Algus{/char}:\nI think you have the wrong number, sorry.",
+            ("{char}Algus{/char}:\nWhat is this strange old world device?", GameplayUIManager.DBPosition.TopLeft),
+            ("Ring ring!", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Algus{/char}:\nUhh... Hello?", GameplayUIManager.DBPosition.TopLeft),
+            ("Hello, We've Been Trying To Reach You About Your Car's Extended Warranty.", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Algus{/char}:\nI think you have the wrong number, sorry.", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
-            "{char}Kyuli{/char}:\nZeek, did you just get that block stuck in the wall???",
-            "{char}Zeek{/char}:\nYeah! A cool wizard told me how to do neat tricks and now I can climb walls like you!",
-            "{char}Kyuli{/char}:\nA wizard? The old man that Algus mentioned?",
-            "{char}Zeek{/char}:\nNo, I think he called himself some sort of \"Prize Wizard\".",
-            "{char}Kyuli{/char}:\nMaybe you shouldn't be talking to strange old men...",
+            ("{char}Kyuli{/char}:\nZeek, did you just get that block stuck in the wall???", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Zeek{/char}:\nYeah! A cool wizard told me how to do neat tricks and now I can climb walls like you!", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Kyuli{/char}:\nA wizard? The old man that Algus mentioned?", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Zeek{/char}:\nNo, I think he called himself some sort of \"Prize Wizard\".", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Kyuli{/char}:\nMaybe you shouldn't be talking to strange old men...", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
-            "{char}Bram{/char}:\nFood $200, Data $150, Rend $800, Candles $3,600, Utility $150.",
-            "{char}Bram{/char}:\nSomeone who is good at the economy please help me budget this. My Family is dying.",
-            "{char}Algus{/char}:\nSpend less on candles.",
-            "{char}Bram{/char}:\nNo.",
+            ("{char}Bram{/char}:\nFood $200, Data $150, Rend $800, Candles $3,600, Utility $150.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Bram{/char}:\nSomeone who is good at the economy please help me budget this. My Family is dying.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Algus{/char}:\nSpend less on candles.", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Bram{/char}:\nNo.", GameplayUIManager.DBPosition.TopLeft),
         ],
     ];
 }

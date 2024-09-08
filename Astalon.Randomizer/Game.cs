@@ -1589,9 +1589,9 @@ public static class Game
         room.UpdateObjectState(SaveManager.CurrentSave);
     }
 
-    public static bool OpenDoor((int roomId, int objectId) ids)
+    public static bool OpenDoor(ActorIds ids)
     {
-        if (GetObjectValue(ids.objectId, "wasOpened").ToLower() == "true")
+        if (GetObjectValue(ids.actorId, "wasOpened").ToLower() == "true")
         {
             return false;
         }
@@ -1599,7 +1599,7 @@ public static class Game
         if (ids.roomId == Player.PlayerDataLocal?.currentRoomID)
         {
             var room = GameManager.GetRoomFromID(ids.roomId);
-            var actors = room.GetActorsWithID(ids.objectId);
+            var actors = room.GetActorsWithID(ids.actorId);
             if (actors != null && actors.Length > 0)
             {
                 var actor = actors[0];
@@ -1608,7 +1608,7 @@ public static class Game
             }
         }
 
-        UpdateObjectData(ids.objectId, ids.roomId, "wasOpened", "True");
+        UpdateObjectData(ids.actorId, ids.roomId, "wasOpened", "True");
         return true;
     }
 
@@ -2020,10 +2020,10 @@ public static class Game
         AudioManager.Play("wall-gem");
         Player.Instance.ResetMaterial();
         Player.Instance.ShowPlayer(true, true);
-        Player.Instance.AllowRoomTransition(true);
         targetRoom.PlayerEntered();
         yield return new WaitForSeconds(0.1f);
 
+        Player.Instance.AllowRoomTransition(true);
         _isWarping = false;
         foreach (var actor in targetRoom.GetActorsWithID(checkpointId))
         {
@@ -2061,16 +2061,11 @@ public static class Game
 
         _cutscenePlaying = true;
         var rand = new System.Random();
-        var lines = Data.FakeCutscenes[rand.Next(0, Data.FakeCutscenes.Length)];
-        var dialogue = new Dialogue[lines.Length];
-        for (var i = 0; i < lines.Length; i++)
-        {
-            dialogue[i] = new(lines[i]);
-        }
-        GameManager.Instance.StartCoroutine(CutsceneTrap_Routine(dialogue));
+        var cutscene = Data.FakeCutscenes[rand.Next(0, Data.FakeCutscenes.Length)];
+        GameManager.Instance.StartCoroutine(CutsceneTrap_Routine(cutscene));
     }
 
-    private static IEnumerator CutsceneTrap_Routine(Dialogue[] lines)
+    private static IEnumerator CutsceneTrap_Routine(DialogueLine[] cutscene)
     {
         GameplayUIManager.HideNotification();
         Player.Instance.DisableController(true);
@@ -2078,7 +2073,11 @@ public static class Game
         Player.Instance.godMode = true;
         // Player.Instance.HidePlayerSprite();
         // Player.Instance.Room.DeactivateEnemies();
-        yield return GameManager.Instance.StartCoroutine(GameplayUIManager.Instance.TriggerDialogueSequence_Routine(lines, null, true, true, GameplayUIManager.DBPosition.TopLeft));
+        foreach (var (line, pos) in cutscene)
+        {
+            var lines = new Dialogue[] { new(line) };
+            yield return GameManager.Instance.StartCoroutine(GameplayUIManager.Instance.TriggerDialogueSequence_Routine(lines, null, true, true, pos));
+        }
         // Player.Instance.ShowPlayerSprite();
         Player.Instance.godMode = false;
         Player.Instance.SetPhysicsActive(true);
@@ -2098,7 +2097,8 @@ public static class Game
             !Player.Instance.Room.voidPortal &&
             !Player.Instance.Room.titanStatue &&
             Player.Instance.Room.roomType != "elevator" &&
-            Player.Instance.Room.roomType != "boss"
+            Player.Instance.Room.roomType != "boss" &&
+            Player.Instance.Room.roomID != 5
         );
     }
 

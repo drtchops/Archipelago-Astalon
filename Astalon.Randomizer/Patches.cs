@@ -1132,7 +1132,6 @@ internal class Room_Bram_Patch
     }
 }
 
-
 // [HarmonyPatch(typeof(ContainerTile))]
 // internal class ContainerTile_Patch
 // {
