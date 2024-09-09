@@ -3981,9 +3981,9 @@ public static class Data
         ],
         [
             ("{char}Algus{/char}:\nWhat is this strange old world device?", GameplayUIManager.DBPosition.TopLeft),
-            ("Ring ring!", GameplayUIManager.DBPosition.TopRight),
+            ("{char}BlackKnight{/char}:\nRing ring!", GameplayUIManager.DBPosition.TopRight),
             ("{char}Algus{/char}:\nUhh... Hello?", GameplayUIManager.DBPosition.TopLeft),
-            ("Hello, We've Been Trying To Reach You About Your Car's Extended Warranty.", GameplayUIManager.DBPosition.TopRight),
+            ("{char}BlackKnight{/char}:\nHello, We've Been Trying To Reach You About Your Car's Extended Warranty.", GameplayUIManager.DBPosition.TopRight),
             ("{char}Algus{/char}:\nI think you have the wrong number, sorry.", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
@@ -3998,6 +3998,41 @@ public static class Data
             ("{char}Bram{/char}:\nSomeone who is good at the economy please help me budget this. My Family is dying.", GameplayUIManager.DBPosition.TopLeft),
             ("{char}Algus{/char}:\nSpend less on candles.", GameplayUIManager.DBPosition.TopRight),
             ("{char}Bram{/char}:\nNo.", GameplayUIManager.DBPosition.TopLeft),
+        ],
+        [
+            ("{char}Arias{/char}:\nThis tower...", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Kyuli{/char}:\nWe've only been here for mere seconds, but... I already feel uneasy...", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Arias{/char}:\nI feel it too.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Arias{/char}:\nBut it looks like the poison is coming from here.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Arias{/char}:\nIf we can stop it, we can prevent the people in our village from getting sick!", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Kyuli{/char}:\nI want that too, of course. But this tower seems different than the other ruins...", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Kyuli{/char}:\nI can't put my finger on it, but it almost emanates strong evil energy...", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Zeek{/char}:\nHold on.", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Zeek{/char}:\nIs this even randomized???", GameplayUIManager.DBPosition.TopRight),
+        ],
+        [
+            ("{char}Oldman{/char}:\nIngredients: 6 tbsp of cake mix, 4 tbsp of water, 2 tsp of canola or vegetable oil.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Oldman{/char}:\nStep 1: In a mug or bowl combine the chocolate cake mix, water, and oil. Mix well with a fork.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Oldman{/char}:\nStep 2: Microwave the mug for 1 minute 30 seconds to 1 minute 45 seconds.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Oldman{/char}:\nCheck it with a toothpick, when it comes out clean it is ready.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Oldman{/char}:\nStep 3: A small bowl measurement will take about 1 minute.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Oldman{/char}:\nStep 4: Top with whatever you like such as, frosting, sprinkles, powdered sugar, etc.", GameplayUIManager.DBPosition.TopLeft),
+        ],
+        [
+            ("{char}Gargoyle{/char}:\nJust another stupid game.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Gargoyle{/char}:\nI get to where it say something about shooting black orbs with magic through walls.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Gargoyle{/char}:\nNOPE. Does not work.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Gargoyle{/char}:\nAnd, what imbecile developer decided to make [s] the jump key,", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Gargoyle{/char}:\nrather than the traditional [space bar] key.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Gargoyle{/char}:\nI have lost count of hon many times I have gone to jump, only for nothing to happen.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Gargoyle{/char}:\nBecause I am pressing [space bar]", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Gargoyle{/char}:\nNo thank you!", GameplayUIManager.DBPosition.TopLeft),
+        ],
+        [
+            ("{char}Algus{/char}:\nSo I've been looking into optimizing Archipelago generation times.", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Algus{/char}:\nI think I have a way to speed things up significantly!", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Arias{/char}:\nSounds great! What is it?", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Algus{/char}:\nSimply delete OoT.", GameplayUIManager.DBPosition.TopLeft),
         ],
     ];
 }
