@@ -452,7 +452,7 @@ internal class Player_Patch
     [HarmonyPrefix]
     public static void AssignRoom(Room _room)
     {
-        //Plugin.Logger.LogDebug($"Player.AssignRoom({_room.roomID})");
+        // Plugin.Logger.LogDebug($"Player.AssignRoom({_room.roomID}, {_room.roomType})");
         Game.ExploreRoom(_room);
     }
 

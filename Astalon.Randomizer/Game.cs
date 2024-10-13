@@ -1366,6 +1366,25 @@ public static class Game
             return;
         }
 
+        var newRegen = Player.Instance.regenInterval;
+        if (Plugin.State.SlotData.FastBloodChalice && room.roomType != "boss")
+        {
+            newRegen = 0.2f;
+        }
+        else
+        {
+            newRegen = 1f;
+        }
+        if (newRegen != Player.Instance.regenInterval)
+        {
+            Player.Instance.regenInterval = newRegen;
+            if (Player.PlayerDataLocal.HasEnabledItem(ItemProperties.ItemID.BloodChalice))
+            {
+                Player.Instance.RemoveRegen();
+                Player.Instance.UpdateItems();
+            }
+        }
+
         if (room.roomID == 3728 && Plugin.State.SlotData.RandomizeKeyItems)
         {
             Player.PlayerDataLocal.cyclopsDenKey = Plugin.State.ReceivedCyclopsKey;
