@@ -1366,7 +1366,34 @@ public static class Game
             return;
         }
 
-        var newRegen = Player.Instance.regenInterval;
+        var area = room.GetRoomArea();
+        switch (room.roomID)
+        {
+            case 2704:
+            case 2705:
+                area = 19;
+                break;
+            case 8771:
+                area = 5;
+                break;
+            case 1080:
+            case 10535:
+                area = 3;
+                break;
+            case 803:
+            case 3947:
+                area = 2;
+                break;
+            case 248:
+                area = 1;
+                break;
+        }
+        if (area != 0 && area != 22)
+        {
+            Plugin.ArchipelagoClient.StoreArea(area);
+        }
+
+        float newRegen;
         if (Plugin.State.SlotData.FastBloodChalice && room.roomType != "boss")
         {
             newRegen = 0.2f;

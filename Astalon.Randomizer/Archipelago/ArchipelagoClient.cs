@@ -315,4 +315,14 @@ public class ArchipelagoClient
     {
         _session?.Say(message);
     }
+
+    public void StoreArea(int area)
+    {
+        if (!Connected)
+        {
+            return;
+        }
+
+        _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_area"] = area;
+    }
 }
