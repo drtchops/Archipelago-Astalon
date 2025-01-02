@@ -661,7 +661,7 @@ internal class GameplayUIManager_Patch
     public static void TriggerFullScreen(ref Il2CppArrayBase<Dialogue> dialogueSequence)
     {
         Plugin.Logger.LogDebug("GameplayUIManager.TriggerFullScreen()");
-        if (dialogueSequence.Length == 5 && dialogueSequence[0].dialogueLine.StartsWith("We traveled through hell to get here"))
+        if (Plugin.State.Valid && dialogueSequence.Length == 5 && dialogueSequence[0].dialogueLine.StartsWith(ScriptLocalization.SCENE_2_1))
         {
             List<Dialogue> newDialogue = new();
             newDialogue.Add(new("Good luck, have fun!"));

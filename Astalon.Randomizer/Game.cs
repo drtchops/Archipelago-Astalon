@@ -419,6 +419,11 @@ public static class Game
 
     public static void UpdateSaveData()
     {
+        if (!Plugin.State.Valid)
+        {
+            return;
+        }
+
         var data = JsonConvert.SerializeObject(Plugin.State);
         SaveManager.SaveObject(SaveObjectId, data, SaveRoomId);
     }
@@ -588,6 +593,7 @@ public static class Game
         _saveInitialized = false;
         Plugin.State.ClearConnection();
         Plugin.State.ClearSave();
+        SaveManager.SaveObject(SaveObjectId, "", SaveRoomId);
     }
 
     #endregion
@@ -1077,6 +1083,11 @@ public static class Game
 
     public static void HandleDeath()
     {
+        if (!Plugin.State.Valid)
+        {
+            return;
+        }
+
         if (_deathCounter <= 0)
         {
             Plugin.ArchipelagoClient.SendDeath();
