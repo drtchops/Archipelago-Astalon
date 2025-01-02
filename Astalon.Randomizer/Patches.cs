@@ -969,6 +969,28 @@ internal class SavePoint_Patch
         Plugin.Logger.LogDebug("SavePoint.UpdateCharacters()");
         Game.UpdateSaveCharacters(__instance);
     }
+
+    [HarmonyPatch(nameof(SavePoint.TriggerEntered))]
+    [HarmonyPrefix]
+    public static void TriggerEntered(Collider2D collision)
+    {
+        Plugin.Logger.LogDebug("SavePoint.TriggerEntered()");
+        if (collision.CompareTag(Tags.Player))
+        {
+            Game.CampfireTriggerEntered();
+        }
+    }
+
+    [HarmonyPatch(nameof(SavePoint.TriggerExited))]
+    [HarmonyPrefix]
+    public static void TriggerExited(Collider2D collision)
+    {
+        Plugin.Logger.LogDebug("SavePoint.TriggerExited()");
+        if (collision.CompareTag(Tags.Player))
+        {
+            Game.CampfireTriggerExited();
+        }
+    }
 }
 
 [HarmonyPatch(typeof(Room))]

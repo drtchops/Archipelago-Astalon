@@ -515,7 +515,7 @@ public static class Game
             }
         }
 
-        if (Plugin.State.SlotData.FastBloodChalice)
+        if (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always)
         {
             Player.Instance.regenInterval = 0.2f;
         }
@@ -1405,7 +1405,7 @@ public static class Game
         }
 
         float newRegen;
-        if (Plugin.State.SlotData.FastBloodChalice && room.roomType != "boss")
+        if (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always || (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.NotBosses && room.roomType != "boss"))
         {
             newRegen = 0.2f;
         }
@@ -1413,15 +1413,7 @@ public static class Game
         {
             newRegen = 1f;
         }
-        if (newRegen != Player.Instance.regenInterval)
-        {
-            Player.Instance.regenInterval = newRegen;
-            if (Player.PlayerDataLocal.HasEnabledItem(ItemProperties.ItemID.BloodChalice))
-            {
-                Player.Instance.RemoveRegen();
-                Player.Instance.UpdateItems();
-            }
-        }
+        ChangeRegen(newRegen);
 
         if (room.roomID == 3728 && Plugin.State.SlotData.RandomizeKeyItems)
         {
@@ -1444,6 +1436,35 @@ public static class Game
             case 6671 when !Plugin.State.SlotData.StartingCharacters.Contains("Kyuli"):
                 SendLocation(ApLocationId.GtKyuli);
                 break;
+        }
+    }
+
+    public static void ChangeRegen(float newRegen)
+    {
+        if (newRegen != Player.Instance.regenInterval)
+        {
+            Player.Instance.regenInterval = newRegen;
+            if (Player.PlayerDataLocal.HasEnabledItem(ItemProperties.ItemID.BloodChalice))
+            {
+                Player.Instance.RemoveRegen();
+                Player.Instance.UpdateItems();
+            }
+        }
+    }
+
+    public static void CampfireTriggerEntered()
+    {
+        if (Plugin.State.Valid && Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Campfires)
+        {
+            ChangeRegen(0.2f);
+        }
+    }
+
+    public static void CampfireTriggerExited()
+    {
+        if (Plugin.State.Valid && Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Campfires)
+        {
+            ChangeRegen(1f);
         }
     }
 

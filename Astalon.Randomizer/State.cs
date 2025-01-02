@@ -40,6 +40,14 @@ public enum ApexElevator
     Removed = 2,
 }
 
+public enum FastBloodChalice
+{
+    Off = 0,
+    Campfires = 1,
+    NotBosses = 2,
+    Always = 3,
+}
+
 public class SlotData
 {
     public Campaign Campaign { get; set; } = Campaign.TearsOfTheEarth;
@@ -63,7 +71,7 @@ public class SlotData
     public bool SkipCutscenes { get; set; } = true;
     public ApexElevator ApexElevator { get; set; } = ApexElevator.Vanilla;
     public int CostMultiplier { get; set; } = 100;
-    public bool FastBloodChalice { get; set; } = true;
+    public FastBloodChalice FastBloodChalice { get; set; } = FastBloodChalice.Campfires;
     public bool CampfireWarp { get; set; } = true;
     public bool AllowBlockWarping { get; set; } = false;
     public bool CheapKyuliRay { get; set; } = false;
@@ -100,7 +108,7 @@ public class SlotData
         SkipCutscenes = ParseBool(settings, "skip_cutscenes", true);
         ApexElevator = ParseEnum<ApexElevator>(settings, "apex_elevator");
         CostMultiplier = ParseInt(settings, "cost_multiplier", 100);
-        FastBloodChalice = ParseBool(settings, "fast_blood_chalice", true);
+        FastBloodChalice = ParseEnum<FastBloodChalice>(settings, "fast_blood_chalice");
         CampfireWarp = ParseBool(settings, "campfire_warp", true);
         AllowBlockWarping = ParseBool(settings, "allow_block_warping");
         CheapKyuliRay = ParseBool(settings, "cheap_kyuli_ray");
