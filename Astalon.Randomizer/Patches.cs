@@ -573,6 +573,17 @@ internal class Boss_Worm_Patch
             damageAmount = 999;
         }
     }
+
+    [HarmonyPatch(nameof(Boss_Worm.StartBoss))]
+    [HarmonyPrefix]
+    public static void StartBoss()
+    {
+        Plugin.Logger.LogDebug("Boss_Worm.StartBoss()");
+        if (Plugin.State.Valid && Player.Instance.selfTransform.position.x < 6645)
+        {
+            Player.Instance.selfTransform.position = new(6780, -23710, 0);
+        }
+    }
 }
 
 [HarmonyPatch(typeof(Boss_Maw))]
