@@ -1405,7 +1405,7 @@ public static class Game
         }
 
         float newRegen;
-        if (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always || (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.NotBosses && room.roomType != "boss"))
+        if (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always || (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.NotBosses && room.roomType != "boss" && room.roomID != 5000))
         {
             newRegen = 0.2f;
         }
