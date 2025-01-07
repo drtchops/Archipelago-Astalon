@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.20.0] - 2025-01-07
+
+- UT Map tabs now auto switch! (UT v0.1.15+)
+- Fix map location
+- Fix logic
+
 ## [0.19.0] - 2025-01-02
 
 - Add new options for fast blood chalice
