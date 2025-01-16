@@ -2176,7 +2176,8 @@ public static class Game
             !Player.Instance.Room.titanStatue &&
             Player.Instance.Room.roomType != "elevator" &&
             Player.Instance.Room.roomType != "boss" &&
-            Player.Instance.Room.roomID != 5
+            Player.Instance.Room.roomID != 5 &&
+            Player.Instance.Room.roomID != 4112
         );
     }
 
