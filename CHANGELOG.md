@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - UT now works without a yaml
 - Fix rocks trap breaking the final boss elevator
 - Fix shop rando leaking into other saves
+- Bram is now allowed uppies
 
 ## [0.20.0] - 2025-01-07
 
