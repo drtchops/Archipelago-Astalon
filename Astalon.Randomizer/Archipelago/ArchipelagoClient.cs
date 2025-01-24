@@ -12,7 +12,7 @@ namespace Astalon.Randomizer.Archipelago;
 
 public class ArchipelagoClient
 {
-    private const string MinArchipelagoVersion = "0.4.6";
+    private const string MinArchipelagoVersion = "0.5.0";
 
     public bool Connected => _session?.Socket.Connected ?? false;
     private bool _attemptingConnection;

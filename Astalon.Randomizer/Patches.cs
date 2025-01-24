@@ -914,17 +914,17 @@ internal class LocalizationManager_Patch
     }
 }
 
-[HarmonyPatch(typeof(ItemManager))]
-internal class ItemManager_Patch
+[HarmonyPatch(typeof(ShopItem))]
+internal class ShopItem_Patch
 {
-    [HarmonyPatch(nameof(ItemManager.GetDealProperties))]
-    [HarmonyPostfix]
-    public static void GetDealProperties(ref DealProperties __result)
+    [HarmonyPatch(nameof(ShopItem.InitializeItem))]
+    [HarmonyPrefix]
+    public static void InitializeItem(DealProperties.DealID _itemID, ref string _sprite, ref string _name)
     {
-        if (Game.TryUpdateDeal(__result.dealID, out var sprite, out var name, out _))
+        if (Game.TryUpdateDeal(_itemID, out var sprite, out var name, out _))
         {
-            __result.dealIcon = sprite;
-            __result.dealName = "ARCHIPELAGO:" + name;
+            _sprite = sprite;
+            _name = "ARCHIPELAGO:" + name;
         }
     }
 }

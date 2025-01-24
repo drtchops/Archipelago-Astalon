@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.21.0] - 2025-01-23
+
+- UT now works without a yaml
+- Fix rocks trap breaking the final boss elevator
+- Fix shop rando leaking into other saves
+
 ## [0.20.0] - 2025-01-07
 
 - UT Map tabs now auto switch! (UT v0.1.15+)

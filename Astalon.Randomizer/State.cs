@@ -85,36 +85,36 @@ public class SlotData
 
     public SlotData(IReadOnlyDictionary<string, object> slotData)
     {
-        var settings = (JObject)slotData["settings"];
+        var options = (JObject)slotData["options"];
 
-        Campaign = ParseEnum<Campaign>(settings, "campaign");
-        Goal = ParseEnum<Goal>(settings, "goal");
-        AdditionalEyesRequired = ParseInt(settings, "additional_eyes_required");
-        RandomizeCharacters = ParseInt(settings, "randomize_characters") != 0;
-        RandomizeKeyItems = ParseBool(settings, "randomize_key_items", true);
-        RandomizeAttackPickups = ParseBool(settings, "randomize_attack_pickups", true);
-        RandomizeHealthPickups = ParseBool(settings, "randomize_health_pickups", true);
-        RandomizeWhiteKeys = ParseBool(settings, "randomize_white_keys");
-        RandomizeBlueKeys = ParseBool(settings, "randomize_blue_keys");
-        RandomizeRedKeys = ParseBool(settings, "randomize_red_keys");
-        RandomizeShop = ParseBool(settings, "randomize_shop");
-        RandomizeElevator = ParseBool(settings, "randomize_elevator");
-        RandomizeSwitches = ParseBool(settings, "randomize_switches");
-        RandomizeCandles = ParseBool(settings, "randomize_candles");
-        RandomizeOrbCrates = ParseBool(settings, "randomize_orb_crates");
-        RandomizeFamiliars = ParseBool(settings, "randomize_familiars");
-        RandomizeBossOrbRewards = ParseBool(settings, "randomize_boss_orb_rewards");
-        RandomizeMinibossOrbRewards = ParseBool(settings, "randomize_miniboss_orb_rewards");
-        SkipCutscenes = ParseBool(settings, "skip_cutscenes", true);
-        ApexElevator = ParseEnum<ApexElevator>(settings, "apex_elevator");
-        CostMultiplier = ParseInt(settings, "cost_multiplier", 100);
-        FastBloodChalice = ParseEnum<FastBloodChalice>(settings, "fast_blood_chalice");
-        CampfireWarp = ParseBool(settings, "campfire_warp", true);
-        AllowBlockWarping = ParseBool(settings, "allow_block_warping");
-        CheapKyuliRay = ParseBool(settings, "cheap_kyuli_ray");
-        AlwaysRestoreCandles = ParseBool(settings, "always_restore_candles");
-        ScaleCharacterStats = ParseBool(settings, "scale_character_stats", true);
-        DeathLink = ParseBool(settings, "death_link");
+        Campaign = ParseEnum<Campaign>(options, "campaign");
+        Goal = ParseEnum<Goal>(options, "goal");
+        AdditionalEyesRequired = ParseInt(options, "additional_eyes_required");
+        RandomizeCharacters = ParseInt(options, "randomize_characters") != 0;
+        RandomizeKeyItems = ParseBool(options, "randomize_key_items", true);
+        RandomizeAttackPickups = ParseBool(options, "randomize_attack_pickups", true);
+        RandomizeHealthPickups = ParseBool(options, "randomize_health_pickups", true);
+        RandomizeWhiteKeys = ParseBool(options, "randomize_white_keys");
+        RandomizeBlueKeys = ParseBool(options, "randomize_blue_keys");
+        RandomizeRedKeys = ParseBool(options, "randomize_red_keys");
+        RandomizeShop = ParseBool(options, "randomize_shop");
+        RandomizeElevator = ParseBool(options, "randomize_elevator");
+        RandomizeSwitches = ParseBool(options, "randomize_switches");
+        RandomizeCandles = ParseBool(options, "randomize_candles");
+        RandomizeOrbCrates = ParseBool(options, "randomize_orb_crates");
+        RandomizeFamiliars = ParseBool(options, "randomize_familiars");
+        RandomizeBossOrbRewards = ParseBool(options, "randomize_boss_orb_rewards");
+        RandomizeMinibossOrbRewards = ParseBool(options, "randomize_miniboss_orb_rewards");
+        SkipCutscenes = ParseBool(options, "skip_cutscenes", true);
+        ApexElevator = ParseEnum<ApexElevator>(options, "apex_elevator");
+        CostMultiplier = ParseInt(options, "cost_multiplier", 100);
+        FastBloodChalice = ParseEnum<FastBloodChalice>(options, "fast_blood_chalice");
+        CampfireWarp = ParseBool(options, "campfire_warp", true);
+        AllowBlockWarping = ParseBool(options, "allow_block_warping");
+        CheapKyuliRay = ParseBool(options, "cheap_kyuli_ray");
+        AlwaysRestoreCandles = ParseBool(options, "always_restore_candles");
+        ScaleCharacterStats = ParseBool(options, "scale_character_stats", true);
+        DeathLink = ParseBool(options, "death_link");
 
         try
         {
