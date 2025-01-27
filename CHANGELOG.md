@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Fix updating options in UT
 - Fix character shop item icons
+- Fix opened doors closing when you press a switch
 
 ## [0.21.0] - 2025-01-23
 
