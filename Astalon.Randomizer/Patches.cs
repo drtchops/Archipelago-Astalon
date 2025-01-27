@@ -1098,6 +1098,27 @@ internal class SwitchableObject_Patch
     }
 }
 
+[HarmonyPatch(typeof(SwitchableGate._FlashRenderer_d__10))]
+internal class SwitchableGate_FlashRenderer_d__10_Patch
+{
+    [HarmonyPatch(nameof(SwitchableGate._FlashRenderer_d__10.MoveNext))]
+    [HarmonyPrefix]
+    static bool MoveNext(SwitchableGate._FlashRenderer_d__10 __instance, ref bool __result)
+    {
+        Plugin.Logger.LogDebug("SwitchableGate._FlashRenderer_d__10.MoveNext()");
+
+        var roomId = __instance.__4__this.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
+        var linkId = __instance.__4__this.linkID;
+        if (Game.IsSwitchRandomized(roomId, linkId, out _))
+        {
+            __result = false;
+            return false;
+        }
+
+        return true;
+    }
+}
+
 [HarmonyPatch(typeof(Elevator))]
 internal class Elevator_Patch
 {

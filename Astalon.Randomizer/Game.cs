@@ -1984,7 +1984,9 @@ public static class Game
             !_isWarping &&
             Plugin.State.Valid &&
             GameplayUIManager.Instance != null &&
+            GameplayUIManager.Instance.IGMObject != null &&
             !GameplayUIManager.Instance.InGameMenuOpen &&
+            GameplayUIManager.Instance.fullMapObject != null &&
             !GameplayUIManager.Instance.FullMapOpen &&
             !(GameplayUIManager.Instance.elevatorMenuHolder?.activeInHierarchy ?? false) &&
             Player.Instance != null &&
