@@ -50,6 +50,7 @@ public enum FastBloodChalice
 
 public class SlotData
 {
+    public string Version { get; set; } = null;
     public Campaign Campaign { get; set; } = Campaign.TearsOfTheEarth;
     public Goal Goal { get; set; } = Goal.Vanilla;
     public int AdditionalEyesRequired { get; set; } = 0;
@@ -87,6 +88,7 @@ public class SlotData
     {
         var options = (JObject)slotData["options"];
 
+        Version = options.GetValue("version")?.ToString();
         Campaign = ParseEnum<Campaign>(options, "campaign");
         Goal = ParseEnum<Goal>(options, "goal");
         AdditionalEyesRequired = ParseInt(options, "additional_eyes_required");

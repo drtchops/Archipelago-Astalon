@@ -921,6 +921,7 @@ internal class ShopItem_Patch
     [HarmonyPrefix]
     public static void InitializeItem(DealProperties.DealID _itemID, ref string _sprite, ref string _name)
     {
+        Plugin.Logger.LogDebug($"ShopItem.InitializeItem({_itemID})");
         if (Game.TryUpdateDeal(_itemID, out var sprite, out var name, out _))
         {
             _sprite = sprite;
@@ -947,6 +948,21 @@ internal class ShopSubMenu_Patch
 
             __instance.dealTitle.text = name;
             __instance.dealDescription.text = description;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(ShopSubMenuItem))]
+internal class ShopSubMenuItem_Patch
+{
+    [HarmonyPatch(nameof(ShopSubMenuItem.SetDealID))]
+    [HarmonyPostfix]
+    public static void SetDealID(ShopSubMenuItem __instance, DealProperties _deal, bool _locked)
+    {
+        Plugin.Logger.LogDebug($"ShopSubMenuItem.SetDealID({_deal.dealID})");
+        if (!_locked && Game.TryUpdateDeal(_deal.dealID, out var sprite, out _, out _))
+        {
+            __instance.icon.SetSprite(sprite);
         }
     }
 }
