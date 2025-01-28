@@ -316,7 +316,7 @@ public class ArchipelagoClient
         _session?.Say(message);
     }
 
-    public void StoreArea(int area)
+    public void StoreArea(int area, int room)
     {
         if (!Connected)
         {
@@ -324,5 +324,6 @@ public class ArchipelagoClient
         }
 
         _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_area"] = area;
+        _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_room"] = room;
     }
 }

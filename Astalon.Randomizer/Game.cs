@@ -1401,7 +1401,7 @@ public static class Game
         }
         if (area != 0 && area != 22)
         {
-            Plugin.ArchipelagoClient.StoreArea(area);
+            Plugin.ArchipelagoClient.StoreArea(area, room.roomID);
         }
 
         float newRegen;
