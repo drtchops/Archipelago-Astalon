@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.22.0] - 2025-03-06
+
+- Complete logic rewrite to support current and future features
+- A new Astalon Tracker in the AP launcher that integrates with UT if installed
+- A `/route` command in the new tracker that will tell you the shortest route and required logic to the given location or region
+- More logic fixes
+- Added a couple community submitted cutscene traps
+
 ## [0.21.2] - 2025-01-27
 
 - Add cyclops den as its own map in UT

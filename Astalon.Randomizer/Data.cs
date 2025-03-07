@@ -4034,5 +4034,29 @@ public static class Data
             ("{char}Arias{/char}:\nSounds great! What is it?", GameplayUIManager.DBPosition.TopRight),
             ("{char}Algus{/char}:\nSimply delete OoT.", GameplayUIManager.DBPosition.TopLeft),
         ],
+        [
+            ("{char}Kyuli{/char}:\nHey guys! There's a stone in the wall with something written on it!", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Algus{/char}:\nWhat does it say?", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Kyuli{/char}:\n\"ICE PALACE LEADS TO ICE PALACE\"", GameplayUIManager.DBPosition.TopLeft),
+            ("{char}Algus{/char}:\n?", GameplayUIManager.DBPosition.TopRight),
+            ("{char}Arias{/char}:\n?", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Kyuli{/char}:\n?", GameplayUIManager.DBPosition.TopLeft),
+        ],
+        [
+            ("{char}Kyuli{/char}:\nHey player!", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Kyuli{/char}:\nI know you're having a hard time...", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Kyuli{/char}:\nBut remember,", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Kyuli{/char}:\nevery decision you have ever made in your life has led you to seeing this cutscene trap.", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Kyuli{/char}:\n:)", GameplayUIManager.DBPosition.TopCenter),
+        ],
+        [
+            ("{char}Algus{/char}:\nMario coin fragments, bonus coins, gold skulltulas, yoshi eggs, jiggies, power stars,", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Algus{/char}:\ntime pieces, triforce pieces, strawberries, special1s, special2s, grubs, ", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Algus{/char}:\nrupees, grass, questagons, piece of luigis, gorgon eye (gold)s...", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Algus{/char}:\nI can't see why anyone wants to flood the multiworld with these!", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Algus{/char}:\nAm I so out of touch?", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Algus{/char}:\n...", GameplayUIManager.DBPosition.TopCenter),
+            ("{char}Algus{/char}:\nNo, it's the hosts who are wrong.", GameplayUIManager.DBPosition.TopCenter),
+        ],
     ];
 }
