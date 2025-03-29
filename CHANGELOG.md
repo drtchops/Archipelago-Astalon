@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Update Archipelago.MultiClient.Net to 6.6.0 to fix compat with AP 0.6.0 hints
 - Fix some unrandomized white key logic
 - Speed up gen times and lower memory usage a bit
+- Restructure mod to make it a little more clear
 
 ## [0.22.0] - 2025-03-06
 

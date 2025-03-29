@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Archipelago.MultiClient.Net.Enums;
 using Newtonsoft.Json.Linq;
 
-namespace Astalon.Randomizer;
+namespace Archipelago.Astalon;
 
 public class ApItemInfo
 {

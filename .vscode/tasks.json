@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/Astalon.Randomizer/Astalon.Randomizer.csproj",
+        "${workspaceFolder}/Archipelago.Astalon/Archipelago.Astalon.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -19,7 +19,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/Astalon.Randomizer/Astalon.Randomizer.csproj",
+        "${workspaceFolder}/Archipelago.Astalon/Archipelago.Astalon.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -33,7 +33,7 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/Astalon.Randomizer/Astalon.Randomizer.csproj"
+        "${workspaceFolder}/Archipelago.Astalon/Archipelago.Astalon.csproj"
       ],
       "problemMatcher": "$msCompile"
     }

@@ -1,0 +1,108 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>Archipelago.Astalon</AssemblyName>
+    <Authors>drtchops</Authors>
+    <Description>Archipelago randomizer integration for Astalon: Tears of the Earth</Description>
+    <Version>0.23.0</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RootNamespace>Archipelago.Astalon</RootNamespace>
+    <AstalonRefs>./refs</AstalonRefs>
+    <ExportDir>bin/Publish</ExportDir>
+  </PropertyGroup>
+
+  <Import Project="LocalOverrides.targets" Condition="Exists('LocalOverrides.targets')" />
+  <Target Name="CopyMod" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <OutputFiles Include="$(TargetPath)" />
+      <OutputFiles Include="$(TargetDir)/$(TargetName).pdb" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+      <OutputFiles Include="$(TargetDir)/Archipelago.MultiClient.Net.dll" />
+      <OutputFiles Include="$(TargetDir)/Newtonsoft.Json.dll" />
+    </ItemGroup>
+    <RemoveDir Directories="$(ExportDir)/" />
+    <MakeDir Directories="$(ExportDir)/" />
+    <MakeDir Directories="$(ExportDir)/zip/BepInEx/plugins/$(TargetName)/" />
+    <MakeDir Condition="!Exists('$(AstalonRefs)/plugins/$(TargetName)/')" Directories="$(AstalonRefs)/plugins/$(TargetName)/" />
+    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(AstalonRefs)/plugins/$(TargetName)/"></Copy>
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ExportDir)/" />
+    <Copy SourceFiles="$(SolutionDir)/README.md" DestinationFolder="$(ExportDir)/zip/" />
+    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(ExportDir)/zip/BepInEx/plugins/$(TargetName)/" />
+    <ZipDirectory SourceDirectory="$(ExportDir)/zip/" DestinationFile="$(ExportDir)/$(TargetName)-v$(Version).zip" />
+    <RemoveDir Directories="$(ExportDir)/zip/" />
+    <GetFileHash Files="$(ExportDir)/$(TargetName)-v$(Version).zip" Algorithm="SHA256">
+      <Output TaskParameter="Items" ItemName="FilesWithHashes" />
+    </GetFileHash>
+    <WriteLinesToFile File="$(ExportDir)/SHA.txt" Lines="@(FilesWithHashes->'%(FileHash)')" Overwrite="true" Encoding="UTF-8" />
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="Targets" />
+    </GetAssemblyIdentity>
+    <ItemGroup>
+      <VersionNumber Include="@(Targets->'%(Version)')" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(ExportDir)/VERSION.txt" Lines="@(VersionNumber)" Overwrite="true" Encoding="UTF-8" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.6.0" />
+    <PackageReference Include="Archipelago.MultiClient.Net.Analyzers" Version="1.3.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(AstalonRefs)/interop/Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>$(AstalonRefs)/interop/Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween">
+      <HintPath>$(AstalonRefs)/interop/DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTweenPro">
+      <HintPath>$(AstalonRefs)/interop/DOTweenPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>$(AstalonRefs)/interop/Il2Cppmscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Core">
+      <HintPath>$(AstalonRefs)/interop/Il2CppSystem.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem">
+      <HintPath>$(AstalonRefs)/interop/Il2CppSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(AstalonRefs)/interop/UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(AstalonRefs)/interop/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(AstalonRefs)/interop/UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(AstalonRefs)/interop/UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(AstalonRefs)/interop/UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>$(AstalonRefs)/interop/UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(AstalonRefs)/interop/UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

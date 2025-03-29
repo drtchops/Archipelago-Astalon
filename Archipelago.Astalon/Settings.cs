@@ -1,4 +1,4 @@
-namespace Astalon.Randomizer;
+namespace Archipelago.Astalon;
 
 public static class Settings
 {

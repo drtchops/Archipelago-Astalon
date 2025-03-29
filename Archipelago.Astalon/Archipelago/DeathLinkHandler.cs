@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 
-namespace Astalon.Randomizer.Archipelago;
+namespace Archipelago.Astalon.Archipelago;
 
 public class DeathLinkHandler
 {

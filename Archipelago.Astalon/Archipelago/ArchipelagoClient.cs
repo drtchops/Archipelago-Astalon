@@ -8,7 +8,7 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 
-namespace Astalon.Randomizer.Archipelago;
+namespace Archipelago.Astalon.Archipelago;
 
 public class ArchipelagoClient
 {

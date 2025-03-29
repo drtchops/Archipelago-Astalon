@@ -9,6 +9,6 @@ Follow the [Setup Guide](https://github.com/drtchops/Archipelago/blob/astalon/wo
 ## Development
 
 1. Install BepInEx and run your game once as per the setup guide
-2. Copy or symlink the `Astalon Tears of the Earth/BepInEx/interop` directory to `./lib`
+2. Copy `LocalOverrides.targets.example`, rename to `LocalOverrides.targets`, and edit it to point to the `BepInEx` folder of your local Astalon install
 3. Debug build with `dotnet build`
 4. Release build with `dotnet build -c release`

@@ -1,11 +1,11 @@
-﻿using Astalon.Randomizer.Archipelago;
+﻿using Archipelago.Astalon.Archipelago;
 using HarmonyLib;
 using I2.Loc;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Collections.Generic;
 using UnityEngine;
 
-namespace Astalon.Randomizer;
+namespace Archipelago.Astalon;
 
 [HarmonyPatch(typeof(Collectable))]
 internal class Collectable_Patch

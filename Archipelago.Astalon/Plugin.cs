@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using Astalon.Randomizer.Archipelago;
+using Archipelago.Astalon.Archipelago;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -7,7 +7,7 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using UnityEngine;
 
-namespace Astalon.Randomizer;
+namespace Archipelago.Astalon;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInProcess("Astalon.exe")]

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Astalon.Randomizer;
+namespace Archipelago.Astalon;
 
 public static class Debug
 {

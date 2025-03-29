@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using PathologicalGames;
 using UnityEngine;
 
-namespace Astalon.Randomizer;
+namespace Archipelago.Astalon;
 
 public class ItemBox
 {

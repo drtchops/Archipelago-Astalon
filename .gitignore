@@ -1,9 +1,7 @@
 ### Project specific ###
 
-lib
-global.json
+refs
 datadump
-pkg
 LocalOverrides.targets
 
 

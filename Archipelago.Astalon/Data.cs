@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Astalon.Randomizer;
+namespace Archipelago.Astalon;
 
 public enum ApLocationId
 {
