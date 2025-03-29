@@ -114,7 +114,7 @@ public class Plugin : BasePlugin
 //  adapted from https://github.com/gmh5225/IL2CPP-GUI-BepInEx-IL2CPPBase
 public class Il2CppBase : MonoBehaviour
 {
-    public const string ModDisplayInfo = $"Astalon-{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION}";
+    public const string ModDisplayInfo = $"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION}";
     private const string ArchipelagoDisplayInfo = "Archipelago";
 
     public static bool ConnectionFocused { get; private set; }
