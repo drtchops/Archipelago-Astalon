@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.23.1] - 2025-04-04
+
+- Fix map tab auto tracking on latest version of UT (thanks Faris)
+
 ## [0.23.0] - 2025-03-29
 
 - Update Archipelago.MultiClient.Net to 6.6.0 to fix compat with AP 0.6.0 hints
