@@ -18,7 +18,7 @@ public class ItemBox
     public string Icon { get; set; }
     public string Sound { get; set; }
     public float Duration { get; set; } = 2.5f;
-    public bool DisableController { get; set; } = false;
+    public bool DisableController { get; set; }
 }
 
 public static class Game
@@ -120,8 +120,8 @@ public static class Game
     {
         var path = $"{DataDir}/{filename}";
         var bytes = File.ReadAllBytes(path);
-        var texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-        texture.LoadImage(bytes, markNonReadable: true);
+        Texture2D texture = new(1, 1, TextureFormat.RGBA32, false);
+        _ = texture.LoadImage(bytes, markNonReadable: true);
         texture.filterMode = FilterMode.Bilinear;
         return texture;
     }
@@ -144,14 +144,14 @@ public static class Game
 
         // sprite.SetSprite(_injectedSpriteId);
         // sprite.SetSprite(_baseSprite.Collection, 1);
-        tk2dSprite.AddComponent(sprite.gameObject, _baseSprite.Collection, 0);
+        _ = tk2dSprite.AddComponent(sprite.gameObject, _baseSprite.Collection, 0);
     }
 
     public static void UpdateAnimation(tk2dSpriteAnimator animator)
     {
         if (!_injectedAnimation)
         {
-            var newClips = animator.library.clips.ToList();
+            List<tk2dSpriteAnimationClip> newClips = [.. animator.library.clips];
             newClips.Add(_spriteAnimationClip);
             animator.library.clips = newClips.ToArray();
             _injectedAnimation = true;
@@ -259,7 +259,7 @@ public static class Game
         }
 
         var sprite = gameObject.GetComponent<tk2dBaseSprite>();
-        sprite?.SetSprite(icon);
+        _ = (sprite?.SetSprite(icon));
         // if (icon == "AP_ITEM" && sprite != null)
         // {
         //     UpdateSprite(sprite);
@@ -321,7 +321,7 @@ public static class Game
         }
 
         InitializeSave(false);
-        ConnectSave();
+        _ = ConnectSave();
     }
 
     public static void SetupNewSave()
@@ -411,7 +411,7 @@ public static class Game
             Plugin.UpdateConnectionInfo();
         }
 
-        Plugin.ArchipelagoClient.SyncLocations(Plugin.State.CheckedLocations);
+        _ = Plugin.ArchipelagoClient.SyncLocations(Plugin.State.CheckedLocations);
         InitializeSave(isNew);
 
         return true;
@@ -600,87 +600,27 @@ public static class Game
 
     public static bool CanGetItem()
     {
-        if (!Plugin.State.Valid || !_saveInitialized)
-        {
-            return false;
-        }
-
-        if (GameManager.Instance?.player?.playerData == null)
-        {
-            return false;
-        }
-
-        if (Player.Instance == null || !Player.Instance.playerDataLoaded)
-        {
-            return false;
-        }
-
-        return true;
+        return Plugin.State.Valid && _saveInitialized && (GameManager.Instance?.player?.playerData) != null && Player.Instance != null && Player.Instance.playerDataLoaded;
     }
 
     public static bool CanDisplayMessage()
     {
-        if (!CanGetItem())
-        {
-            return false;
-        }
-
-        if (GameplayUIManager.Instance == null)
-        {
-            return false;
-        }
-
-        if (GameplayUIManager.Instance.itemBox == null || GameplayUIManager.Instance.itemBox.active)
-        {
-            return false;
-        }
-
-        return true;
+        return CanGetItem() && GameplayUIManager.Instance != null && GameplayUIManager.Instance.itemBox != null && !GameplayUIManager.Instance.itemBox.active;
     }
 
     public static bool CanBeKilled()
     {
-        if (!CanGetItem())
-        {
-            return false;
-        }
-
-        if (Player.PlayerDataLocal.currentHealth <= 0)
-        {
-            return false;
-        }
-
-        if (Player.Instance.isInElevator)
-        {
-            return false;
-        }
-
-        if (GameplayUIManager.Instance.ESOpen || GameplayUIManager.Instance.inGameMenuOpen)
-        {
-            return false;
-        }
-
-        return true;
+        return CanGetItem() && Player.PlayerDataLocal.currentHealth > 0 && !Player.Instance.isInElevator && !GameplayUIManager.Instance.ESOpen && !GameplayUIManager.Instance.inGameMenuOpen;
     }
 
     public static bool CanCycleCharacter()
     {
-        if (!Plugin.State.Valid)
-        {
-            return true;
-        }
-
-        return Player.PlayerDataLocal.unlockedCharacters.Count > 1;
+        return !Plugin.State.Valid || Player.PlayerDataLocal.unlockedCharacters.Count > 1;
     }
 
     public static string GetDefaultIcon(ItemFlags flags = ItemFlags.None)
     {
-        if (flags.HasFlag(ItemFlags.Advancement) || flags.HasFlag(ItemFlags.Trap))
-        {
-            return "BlueOrb_1";
-        }
-
-        return "Orb_Idle_1";
+        return flags.HasFlag(ItemFlags.Advancement) || flags.HasFlag(ItemFlags.Trap) ? "BlueOrb_1" : "Orb_Idle_1";
     }
 
     public static string GetIcon(ApItemInfo itemInfo)
@@ -704,60 +644,39 @@ public static class Game
 
         var itemName = itemId.ToString();
 
-        if (itemName.StartsWith("WhiteDoor"))
-        {
-            return "WhiteKey_1";
-        }
-
-        if (itemName.StartsWith("BlueDoor"))
-        {
-            return "BlueKey_1";
-        }
-
-        if (itemName.StartsWith("RedDoor"))
-        {
-            return "RedKey_1";
-        }
-
-        if (itemName.StartsWith("Orbs"))
-        {
-            return "SoulOrb_Big";
-        }
-
-        if (itemName.StartsWith("Elevator"))
-        {
-            return "ElevatorMenu_Icon_OldMan";
-        }
-
-        if (itemName.StartsWith("Switch") || itemName.StartsWith("Crystal") || itemName.StartsWith("Face"))
-        {
-            return "Frog";
-        }
-
-        return GetDefaultIcon(itemInfo.Flags);
+        return itemName.StartsWith("WhiteDoor")
+            ? "WhiteKey_1"
+            : itemName.StartsWith("BlueDoor")
+            ? "BlueKey_1"
+            : itemName.StartsWith("RedDoor")
+            ? "RedKey_1"
+            : itemName.StartsWith("Orbs")
+            ? "SoulOrb_Big"
+            : itemName.StartsWith("Elevator")
+            ? "ElevatorMenu_Icon_OldMan"
+            : itemName.StartsWith("Switch") || itemName.StartsWith("Crystal") || itemName.StartsWith("Face")
+            ? "Frog"
+            : GetDefaultIcon(itemInfo.Flags);
     }
 
     public static string GetClip(string icon)
     {
-        if (icon.StartsWith("Deal_") || icon.StartsWith("ElevatorMenu_"))
-        {
-            return null;
-        }
-
-        return icon switch
-        {
-            "WhiteKey_1" => "WhiteKey",
-            "BlueKey_1" => "BlueKey",
-            "RedKey_1" => "RedKey",
-            "RedOrb_1" => "DeathOrb",
-            "BlueOrb_1" => "TrapOrb",
-            "SoulOrb_Big" => "Orb_Big_UI",
-            "Orb_Idle_1" => "SecretsOrb_Idle",
-            "Candle_1_Lit_1_01" => "Candle1_Lit",
-            "Frog" => null,
-            "AP_ITEM" => null,
-            _ => icon,
-        };
+        return icon.StartsWith("Deal_") || icon.StartsWith("ElevatorMenu_")
+            ? null
+            : icon switch
+            {
+                "WhiteKey_1" => "WhiteKey",
+                "BlueKey_1" => "BlueKey",
+                "RedKey_1" => "RedKey",
+                "RedOrb_1" => "DeathOrb",
+                "BlueOrb_1" => "TrapOrb",
+                "SoulOrb_Big" => "Orb_Big_UI",
+                "Orb_Idle_1" => "SecretsOrb_Idle",
+                "Candle_1_Lit_1_01" => "Candle1_Lit",
+                "Frog" => null,
+                "AP_ITEM" => null,
+                _ => icon,
+            };
     }
 
     public static ItemBox FormatItemBox(ApItemInfo itemInfo)
@@ -1017,7 +936,7 @@ public static class Game
             {
                 if (elevatorId != ((int)ElevatorId.Gt1) && (elevatorId != ((int)ElevatorId.Apex) || Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla) && !Plugin.State.ReceivedElevators.Contains(elevatorId))
                 {
-                    elevators.Remove(elevatorId);
+                    _ = elevators.Remove(elevatorId);
                 }
             }
 
@@ -1043,7 +962,7 @@ public static class Game
         }
         else if (Player.PlayerDataLocal.elevatorsFound != null && Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla && !Player.PlayerDataLocal.discoveredRooms.Contains((int)ElevatorId.Apex))
         {
-            Player.PlayerDataLocal.elevatorsFound.Remove((int)ElevatorId.Apex);
+            _ = Player.PlayerDataLocal.elevatorsFound.Remove((int)ElevatorId.Apex);
         }
     }
 
@@ -1197,7 +1116,7 @@ public static class Game
             playerName = shopItem.IsLocal ? null : shopItem.PlayerName;
             sprite = GetIcon(shopItem);
 
-            if (dealId == DealProperties.DealID.Deal_DeathOrb || dealId == DealProperties.DealID.Deal_Gift)
+            if (dealId is DealProperties.DealID.Deal_DeathOrb or DealProperties.DealID.Deal_Gift)
             {
                 name = $"*{name}";
             }
@@ -1228,15 +1147,7 @@ public static class Game
         {
             if (itemId == ItemProperties.ItemID.PrincesCrown)
             {
-                if (!Plugin.State.CheckedCyclopsIdol)
-                {
-                    result = false;
-                }
-                else
-                {
-                    result = Plugin.State.ReceivedCrown;
-                }
-
+                result = Plugin.State.CheckedCyclopsIdol && Plugin.State.ReceivedCrown;
                 return true;
             }
 
@@ -1370,13 +1281,8 @@ public static class Game
         }
     }
 
-    public static void ExploreRoom(Room room)
+    public static int GetRoomArea(Room room)
     {
-        if (!Plugin.State.Valid)
-        {
-            return;
-        }
-
         var area = room.GetRoomArea();
         switch (room.roomID)
         {
@@ -1399,20 +1305,32 @@ public static class Game
                 area = 1;
                 break;
         }
-        if (area != 0 && area != 22)
+        return area;
+    }
+
+    public static void StoreCurrentRoom(Room room)
+    {
+        if (!Plugin.State.Valid)
         {
-            Plugin.ArchipelagoClient.StoreArea(area, room.roomID);
+            return;
         }
 
-        float newRegen;
-        if (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always || (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.NotBosses && room.roomType != "boss" && room.roomID != 5000))
+        var area = GetRoomArea(room);
+        Plugin.ArchipelagoClient.StorePosition(area, room.roomID, (int)room.roomInitialPosition.x, (int)room.roomInitialPosition.y, (int)Player.Instance.characterProperty.characterID);
+    }
+
+    public static void ExploreRoom(Room room)
+    {
+        if (!Plugin.State.Valid)
         {
-            newRegen = 0.2f;
+            return;
         }
-        else
-        {
-            newRegen = 1f;
-        }
+
+        StoreCurrentRoom(room);
+
+        var newRegen = Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always || (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.NotBosses && room.roomType != "boss" && room.roomID != 5000)
+            ? 0.2f
+            : 1f;
         ChangeRegen(newRegen);
 
         if (room.roomID == 3728 && Plugin.State.SlotData.RandomizeKeyItems)
@@ -1576,27 +1494,14 @@ public static class Game
 
     public static bool ShouldUnlockDeal(DealProperties.DealID dealId)
     {
-        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeCharacters)
-        {
-            return true;
-        }
-
-        if (dealId != DealProperties.DealID.Deal_SubMenu_Zeek && dealId != DealProperties.DealID.Deal_SubMenu_Bram)
-        {
-            return true;
-        }
-
-        return ReceivingItem;
+        return !Plugin.State.Valid || !Plugin.State.SlotData.RandomizeCharacters || dealId is not DealProperties.DealID.Deal_SubMenu_Zeek and not DealProperties.DealID.Deal_SubMenu_Bram || ReceivingItem;
     }
 
     public static bool IsDealReceived(DealProperties.DealID dealId)
     {
-        if (!Plugin.State.Valid)
-        {
-            return Player.PlayerDataLocal?.purchasedDeals?.Contains(dealId) ?? false;
-        }
-
-        return Plugin.State.ReceivedDeals != null && Plugin.State.ReceivedDeals.Contains(dealId);
+        return !Plugin.State.Valid
+            ? Player.PlayerDataLocal?.purchasedDeals?.Contains(dealId) ?? false
+            : Plugin.State.ReceivedDeals != null && Plugin.State.ReceivedDeals.Contains(dealId);
     }
 
     public static bool PurchaseDeal(DealProperties.DealID dealId)
@@ -1635,7 +1540,7 @@ public static class Game
 
     public static string GetValue(string data, string property)
     {
-        var re = new Regex($"_{property}(.*){property}_");
+        Regex re = new($"_{property}(.*){property}_");
         var match = re.Match(data);
         return match.Success ? match.Groups[1].Value : "";
     }
@@ -1649,14 +1554,9 @@ public static class Game
     public static string SetValue(string data, string property, string value)
     {
         var newValue = $"_{property}{value}{property}_";
-        var re = new Regex($"_{property}(.*){property}_");
+        Regex re = new($"_{property}(.*){property}_");
         var match = re.Match(data);
-        if (match.Success)
-        {
-            return re.Replace(data, newValue);
-        }
-
-        return data + newValue;
+        return match.Success ? re.Replace(data, newValue) : data + newValue;
     }
 
     public static void UpdateObjectData(int objectId, int roomId, string property, string value)
@@ -1722,12 +1622,9 @@ public static class Game
 
     public static bool IsLocationChecked(ApLocationId location)
     {
-        if (Plugin.ArchipelagoClient.Connected)
-        {
-            return Plugin.ArchipelagoClient.IsLocationChecked((long)location);
-        }
-
-        return Plugin.State.CheckedLocations.Contains((long)location);
+        return Plugin.ArchipelagoClient.Connected
+            ? Plugin.ArchipelagoClient.IsLocationChecked((long)location)
+            : Plugin.State.CheckedLocations.Contains((long)location);
     }
 
     public static void Update()
@@ -1786,7 +1683,7 @@ public static class Game
 
         if (CanDisplayMessage() && IncomingMessages.TryDequeue(out var message))
         {
-            DisplayItem(message);
+            _ = DisplayItem(message);
         }
 
         if (UnlockElevators)
@@ -1979,7 +1876,7 @@ public static class Game
 
     private static bool IsGameStateNormal()
     {
-        return (
+        return
             !_cutscenePlaying &&
             !_isWarping &&
             Plugin.State.Valid &&
@@ -2000,7 +1897,7 @@ public static class Game
             !(Player.Instance.currentSubWeaponClass?.isShooting ?? false) &&
             !(Player.Instance.currentSubWeaponClass?.isAttacking ?? false) &&
             Player.Instance.ControllerEnabled()
-        );
+        ;
     }
 
     private static void CheckWarp()
@@ -2049,7 +1946,7 @@ public static class Game
         }
 
         _isWarping = true;
-        GameManager.Instance.StartCoroutine(Warp_Routine(targetDestination, targetRoom, checkpointId));
+        _ = GameManager.Instance.StartCoroutine(Warp_Routine(targetDestination, targetRoom, checkpointId));
     }
 
     private static IEnumerator Warp_Routine(Vector2 targetDestination, Room targetRoom, int checkpointId)
@@ -2066,7 +1963,7 @@ public static class Game
         var lightning = PoolManager.Pools["Particles"].Spawn("Lightning");
         lightning.position = new(
             Player.Instance.selfTransform.position.x,
-            Player.Instance.selfTransform.position.y + lightning.GetComponent<BoxCollider2D>().size.y / 2f,
+            Player.Instance.selfTransform.position.y + (lightning.GetComponent<BoxCollider2D>().size.y / 2f),
             Player.Instance.selfTransform.position.z
         );
         AudioManager.Play("wall-gem");
@@ -2094,7 +1991,7 @@ public static class Game
         lightning = PoolManager.Pools["Particles"].Spawn("Lightning");
         lightning.position = new(
             Player.Instance.selfTransform.position.x,
-            Player.Instance.selfTransform.position.y + lightning.GetComponent<BoxCollider2D>().size.y / 2f,
+            Player.Instance.selfTransform.position.y + (lightning.GetComponent<BoxCollider2D>().size.y / 2f),
             Player.Instance.selfTransform.position.z
         );
         AudioManager.Play("wall-gem");
@@ -2119,14 +2016,7 @@ public static class Game
 
         if (Player.Instance?.PlayerPhysics != null)
         {
-            if (enabled)
-            {
-                Player.Instance.PlayerPhysics.infiniteJump = true;
-            }
-            else
-            {
-                Player.Instance.PlayerPhysics.infiniteJump = Player.Instance.CharacterProperty.infiniteJump;
-            }
+            Player.Instance.PlayerPhysics.infiniteJump = enabled || Player.Instance.CharacterProperty.infiniteJump;
         }
 
         Settings.InfiniteJumps = enabled;
@@ -2140,9 +2030,9 @@ public static class Game
         }
 
         _cutscenePlaying = true;
-        var rand = new System.Random();
+        System.Random rand = new();
         var cutscene = Data.FakeCutscenes[rand.Next(0, Data.FakeCutscenes.Length)];
-        GameManager.Instance.StartCoroutine(CutsceneTrap_Routine(cutscene));
+        _ = GameManager.Instance.StartCoroutine(CutsceneTrap_Routine(cutscene));
     }
 
     private static IEnumerator CutsceneTrap_Routine(DialogueLine[] cutscene)
@@ -2153,9 +2043,9 @@ public static class Game
         Player.Instance.godMode = true;
         // Player.Instance.HidePlayerSprite();
         // Player.Instance.Room.DeactivateEnemies();
-        foreach (var (line, pos) in cutscene)
+        foreach ((var line, var pos) in cutscene)
         {
-            var lines = new Dialogue[] { new(line) };
+            Dialogue[] lines = [new(line)];
             yield return GameManager.Instance.StartCoroutine(GameplayUIManager.Instance.TriggerDialogueSequence_Routine(lines, null, true, true, pos));
         }
         // Player.Instance.ShowPlayerSprite();
@@ -2169,7 +2059,7 @@ public static class Game
 
     public static bool CanEnableRocks()
     {
-        return (
+        return
             IsGameStateNormal() &&
             Player.Instance.Room != null &&
             !Player.Instance.Room.isRocks &&
@@ -2180,7 +2070,7 @@ public static class Game
             Player.Instance.Room.roomType != "boss" &&
             Player.Instance.Room.roomID != 5 &&
             Player.Instance.Room.roomID != 4112
-        );
+        ;
     }
 
     public static void StartRocksTrap()

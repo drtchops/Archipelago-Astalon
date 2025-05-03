@@ -124,7 +124,7 @@ public class DeathLinkHandler
         }
     }
 
-    public bool IsEnabled()
+    public static bool IsEnabled()
     {
         return _deathLinkEnabled;
     }

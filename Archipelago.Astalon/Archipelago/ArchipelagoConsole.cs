@@ -140,7 +140,7 @@ public static class ArchipelagoConsole
             scrollDepth = height * 10;
         }
 
-        _window = new(Screen.width / 2f - width / 2f, 0, width, height);
+        _window = new((Screen.width / 2f) - (width / 2f), 0, width, height);
         _scroll = new(0, 0, width * 0.9f, scrollDepth);
         _scrollView = new(0, scrollDepth);
         _text = new(0, 0, width, scrollDepth);
@@ -160,12 +160,12 @@ public static class ArchipelagoConsole
         var buttonWidth = (int)(Screen.width * 0.12f);
         var buttonHeight = (int)(Screen.height * 0.03f);
 
-        _hideShowButton = new(Screen.width / 2f + width / 2f + buttonWidth / 3f, Screen.height * 0.004f, buttonWidth,
+        _hideShowButton = new((Screen.width / 2f) + (width / 2f) + (buttonWidth / 3f), Screen.height * 0.004f, buttonWidth,
             buttonHeight);
 
         // draw server command text field and button
         width = (int)(Screen.width * 0.4f);
-        var xPos = (int)(Screen.width / 2.0f - width / 2.0f);
+        var xPos = (int)((Screen.width / 2.0f) - (width / 2.0f));
         var yPos = (int)(Screen.height * 0.307f);
         height = 20;
 

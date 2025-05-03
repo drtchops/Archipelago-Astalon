@@ -41,23 +41,23 @@ public static class Debug
             top: -ButtonPadding,
             buttons: [
                 new(
-                    label: () => "Die",
-                    callback: () => Game.TriggerDeath = true
+                    label: static () => "Die",
+                    callback: static () => Game.TriggerDeath = true
                 ),
                 new(
-                    label: () => Plugin.ArchipelagoClient.DeathLinkEnabled() ? "Disable Death Link" : "Enable Death Link",
+                    label: static () => Archipelago.ArchipelagoClient.DeathLinkEnabled() ? "Disable Death Link" : "Enable Death Link",
                     callback: Plugin.ArchipelagoClient.ToggleDeathLink
                 ),
                 new(
-                    label: () => Settings.ShowConnection ? "Hide Connection" : "Show Connection",
+                    label: static () => Settings.ShowConnection ? "Hide Connection" : "Show Connection",
                     callback: Plugin.ToggleConnection
                 ),
                 new(
-                    label: () => Settings.ShowConsole ? "Hide Console" : "Show Console",
+                    label: static () => Settings.ShowConsole ? "Hide Console" : "Show Console",
                     callback: Plugin.ToggleConsole
                 ),
                 new(
-                    label: () => Settings.RunInBackground ? "Pause In Background" : "Run In Background",
+                    label: static () => Settings.RunInBackground ? "Pause In Background" : "Run In Background",
                     callback: Plugin.ToggleRunInBackground
                 ),
             ]
@@ -67,28 +67,28 @@ public static class Debug
             top: -ButtonPadding,
             buttons: [
                 new(
-                    label: () => Settings.Invincibility ? "Disable Invincibility" : "Enable Invincibility",
-                    callback: () => Settings.Invincibility = !Settings.Invincibility
+                    label: static () => Settings.Invincibility ? "Disable Invincibility" : "Enable Invincibility",
+                    callback: static () => Settings.Invincibility = !Settings.Invincibility
                 ),
                 new(
-                    label: () => Settings.MaxDamage ? "Disable Max Damage" : "Enable Max Damage",
-                    callback: () => Settings.MaxDamage = !Settings.MaxDamage
+                    label: static () => Settings.MaxDamage ? "Disable Max Damage" : "Enable Max Damage",
+                    callback: static () => Settings.MaxDamage = !Settings.MaxDamage
                 ),
                 new(
-                    label: () => Settings.FreeKeys ? "Disable Free Keys" : "Enable Free Keys",
-                    callback: () => Settings.FreeKeys = !Settings.FreeKeys
+                    label: static () => Settings.FreeKeys ? "Disable Free Keys" : "Enable Free Keys",
+                    callback: static () => Settings.FreeKeys = !Settings.FreeKeys
                 ),
                 new(
-                    label: () => Settings.FreePurchases ? "Disable Free Purchases" : "Enable Free Purchases",
-                    callback: () => Settings.FreePurchases = !Settings.FreePurchases
+                    label: static () => Settings.FreePurchases ? "Disable Free Purchases" : "Enable Free Purchases",
+                    callback: static () => Settings.FreePurchases = !Settings.FreePurchases
                 ),
                 new(
-                    label: () => Settings.InfiniteJumps ? "Disable Infinite Jumps" : "Enable Infinite Jumps",
+                    label: static () => Settings.InfiniteJumps ? "Disable Infinite Jumps" : "Enable Infinite Jumps",
                     callback: Game.ToggleInfiniteJumps
                 ),
                 new(
-                    label: () => "Unlock All Elevators",
-                    callback: () => Game.UnlockElevators = true
+                    label: static () => "Unlock All Elevators",
+                    callback: static () => Game.UnlockElevators = true
                 ),
             ]
         ),
@@ -98,20 +98,20 @@ public static class Debug
             top: -ButtonPadding,
             buttons: [
                 new(
-                    label: () => "Dump Room Data",
-                    callback: () => Game.DumpRoom = true
+                    label: static () => "Dump Room Data",
+                    callback: static () => Game.DumpRoom = true
                 ),
                 new(
-                    label: () => "Toggle Switches",
-                    callback: () => Game.ToggleSwitches = true
+                    label: static () => "Toggle Switches",
+                    callback: static () => Game.ToggleSwitches = true
                 ),
                 new(
-                    label: () => "Toggle Objects",
-                    callback: () => Game.ToggleObjects = true
+                    label: static () => "Toggle Objects",
+                    callback: static () => Game.ToggleObjects = true
                 ),
                 new(
-                    label: () => "Reset Doors",
-                    callback: () => Game.ResetDoors = true
+                    label: static () => "Reset Doors",
+                    callback: static () => Game.ResetDoors = true
                 ),
             ]
         ),
@@ -147,7 +147,7 @@ public static class Debug
         var height = 64;
         var texture = new Texture2D(width, height);
         var pixels = new Color[width * height];
-        for (int i = 0; i < pixels.Length; i++)
+        for (var i = 0; i < pixels.Length; i++)
         {
             pixels[i] = Color.black;
         }

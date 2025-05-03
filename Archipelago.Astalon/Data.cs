@@ -3506,9 +3506,9 @@ public static class Data
     #endregion
 
     public static readonly Dictionary<(int, string), ApLocationId> LinkToLocation =
-        Switches.ToDictionary((data) => (data.RoomId, data.Id), (data) => data.ApLocationId);
+        Switches.ToDictionary(static (data) => (data.RoomId, data.Id), static (data) => data.ApLocationId);
 
-    public static readonly Dictionary<ApItemId, SwitchData> ItemToLink = Switches.ToDictionary((data) => data.ApItemId);
+    public static readonly Dictionary<ApItemId, SwitchData> ItemToLink = Switches.ToDictionary(static (data) => data.ApItemId);
 
     public static readonly Dictionary<int, ApLocationId> ElevatorToLocation = new()
     {
@@ -3958,7 +3958,7 @@ public static class Data
         new() { Id=10747, RoomId=3585, ApLocationId=ApLocationId.RoaCandleArena },
     ];
 
-    public static readonly Dictionary<int, ApLocationId> CandleToLocation = Candles.ToDictionary((candle) => candle.Id, (candle) => candle.ApLocationId);
+    public static readonly Dictionary<int, ApLocationId> CandleToLocation = Candles.ToDictionary(static (candle) => candle.Id, static (candle) => candle.ApLocationId);
 
     public static readonly DialogueLine[][] FakeCutscenes = [
         [

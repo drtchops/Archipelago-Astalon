@@ -50,35 +50,35 @@ public enum FastBloodChalice
 
 public class SlotData
 {
-    public string Version { get; set; } = null;
+    public string Version { get; set; }
     public Campaign Campaign { get; set; } = Campaign.TearsOfTheEarth;
     public Goal Goal { get; set; } = Goal.Vanilla;
-    public int AdditionalEyesRequired { get; set; } = 0;
-    public bool RandomizeCharacters { get; set; } = false;
+    public int AdditionalEyesRequired { get; set; }
+    public bool RandomizeCharacters { get; set; }
     public bool RandomizeKeyItems { get; set; } = true;
     public bool RandomizeAttackPickups { get; set; } = true;
     public bool RandomizeHealthPickups { get; set; } = true;
-    public bool RandomizeWhiteKeys { get; set; } = false;
-    public bool RandomizeBlueKeys { get; set; } = false;
-    public bool RandomizeRedKeys { get; set; } = false;
-    public bool RandomizeShop { get; set; } = false;
-    public bool RandomizeElevator { get; set; } = false;
-    public bool RandomizeSwitches { get; set; } = false;
-    public bool RandomizeCandles { get; set; } = false;
-    public bool RandomizeOrbCrates { get; set; } = false;
-    public bool RandomizeFamiliars { get; set; } = false;
-    public bool RandomizeBossOrbRewards { get; set; } = false;
-    public bool RandomizeMinibossOrbRewards { get; set; } = false;
+    public bool RandomizeWhiteKeys { get; set; }
+    public bool RandomizeBlueKeys { get; set; }
+    public bool RandomizeRedKeys { get; set; }
+    public bool RandomizeShop { get; set; }
+    public bool RandomizeElevator { get; set; }
+    public bool RandomizeSwitches { get; set; }
+    public bool RandomizeCandles { get; set; }
+    public bool RandomizeOrbCrates { get; set; }
+    public bool RandomizeFamiliars { get; set; }
+    public bool RandomizeBossOrbRewards { get; set; }
+    public bool RandomizeMinibossOrbRewards { get; set; }
     public bool SkipCutscenes { get; set; } = true;
     public ApexElevator ApexElevator { get; set; } = ApexElevator.Vanilla;
     public int CostMultiplier { get; set; } = 100;
     public FastBloodChalice FastBloodChalice { get; set; } = FastBloodChalice.Campfires;
     public bool CampfireWarp { get; set; } = true;
-    public bool AllowBlockWarping { get; set; } = false;
-    public bool CheapKyuliRay { get; set; } = false;
-    public bool AlwaysRestoreCandles { get; set; } = false;
+    public bool AllowBlockWarping { get; set; }
+    public bool CheapKyuliRay { get; set; }
+    public bool AlwaysRestoreCandles { get; set; }
     public bool ScaleCharacterStats { get; set; } = true;
-    public bool DeathLink { get; set; } = false;
+    public bool DeathLink { get; set; }
     public string[] StartingCharacters { get; set; } = [];
     public Dictionary<string, float> CharacterStrengths { get; set; } = [];
 
@@ -274,13 +274,28 @@ public class State
         VisitedCampfires.Clear();
     }
 
-    public bool ShouldSkipCutscenes() => Valid && SlotData.SkipCutscenes;
+    public bool ShouldSkipCutscenes()
+    {
+        return Valid && SlotData.SkipCutscenes;
+    }
 
-    public bool CampfireWarpsEnabled() => Valid && SlotData.CampfireWarp;
+    public bool CampfireWarpsEnabled()
+    {
+        return Valid && SlotData.CampfireWarp;
+    }
 
-    public bool IsEyeHunt() => Valid && SlotData.Goal == Goal.EyeHunt;
+    public bool IsEyeHunt()
+    {
+        return Valid && SlotData.Goal == Goal.EyeHunt;
+    }
 
-    public int GoldEyeRequirement() => Valid ? SlotData.AdditionalEyesRequired : 0;
+    public int GoldEyeRequirement()
+    {
+        return Valid ? SlotData.AdditionalEyesRequired : 0;
+    }
 
-    public int GoldEyesCollected() => Valid ? CollectedGoldEyes : 0;
+    public int GoldEyesCollected()
+    {
+        return Valid ? CollectedGoldEyes : 0;
+    }
 }

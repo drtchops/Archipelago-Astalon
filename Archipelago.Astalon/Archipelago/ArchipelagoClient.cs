@@ -7,12 +7,22 @@ using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
+using Newtonsoft.Json.Linq;
 
 namespace Archipelago.Astalon.Archipelago;
 
+public readonly struct PlayerCoords
+{
+    public int Room { get; init; }
+    public int Area { get; init; }
+    public int X { get; init; }
+    public int Y { get; init; }
+    public int Character { get; init; }
+}
+
 public class ArchipelagoClient
 {
-    private const string MinArchipelagoVersion = "0.5.0";
+    private const string MinArchipelagoVersion = "0.5.1";
 
     public bool Connected => _session?.Socket.Connected ?? false;
     private bool _attemptingConnection;
@@ -48,11 +58,11 @@ public class ArchipelagoClient
 
     private void SetupSession()
     {
-        _session.Socket.ErrorReceived += Session_ErrorReceived;
-        _session.Socket.SocketClosed += Session_SocketClosed;
-        _session.Items.ItemReceived += Session_ItemReceived;
-        _session.Locations.CheckedLocationsUpdated += Session_CheckedLocationsUpdated;
-        _session.MessageLog.OnMessageReceived += Session_OnMessageReceived;
+        _session.Socket.ErrorReceived += SessionErrorReceived;
+        _session.Socket.SocketClosed += SessionSocketClosed;
+        _session.Items.ItemReceived += SessionItemReceived;
+        _session.Locations.CheckedLocationsUpdated += SessionCheckedLocationsUpdated;
+        _session.MessageLog.OnMessageReceived += SessionOnMessageReceived;
     }
 
     private void TryConnect()
@@ -109,18 +119,18 @@ public class ArchipelagoClient
         }
 
         _attemptingConnection = false;
-        Task.Run(() => { _session.Socket.DisconnectAsync(); }).Wait();
+        Task.Run(() => { _ = _session.Socket.DisconnectAsync(); }).Wait();
         _deathLinkHandler = null;
         _session = null;
     }
 
-    public void Session_SocketClosed(string reason)
+    public void SessionSocketClosed(string reason)
     {
         Plugin.Logger.LogError("Connection to Archipelago lost: " + reason);
         Disconnect();
     }
 
-    public void Session_ErrorReceived(Exception e, string message)
+    public void SessionErrorReceived(Exception e, string message)
     {
         Plugin.Logger.LogError(message);
         if (e != null)
@@ -131,7 +141,7 @@ public class ArchipelagoClient
         Disconnect();
     }
 
-    public void Session_OnMessageReceived(LogMessage message)
+    public static void SessionOnMessageReceived(LogMessage message)
     {
         Plugin.Logger.LogMessage(message);
         ArchipelagoConsole.LogMessage(message.ToString());
@@ -145,17 +155,12 @@ public class ArchipelagoClient
             return;
         }
 
-        _session.Locations.CompleteLocationChecksAsync(location);
+        _ = _session.Locations.CompleteLocationChecksAsync(location);
     }
 
     public bool IsLocationChecked(long location)
     {
-        if (!Connected)
-        {
-            return false;
-        }
-
-        return _session.Locations.AllLocationsChecked.Contains(location);
+        return Connected && _session.Locations.AllLocationsChecked.Contains(location);
     }
 
     public bool SyncLocations(List<long> locations)
@@ -166,7 +171,7 @@ public class ArchipelagoClient
         }
 
         Plugin.Logger.LogInfo($"Sending location checks: {string.Join(", ", locations)}");
-        _session.Locations.CompleteLocationChecksAsync(locations.ToArray());
+        _ = _session.Locations.CompleteLocationChecksAsync([.. locations]);
         return true;
     }
 
@@ -178,7 +183,7 @@ public class ArchipelagoClient
         }
 
         List<long> locations = new(_session.Locations.AllLocations);
-        var scouts = _session.Locations.ScoutLocationsAsync(locations.ToArray()).ContinueWith(task =>
+        var scouts = _session.Locations.ScoutLocationsAsync([.. locations]).ContinueWith(task =>
         {
             Dictionary<long, ApItemInfo> itemInfos = [];
             foreach (var entry in task.Result)
@@ -221,7 +226,7 @@ public class ArchipelagoClient
         _session.SetGoalAchieved();
     }
 
-    public void Session_ItemReceived(IReceivedItemsHelper helper)
+    public void SessionItemReceived(IReceivedItemsHelper helper)
     {
         var index = helper.Index - 1;
         var item = helper.DequeueItem();
@@ -251,7 +256,7 @@ public class ArchipelagoClient
         });
     }
 
-    public void Session_CheckedLocationsUpdated(ReadOnlyCollection<long> newCheckedLocations)
+    public void SessionCheckedLocationsUpdated(ReadOnlyCollection<long> newCheckedLocations)
     {
         if (_ignoreLocations)
         {
@@ -280,12 +285,7 @@ public class ArchipelagoClient
 
     public int GetCurrentPlayer()
     {
-        if (!Connected)
-        {
-            return -1;
-        }
-
-        return _session.ConnectionInfo.Slot;
+        return !Connected ? -1 : _session.ConnectionInfo.Slot;
     }
 
     public void SendDeath()
@@ -298,9 +298,9 @@ public class ArchipelagoClient
         _deathLinkHandler?.ToggleDeathLink();
     }
 
-    public bool DeathLinkEnabled()
+    public static bool DeathLinkEnabled()
     {
-        return _deathLinkHandler?.IsEnabled() ?? false;
+        return DeathLinkHandler.IsEnabled();
     }
 
     public void CheckForDeath()
@@ -316,14 +316,28 @@ public class ArchipelagoClient
         _session?.Say(message);
     }
 
-    public void StoreArea(int area, int room)
+    public void StorePosition(int area, int room, int x, int y, int character)
     {
         if (!Connected)
         {
             return;
         }
 
-        _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_area"] = area;
         _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_room"] = room;
+
+        PlayerCoords coords = new()
+        {
+            Room = room,
+            Area = area,
+            X = x,
+            Y = y,
+            Character = character,
+        };
+        _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_coords"] = JObject.FromObject(coords);
+
+        if (area is not 0 and not 22)
+        {
+            _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_area"] = area;
+        }
     }
 }
