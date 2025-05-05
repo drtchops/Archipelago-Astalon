@@ -22,7 +22,7 @@ public readonly struct PlayerCoords
 
 public class ArchipelagoClient
 {
-    private const string MinArchipelagoVersion = "0.5.1";
+    private const string MinArchipelagoVersion = "0.6.0";
 
     public bool Connected => _session?.Socket.Connected ?? false;
     private bool _attemptingConnection;
