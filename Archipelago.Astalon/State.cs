@@ -51,7 +51,7 @@ public enum FastBloodChalice
 public class SlotData
 {
     public string Version { get; set; }
-    public Campaign Campaign { get; set; } = Campaign.TearsOfTheEarth;
+    // public Campaign Campaign { get; set; } = Campaign.TearsOfTheEarth;
     public Goal Goal { get; set; } = Goal.Vanilla;
     public int AdditionalEyesRequired { get; set; }
     public bool RandomizeCharacters { get; set; }
@@ -65,10 +65,6 @@ public class SlotData
     public bool RandomizeElevator { get; set; }
     public bool RandomizeSwitches { get; set; }
     public bool RandomizeCandles { get; set; }
-    public bool RandomizeOrbCrates { get; set; }
-    public bool RandomizeFamiliars { get; set; }
-    public bool RandomizeBossOrbRewards { get; set; }
-    public bool RandomizeMinibossOrbRewards { get; set; }
     public bool SkipCutscenes { get; set; } = true;
     public ApexElevator ApexElevator { get; set; } = ApexElevator.Vanilla;
     public int CostMultiplier { get; set; } = 100;
@@ -89,7 +85,7 @@ public class SlotData
         var options = (JObject)slotData["options"];
 
         Version = options.GetValue("version")?.ToString();
-        Campaign = ParseEnum<Campaign>(options, "campaign");
+        // Campaign = ParseEnum<Campaign>(options, "campaign");
         Goal = ParseEnum<Goal>(options, "goal");
         AdditionalEyesRequired = ParseInt(options, "additional_eyes_required");
         RandomizeCharacters = ParseInt(options, "randomize_characters") != 0;
@@ -103,10 +99,6 @@ public class SlotData
         RandomizeElevator = ParseBool(options, "randomize_elevator");
         RandomizeSwitches = ParseBool(options, "randomize_switches");
         RandomizeCandles = ParseBool(options, "randomize_candles");
-        RandomizeOrbCrates = ParseBool(options, "randomize_orb_crates");
-        RandomizeFamiliars = ParseBool(options, "randomize_familiars");
-        RandomizeBossOrbRewards = ParseBool(options, "randomize_boss_orb_rewards");
-        RandomizeMinibossOrbRewards = ParseBool(options, "randomize_miniboss_orb_rewards");
         SkipCutscenes = ParseBool(options, "skip_cutscenes", true);
         ApexElevator = ParseEnum<ApexElevator>(options, "apex_elevator");
         CostMultiplier = ParseInt(options, "cost_multiplier", 100);
