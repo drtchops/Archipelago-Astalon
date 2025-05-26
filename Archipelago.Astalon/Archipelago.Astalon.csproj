@@ -5,7 +5,7 @@
     <AssemblyName>Archipelago.Astalon</AssemblyName>
     <Authors>drtchops</Authors>
     <Description>Archipelago randomizer integration for Astalon: Tears of the Earth</Description>
-    <Version>0.24.0-rc1</Version>
+    <Version>0.24.0-rc2</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
