@@ -34,6 +34,7 @@ public static class Game
     public static bool IsInShop { get; set; }
     public static int QueuedCutscenes { get; set; }
     public static int QueuedRocks { get; set; }
+    public static int TaggedKong { get; set; } = -1;
 
     public static bool UnlockElevators { get; set; }
     public static bool TriggerDeath { get; set; }
@@ -57,6 +58,7 @@ public static class Game
     private static bool _activatingBramRoom;
     private static int _activatingElevator = -1;
     private static bool _cutscenePlaying;
+    private static int _tagCounter = -1;
 
 #if DEBUG
     private static tk2dBaseSprite _baseSprite;
@@ -1023,6 +1025,24 @@ public static class Game
         DeathSource = source;
     }
 
+    public static void HandleTag(int character)
+    {
+        if (!Plugin.State.Valid)
+        {
+            return;
+        }
+
+        if (_tagCounter <= 0)
+        {
+            Plugin.ArchipelagoClient.SendTag(character);
+        }
+    }
+
+    public static void ReceiveTag(int kong)
+    {
+        TaggedKong = kong;
+    }
+
     public static bool TryGetItemLocation(ItemProperties.ItemID itemId, out ApLocationId? location)
     {
         location = null;
@@ -1661,6 +1681,35 @@ public static class Game
         {
             GameManager.Instance?.player?.Kill();
             TriggerDeath = false;
+        }
+
+        if (TaggedKong != -1 && _tagCounter == -1 && CanCycleCharacter())
+        {
+            _tagCounter = 10;
+            var character = CharacterProperties.Character.None;
+            if (TaggedKong >= 0 && TaggedKong < Data.TaggedCharacters.Length)
+            {
+                character = Data.TaggedCharacters[TaggedKong];
+            }
+            if (character == CharacterProperties.Character.None || !Player.PlayerDataLocal.unlockedCharacters.Contains(character))
+            {
+                character = Player.PlayerDataLocal.unlockedCharacters.ToArray().Where(static (c) => c != Player.PlayerDataLocal.currentCharacter).OrderBy(static (x) => Guid.NewGuid()).First();
+            }
+            Player.Instance.CycleCharacterTo(character);
+        }
+        else if (_tagCounter == -1)
+        {
+            Plugin.ArchipelagoClient.CheckForTag();
+        }
+
+        if (_tagCounter > 0)
+        {
+            _tagCounter--;
+        }
+        if (_tagCounter == 0)
+        {
+            _tagCounter = -1;
+            TaggedKong = -1;
         }
 
         if (CanGetItem() && IncomingItems.TryDequeue(out var item))

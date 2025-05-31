@@ -4059,4 +4059,12 @@ public static class Data
             ("{char}Algus{/char}:\nNo, it's the hosts who are wrong.", GameplayUIManager.DBPosition.TopCenter),
         ],
     ];
+
+    public static readonly CharacterProperties.Character[] TaggedCharacters = [
+        CharacterProperties.Character.Algus,
+        CharacterProperties.Character.Zeek,
+        CharacterProperties.Character.Arias,
+        CharacterProperties.Character.Kyuli,
+        CharacterProperties.Character.Bram,
+    ];
 }

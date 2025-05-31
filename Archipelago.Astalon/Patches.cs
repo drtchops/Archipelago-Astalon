@@ -1,4 +1,5 @@
-﻿using Archipelago.Astalon.Archipelago;
+﻿using System;
+using Archipelago.Astalon.Archipelago;
 using HarmonyLib;
 using I2.Loc;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
@@ -474,6 +475,7 @@ internal class Player_Patch
         Plugin.Logger.LogDebug($"Player.CycleCharacters({__instance.characterProperty.characterID})");
         var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
         Game.StoreCurrentRoom(room);
+        Game.HandleTag(Array.IndexOf(Data.TaggedCharacters, Player.PlayerDataLocal.currentCharacter));
     }
 
     [HarmonyPatch(nameof(Player.CycleCharacterTo))]

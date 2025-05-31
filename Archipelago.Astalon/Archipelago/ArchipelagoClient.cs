@@ -28,8 +28,11 @@ public class ArchipelagoClient
     private bool _attemptingConnection;
 
     private DeathLinkHandler _deathLinkHandler;
+    private TagLinkHandler _tagLinkHandler;
     private ArchipelagoSession _session;
     private bool _ignoreLocations;
+
+    private readonly string _clientId = Guid.NewGuid().ToString();
 
     public void Connect()
     {
@@ -108,6 +111,7 @@ public class ArchipelagoClient
 
         _ignoreLocations = false;
         _deathLinkHandler = new(_session.CreateDeathLinkService(), Plugin.State.SlotName, Plugin.State.SlotData.DeathLink);
+        _tagLinkHandler = new(_session.CreateTagLinkService(), _clientId, Plugin.State.SlotData.TagLink);
         _attemptingConnection = false;
     }
 
@@ -121,6 +125,7 @@ public class ArchipelagoClient
         _attemptingConnection = false;
         Task.Run(() => { _ = _session.Socket.DisconnectAsync(); }).Wait();
         _deathLinkHandler = null;
+        _tagLinkHandler = null;
         _session = null;
     }
 
@@ -308,6 +313,29 @@ public class ArchipelagoClient
         if (Game.CanBeKilled())
         {
             _deathLinkHandler?.KillPlayer();
+        }
+    }
+
+    public void SendTag(int character)
+    {
+        _tagLinkHandler?.SendTagLink(character);
+    }
+
+    public void ToggleTagLink()
+    {
+        _tagLinkHandler?.ToggleTagLink();
+    }
+
+    public static bool TagLinkEnabled()
+    {
+        return TagLinkHandler.IsEnabled();
+    }
+
+    public void CheckForTag()
+    {
+        if (Game.CanCycleCharacter())
+        {
+            _tagLinkHandler?.TagPlayer();
         }
     }
 

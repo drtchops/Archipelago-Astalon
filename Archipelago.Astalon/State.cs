@@ -74,6 +74,7 @@ public class SlotData
     public bool CheapKyuliRay { get; set; }
     public bool AlwaysRestoreCandles { get; set; }
     public bool ScaleCharacterStats { get; set; } = true;
+    public bool TagLink { get; set; }
     public bool DeathLink { get; set; }
     public string[] StartingCharacters { get; set; } = [];
     public Dictionary<string, float> CharacterStrengths { get; set; } = [];
@@ -108,6 +109,7 @@ public class SlotData
         CheapKyuliRay = ParseBool(options, "cheap_kyuli_ray");
         AlwaysRestoreCandles = ParseBool(options, "always_restore_candles");
         ScaleCharacterStats = ParseBool(options, "scale_character_stats", true);
+        TagLink = ParseBool(options, "tag_link");
         DeathLink = ParseBool(options, "death_link");
 
         try
