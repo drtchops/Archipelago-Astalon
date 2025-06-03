@@ -803,6 +803,17 @@ public enum ElevatorId
     Tr = 2705,
 }
 
+public static class RoomId
+{
+    public const int
+        Zeek = 3228,
+        CyclopsDenDoor = 3728,
+        FinalBoss = 5000,
+        TutorialKyuli = 6671,
+        TutorialAlgus = 6672,
+        TutorialArias = 6673;
+}
+
 public readonly struct CheckpointData
 {
     public int Id { get; init; }

@@ -1001,12 +1001,13 @@ internal class SavePoint_Patch
 
     [HarmonyPatch(nameof(SavePoint.TriggerEntered))]
     [HarmonyPrefix]
-    public static void TriggerEntered(Collider2D collision)
+    public static void TriggerEntered(SavePoint __instance, Collider2D collision)
     {
         // Plugin.Logger.LogDebug("SavePoint.TriggerEntered()");
         if (collision.CompareTag(Tags.Player))
         {
             Game.CampfireTriggerEntered();
+            Game.CampfireVisited(__instance.actorID);
         }
     }
 
@@ -1172,26 +1173,6 @@ internal class Elevator_Patch
     {
         Plugin.Logger.LogDebug($"Elevator.TriggerElevatorMenu({__instance.actorID}, {__instance.room?.roomID})");
         Game.ElevatorUnlocked(__instance.room?.roomID ?? -1);
-    }
-}
-
-[HarmonyPatch(typeof(Room_Zeek))]
-internal class Room_Zeek_Patch
-{
-    [HarmonyPatch(nameof(Room_Zeek.Activate))]
-    [HarmonyPrefix]
-    public static void ActivatePre()
-    {
-        Plugin.Logger.LogDebug("Room_Zeek.ActivatePre()");
-        Game.ActivateZeekRoom();
-    }
-
-    [HarmonyPatch(nameof(Room_Zeek.Activate))]
-    [HarmonyPostfix]
-    public static void ActivatePost()
-    {
-        Plugin.Logger.LogDebug("Room_Zeek.ActivatePost()");
-        Game.DeactivateZeekRoom();
     }
 }
 

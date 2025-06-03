@@ -54,7 +54,6 @@ public static class Game
     private static int _deathCounter = -1;
     private static int _warpCooldown;
     private static bool _isWarping;
-    private static bool _activatingZeekRoom;
     private static bool _activatingBramRoom;
     private static int _activatingElevator = -1;
     private static bool _cutscenePlaying;
@@ -1163,7 +1162,7 @@ public static class Game
             return true;
         }
 
-        if (Plugin.State.SlotData.RandomizeKeyItems && _activatingZeekRoom)
+        if (Plugin.State.SlotData.RandomizeKeyItems && Player.PlayerDataLocal.currentRoomID == RoomId.Zeek)
         {
             if (itemId == ItemProperties.ItemID.PrincesCrown)
             {
@@ -1190,7 +1189,7 @@ public static class Game
             return false;
         }
 
-        if (_activatingZeekRoom && character == CharacterProperties.Character.Zeek)
+        if (Player.PlayerDataLocal.currentRoomID == RoomId.Zeek && character == CharacterProperties.Character.Zeek)
         {
             if (!Plugin.State.SlotData.RandomizeCharacters)
             {
@@ -1348,12 +1347,12 @@ public static class Game
 
         StoreCurrentRoom(room);
 
-        var newRegen = Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always || (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.NotBosses && room.roomType != "boss" && room.roomID != 5000)
+        var newRegen = Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always || (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.NotBosses && room.roomType != "boss" && room.roomID != RoomId.FinalBoss)
             ? 0.2f
             : 1f;
         ChangeRegen(newRegen);
 
-        if (room.roomID == 3728 && Plugin.State.SlotData.RandomizeKeyItems)
+        if (room.roomID == RoomId.CyclopsDenDoor && Plugin.State.SlotData.RandomizeKeyItems)
         {
             Player.PlayerDataLocal.cyclopsDenKey = Plugin.State.ReceivedCyclopsKey;
         }
@@ -1365,15 +1364,27 @@ public static class Game
 
         switch (room.roomID)
         {
-            case 6672 when !Plugin.State.SlotData.StartingCharacters.Contains("Algus"):
+            case RoomId.TutorialAlgus when !Plugin.State.SlotData.StartingCharacters.Contains("Algus"):
                 SendLocation(ApLocationId.GtAlgus);
                 break;
-            case 6673 when !Plugin.State.SlotData.StartingCharacters.Contains("Arias"):
+            case RoomId.TutorialArias when !Plugin.State.SlotData.StartingCharacters.Contains("Arias"):
                 SendLocation(ApLocationId.GtArias);
                 break;
-            case 6671 when !Plugin.State.SlotData.StartingCharacters.Contains("Kyuli"):
+            case RoomId.TutorialKyuli when !Plugin.State.SlotData.StartingCharacters.Contains("Kyuli"):
                 SendLocation(ApLocationId.GtKyuli);
                 break;
+        }
+
+        if (room.roomID == RoomId.Zeek && Plugin.State.SlotData.RandomizeKeyItems)
+        {
+            if (!Plugin.State.CheckedCyclopsIdol)
+            {
+                Player.PlayerDataLocal.zeekQuestStatus = Room_Zeek.ZeekQuestStatus.None;
+            }
+            else if (Plugin.State.ReceivedCrown && !Plugin.State.CheckedZeek && Plugin.State.SlotData.RandomizeCharacters)
+            {
+                Player.PlayerDataLocal.zeekQuestStatus = Room_Zeek.ZeekQuestStatus.RewardPickedUp;
+            }
         }
     }
 
@@ -1404,21 +1415,6 @@ public static class Game
         {
             ChangeRegen(1f);
         }
-    }
-
-    public static void ActivateZeekRoom()
-    {
-        if (!Plugin.State.Valid)
-        {
-            return;
-        }
-
-        _activatingZeekRoom = true;
-    }
-
-    public static void DeactivateZeekRoom()
-    {
-        _activatingZeekRoom = false;
     }
 
     public static void ActivateBramRoom()
