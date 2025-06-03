@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.24.0-rc1] - 2025-05-05
+## [0.24.0] - 2025-06-02
 
-- Testing release for AP 0.6.2 RC1
-- A location marker on the map
-- Hard logic accessible locations show up as yellow when playing on easy
+- Fully compatible with both AP 0.6.1 and 0.6.2
+- Support for all new Universal Tracker features
+  - Your location on the map is shown with the current character you're playing as
+  - Hard logic accessible locations show up as yellow on both the tracker list and map when playing on easy
+- Adds TagLink, blame DK64
+- Zeek's room cutscenes should have fewer problems now
+- Route command is now disabled in race mode
+- More logic fixes
 
 ## [0.23.1] - 2025-04-04
 
