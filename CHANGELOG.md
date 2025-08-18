@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.24.1] - 2025-08-18
+
+- Fix compatibility with latest UT
+- Fix character strength calculation
+- More logic fixes
+
 ## [0.24.0] - 2025-06-02
 
 - Fully compatible with both AP 0.6.1 and 0.6.2
