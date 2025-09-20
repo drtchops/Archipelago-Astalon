@@ -308,14 +308,6 @@ public class ArchipelagoClient
         return DeathLinkHandler.IsEnabled();
     }
 
-    public void CheckForDeath()
-    {
-        if (Game.CanBeKilled())
-        {
-            _deathLinkHandler?.KillPlayer();
-        }
-    }
-
     public void SendTag(int character)
     {
         _tagLinkHandler?.SendTagLink(character);

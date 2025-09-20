@@ -29,7 +29,6 @@ public static class Game
 
     public static Queue<ApItemInfo> IncomingItems { get; } = new();
     public static Queue<ApItemInfo> IncomingMessages { get; } = new();
-    public static string DeathSource { get; private set; }
     public static bool ReceivingItem { get; set; }
     public static bool IsInShop { get; set; }
     public static int QueuedCutscenes { get; set; }
@@ -58,6 +57,7 @@ public static class Game
     private static int _activatingElevator = -1;
     private static bool _cutscenePlaying;
     private static int _tagCounter = -1;
+    private static string _queuedDeath;
 
 #if DEBUG
     private static tk2dBaseSprite _baseSprite;
@@ -601,17 +601,46 @@ public static class Game
 
     public static bool CanGetItem()
     {
-        return Plugin.State.Valid && _saveInitialized && (GameManager.Instance?.player?.playerData) != null && Player.Instance != null && Player.Instance.playerDataLoaded;
+        return
+            Plugin.State.Valid &&
+            _saveInitialized &&
+            (GameManager.Instance?.player?.playerData) != null &&
+            Player.Instance != null &&
+            Player.Instance.playerDataLoaded
+        ;
     }
 
     public static bool CanDisplayMessage()
     {
-        return CanGetItem() && GameplayUIManager.Instance != null && GameplayUIManager.Instance.itemBox != null && !GameplayUIManager.Instance.itemBox.active;
+        return
+            CanGetItem() &&
+            GameplayUIManager.Instance != null &&
+            GameplayUIManager.Instance.itemBox != null &&
+            !GameplayUIManager.Instance.itemBox.active
+        ;
     }
 
     public static bool CanBeKilled()
     {
-        return CanGetItem() && Player.PlayerDataLocal.currentHealth > 0 && !Player.Instance.isInElevator && !GameplayUIManager.Instance.ESOpen && !GameplayUIManager.Instance.inGameMenuOpen;
+        return
+            CanGetItem() &&
+            Player.PlayerDataLocal.currentHealth > 0 &&
+            !Player.Instance.isDead &&
+            !Player.Instance.isInElevator &&
+            !GameplayUIManager.Instance.ESOpen &&
+            !GameplayUIManager.Instance.inGameMenuOpen &&
+            Player.Instance.ControllerEnabled()
+        ;
+    }
+
+    public static void QueueDeath(string cause)
+    {
+        if (_queuedDeath != null || !CanGetItem() || Player.Instance.isDead || _deathCounter > -1)
+        {
+            return;
+        }
+
+        _queuedDeath = cause;
     }
 
     public static bool CanCycleCharacter()
@@ -682,6 +711,16 @@ public static class Game
 
     public static ItemBox FormatItemBox(ApItemInfo itemInfo)
     {
+        if (itemInfo.Name == "Death")
+        {
+            return new()
+            {
+                Message = itemInfo.PlayerName,
+                Icon = "Deal_Gift",
+                Sound = "evil-laugh",
+            };
+        }
+
         var message = itemInfo.Name;
         if (!itemInfo.IsLocal)
         {
@@ -1017,11 +1056,6 @@ public static class Game
         {
             PlayerData.ResetCandles();
         }
-    }
-
-    public static void ReceiveDeath(string source)
-    {
-        DeathSource = source;
     }
 
     public static void HandleTag(int character)
@@ -1645,21 +1679,17 @@ public static class Game
 
     public static void Update()
     {
-        if (DeathSource != null && _deathCounter == -1 && CanBeKilled())
+        if (_queuedDeath != null && _deathCounter == -1 && CanBeKilled())
         {
             _deathCounter = 60;
             IncomingMessages.Enqueue(new()
             {
                 Name = "Death",
-                PlayerName = DeathSource,
+                PlayerName = _queuedDeath,
                 Receiving = true,
                 Flags = ItemFlags.Trap,
             });
             Player.Instance.Kill(false, false);
-        }
-        else if (_deathCounter == -1)
-        {
-            Plugin.ArchipelagoClient.CheckForDeath();
         }
 
         if (_deathCounter > 0)
@@ -1670,7 +1700,7 @@ public static class Game
         if (_deathCounter == 0)
         {
             _deathCounter = -1;
-            DeathSource = null;
+            _queuedDeath = null;
         }
 
         if (TriggerDeath)
