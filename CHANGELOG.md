@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.25.0] - 2025-09-19
+
+- Add support for the improved `/get_logical_path` command in UT
+  - This works the same as the old `/route` command but you no longer need to use the special Astalon Tracker
+- Add option groups
+- Some deathlink fixes
+- More logic fixes
+
 ## [0.24.1] - 2025-08-18
 
 - Fix compatibility with latest UT
