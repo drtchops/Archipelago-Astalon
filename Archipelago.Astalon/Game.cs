@@ -415,6 +415,11 @@ public static class Game
         _ = Plugin.ArchipelagoClient.SyncLocations(Plugin.State.CheckedLocations);
         InitializeSave(isNew);
 
+        if (Plugin.State.SlotData.CampfireWarp)
+        {
+            _ = Plugin.ArchipelagoClient.LoadCampfires();
+        }
+
         return true;
     }
 
@@ -1008,12 +1013,29 @@ public static class Game
 
     public static void CampfireVisited(int id)
     {
-        if (!Plugin.State.Valid || Plugin.State.VisitedCampfires.Contains(id))
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.CampfireWarp || Plugin.State.VisitedCampfires.Contains(id))
         {
             return;
         }
 
         Plugin.State.VisitedCampfires.Add(id);
+        Plugin.ArchipelagoClient.SyncVisitedCampfires(Plugin.State.VisitedCampfires);
+    }
+
+    public static void AddVisitedCampfires(List<int> ids)
+    {
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.CampfireWarp)
+        {
+            return;
+        }
+
+        foreach (var id in ids)
+        {
+            if (!Plugin.State.VisitedCampfires.Contains(id))
+            {
+                Plugin.State.VisitedCampfires.Add(id);
+            }
+        }
     }
 
     public static bool CharacterUnlocked(CharacterProperties.Character character)

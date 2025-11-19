@@ -23,6 +23,7 @@ public readonly struct PlayerCoords
 public class ArchipelagoClient
 {
     private const string MinArchipelagoVersion = "0.6.0";
+    private const string CampfiresDSKey = "campfires";
 
     public bool Connected => _session?.Socket.Connected ?? false;
     private bool _attemptingConnection;
@@ -66,6 +67,7 @@ public class ArchipelagoClient
         _session.Items.ItemReceived += SessionItemReceived;
         _session.Locations.CheckedLocationsUpdated += SessionCheckedLocationsUpdated;
         _session.MessageLog.OnMessageReceived += SessionOnMessageReceived;
+        _session.DataStorage[Scope.Slot, CampfiresDSKey].OnValueChanged += OnUpdateVisitedCampfires;
     }
 
     private void TryConnect()
@@ -113,6 +115,7 @@ public class ArchipelagoClient
         _deathLinkHandler = new(_session.CreateDeathLinkService(), Plugin.State.SlotName, Plugin.State.SlotData.DeathLink);
         _tagLinkHandler = new(_session.CreateTagLinkService(), _clientId, Plugin.State.SlotData.TagLink);
         _attemptingConnection = false;
+        _session.DataStorage[Scope.Slot, CampfiresDSKey].Initialize(Array.Empty<int>());
     }
 
     public void Disconnect()
@@ -187,7 +190,7 @@ public class ArchipelagoClient
             return null;
         }
 
-        List<long> locations = new(_session.Locations.AllLocations);
+        List<long> locations = [.. _session.Locations.AllLocations];
         var scouts = _session.Locations.ScoutLocationsAsync([.. locations]).ContinueWith(task =>
         {
             Dictionary<long, ApItemInfo> itemInfos = [];
@@ -358,6 +361,35 @@ public class ArchipelagoClient
         if (area is not 0 and not 22)
         {
             _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_area"] = area;
+        }
+    }
+
+    public void SyncVisitedCampfires(List<int> ids)
+    {
+        if (!Connected)
+        {
+            return;
+        }
+
+        _session.DataStorage[Scope.Slot, CampfiresDSKey] = ids;
+    }
+
+    private static void OnUpdateVisitedCampfires(JToken originalValue, JToken newValue, Dictionary<string, JToken> additionalArguments)
+    {
+        var ids = newValue.ToObject<List<int>>();
+        Game.AddVisitedCampfires(ids);
+    }
+
+    public async Task LoadCampfires()
+    {
+        try
+        {
+            var data = await _session.DataStorage[Scope.Slot, CampfiresDSKey].GetAsync();
+            Game.AddVisitedCampfires(data.ToObject<List<int>>());
+        }
+        catch (Exception ex)
+        {
+            Plugin.Logger.LogError($"Unexpected issue unlocking campfires from server data: {ex}");
         }
     }
 }
