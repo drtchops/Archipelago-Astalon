@@ -380,12 +380,12 @@ public class ArchipelagoClient
         Game.AddVisitedCampfires(ids);
     }
 
-    public async Task LoadCampfires()
+    public void LoadCampfires()
     {
         try
         {
-            var data = await _session.DataStorage[Scope.Slot, CampfiresDSKey].GetAsync();
-            Game.AddVisitedCampfires(data.ToObject<List<int>>());
+            var ids = _session.DataStorage[Scope.Slot, CampfiresDSKey].To<List<int>>();
+            Game.AddVisitedCampfires(ids);
         }
         catch (Exception ex)
         {

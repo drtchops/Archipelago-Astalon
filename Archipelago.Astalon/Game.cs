@@ -417,7 +417,7 @@ public static class Game
 
         if (Plugin.State.SlotData.CampfireWarp)
         {
-            _ = Plugin.ArchipelagoClient.LoadCampfires();
+            Plugin.ArchipelagoClient.LoadCampfires();
         }
 
         return true;
