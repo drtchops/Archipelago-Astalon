@@ -9,7 +9,7 @@ namespace Archipelago.Astalon;
 
 public enum ApLocationId
 {
-    GtGorgonheart = 333000,
+    GtGorgonheart = 1,
     GtAncientsRing,
     GtSword,
     GtMap,
@@ -464,7 +464,7 @@ public enum ApLocationId
 
 public enum ApItemId
 {
-    EyeRed = 333000,
+    EyeRed = 1,
     EyeBlue,
     EyeGreen,
     KeyWhite,
