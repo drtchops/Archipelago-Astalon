@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Archipelago.Astalon.Archipelago;
 using BepInEx;
 using BepInEx.Configuration;
@@ -71,6 +72,8 @@ public class Plugin : BasePlugin
         Il2CppBase.Initialize(this);
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} is loaded!");
+
+        AttemptAutomaticConnection();
     }
 
     public static void UpdateConnectionInfo()
@@ -108,6 +111,37 @@ public class Plugin : BasePlugin
         _configRunInBackground.Value = enabled;
         Settings.RunInBackground = enabled;
         Application.runInBackground = enabled;
+    }
+
+    public static void AttemptAutomaticConnection()
+    {
+        var args = Environment.GetCommandLineArgs();
+        foreach (var arg in args)
+        {
+            try
+            {
+                var url = new Uri(arg);
+                if (url.Scheme == "archipelago")
+                {
+                    Logger.LogInfo($"Attempting to connect to URL: {url}");
+                    var uri = $"{url.Host}:{url.Port}";
+                    var userParts = url.UserInfo.Split(":");
+                    var username = userParts[0];
+                    var password = "";
+                    if (userParts.Length > 1 && userParts[1] != "None")
+                    {
+                        password = userParts[1];
+                    }
+                    UpdateConnectionInfo(uri, username, password);
+                    ArchipelagoClient.Connect();
+                    break;
+                }
+            }
+            catch
+            {
+                continue;
+            }
+        }
     }
 }
 
