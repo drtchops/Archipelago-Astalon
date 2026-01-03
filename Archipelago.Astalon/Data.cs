@@ -1136,6 +1136,9 @@ public static class Data
         { ApItemId.WhiteDoorCataPrison, (4336, 4615) },
     };
 
+    public static readonly Dictionary<ActorIds, ApItemId> WhiteDoorToItem =
+        WhiteDoorMap.ToDictionary(static (data) => data.Value, static (data) => data.Key);
+
     public static readonly Dictionary<ApItemId, ActorIds> BlueDoorMap = new()
     {
         { ApItemId.BlueDoorGtHunter, (6628, 9467) },
@@ -1167,6 +1170,11 @@ public static class Data
         { ApItemId.BlueDoorSp, (8088, 8809) },
     };
 
+    public static readonly Dictionary<ActorIds, ApItemId> BlueDoorToItem = BlueDoorMap.ToDictionary(
+        static (data) => data.Value,
+        static (data) => data.Key
+    );
+
     public static readonly Dictionary<ApItemId, ActorIds> RedDoorMap = new()
     {
         { ApItemId.RedDoorZeek, (3227, 3288) },
@@ -1175,6 +1183,11 @@ public static class Data
         { ApItemId.RedDoorTr, (2706, 8812) },
         { ApItemId.RedDoorDevRoom, (2598, 3276) },
     };
+
+    public static readonly Dictionary<ActorIds, ApItemId> RedDoorToItem = RedDoorMap.ToDictionary(
+        static (data) => data.Value,
+        static (data) => data.Key
+    );
 
     public static readonly Dictionary<string, CheckpointData> Checkpoints = new()
     {

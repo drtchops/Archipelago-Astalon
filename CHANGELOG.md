@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.28.0] - 2026-??-??
+
+- Added starting location option
+- Added skull puzzles to switch rando
+- Removed old Astalon Tracker, you can use Universal Tracker directly now
+
+## [0.27.0] - 2025-12-18
+
+- Clicking on the slot name on the room page now lets you directly open Astalon or Universal Tracker and automatically connect
+- Fix `/next_progression` UT command
+- More logic fix
+
+## [0.26.0] - 2025-11-19
+
+- Visited campfires now sync to datastorage
+  - This means playing the same slot in coop or starting a new file will remember the campfires you've visited and make them available for warps
+- `/get_logical_path` now includes campfire warps as shortcuts
+- Update Archipelago.MultiClient.Net to 6.7.0
+
 ## [0.25.0] - 2025-09-19
 
 - Add support for the improved `/get_logical_path` command in UT

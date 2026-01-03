@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Archipelago.MultiClient.Net.Enums;
 using BepInEx.Unity.IL2CPP.Utils;
+using I2.Loc;
 using Newtonsoft.Json;
 using PathologicalGames;
 using UnityEngine;
@@ -1869,6 +1870,59 @@ public static class Game
         }
 
         return false;
+    }
+
+    public static bool ShouldCheckDoor(Door door)
+    {
+        if (!Plugin.State.Valid || door.Room == null)
+        {
+            return true;
+        }
+
+        if (
+            door.keyType == Key.KeyType.White
+            && Plugin.State.SlotData.RandomizeWhiteKeys
+            && Data.WhiteDoorToItem.TryGetValue(
+                (door.Room.roomID, door.actorID),
+                out var whiteKeyId
+            )
+        )
+        {
+            DisplayRequiredMessage(door, Data.ItemNames[whiteKeyId]);
+            return false;
+        }
+        if (
+            door.keyType == Key.KeyType.Blue
+            && Plugin.State.SlotData.RandomizeBlueKeys
+            && Data.BlueDoorToItem.TryGetValue((door.Room.roomID, door.actorID), out var blueKeyId)
+        )
+        {
+            DisplayRequiredMessage(door, Data.ItemNames[blueKeyId]);
+            return false;
+        }
+        if (
+            door.keyType == Key.KeyType.Red
+            && Plugin.State.SlotData.RandomizeRedKeys
+            && Data.RedDoorToItem.TryGetValue((door.Room.roomID, door.actorID), out var redKeyId)
+        )
+        {
+            DisplayRequiredMessage(door, Data.ItemNames[redKeyId]);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static void DisplayRequiredMessage(Door door, string name)
+    {
+        _ = GameManager.Instance.StartCoroutine(door.FlashRenderer());
+        AudioManager.Play("locked-door");
+        GameplayUIManager.Instance.DisplayItemBox(
+            string.Empty,
+            name + ScriptLocalization.REQUIRED,
+            2.5f,
+            false
+        );
     }
 
     public static bool SpawnParticle(Transform particleParent)

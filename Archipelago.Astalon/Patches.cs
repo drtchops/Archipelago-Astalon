@@ -1321,3 +1321,16 @@ internal class PE_Splash_Patch
         return Game.SpawnParticle(__instance.particleParent);
     }
 }
+
+[HarmonyPatch(typeof(Door))]
+internal class DoorPatch
+{
+    [HarmonyPatch(nameof(Door.CheckDoor)), HarmonyPrefix]
+    public static bool CheckDoorPrefix(Door __instance)
+    {
+        Plugin.Logger.LogDebug(
+            $"Door.CheckDoor(roomID={__instance.room?.roomID}, actorID={__instance.actorID}, keyType={__instance.keyType})"
+        );
+        return Game.ShouldCheckDoor(__instance);
+    }
+}
