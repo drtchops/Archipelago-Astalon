@@ -53,7 +53,8 @@ internal class Item_PlayerHeart_Patch
     public static void CollectPre(Item_PlayerHeart __instance)
     {
         Plugin.Logger.LogDebug(
-            $"Item_PlayerHeart.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
+            $"Item_PlayerHeart.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})"
+        );
         if (Game.TryGetEntityLocation(__instance.actorID, out _))
         {
             __instance.heartGain = 0;
@@ -109,7 +110,8 @@ internal class Item_PlayerStrength_Patch
     public static void Collect(Item_PlayerStrength __instance)
     {
         Plugin.Logger.LogDebug(
-            $"Item_PlayerStrength.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})");
+            $"Item_PlayerStrength.Collect({__instance}, {__instance.actorID}, {__instance.collectedIcon})"
+        );
         if (Game.TryGetEntityLocation(__instance.actorID, out _))
         {
             __instance.strengthGain = 0;
@@ -180,7 +182,9 @@ internal class Key_Patch
     [HarmonyPrefix]
     public static void Collect(Key __instance)
     {
-        Plugin.Logger.LogDebug($"Key.Collect({__instance}, {__instance.actorID}, {__instance.room.roomID})");
+        Plugin.Logger.LogDebug(
+            $"Key.Collect({__instance}, {__instance.actorID}, {__instance.room.roomID})"
+        );
         if (Game.TryGetEntityLocation(__instance.actorID, out _))
         {
             __instance.useItemBox = false;
@@ -198,7 +202,8 @@ internal class KeyPickable_Collect_Patch
     public static void Collect(KeyPickable __instance)
     {
         Plugin.Logger.LogDebug(
-            $"KeyPickable.Collect({__instance}, {__instance.actorID}, {__instance.room?.roomID}, {__instance.keyType}, {__instance.poolName})");
+            $"KeyPickable.Collect({__instance}, {__instance.actorID}, {__instance.room?.roomID}, {__instance.keyType}, {__instance.poolName})"
+        );
         if (Game.TryGetEntityLocation(__instance.actorID, out _))
         {
             __instance.useItemBox = false;
@@ -216,7 +221,9 @@ internal class PlayerData_Patch
     public static bool CollectItemID(ItemProperties.ItemID itemID)
     {
         Plugin.Logger.LogDebug($"PlayerData.CollectItemID({itemID})");
-        return Game.ReceivingItem || itemID != ItemProperties.ItemID.ZeekItem || !Game.CollectItem(itemID);
+        return Game.ReceivingItem
+            || itemID != ItemProperties.ItemID.ZeekItem
+            || !Game.CollectItem(itemID);
     }
 
     [HarmonyPatch(nameof(PlayerData.CollectItem), typeof(ItemProperties))]
@@ -369,7 +376,10 @@ internal class PlayerData_Patch
 
     [HarmonyPatch(nameof(PlayerData.HasUnlockedCharacter), typeof(CharacterProperties.Character))]
     [HarmonyPrefix]
-    public static bool HasUnlockedCharacter(CharacterProperties.Character _character, ref bool __result)
+    public static bool HasUnlockedCharacter(
+        CharacterProperties.Character _character,
+        ref bool __result
+    )
     {
         // Plugin.Logger.LogDebug($"PlayerData.HasUnlockedCharacter({_character})");
         if (Game.TryHasUnlockedCharacter(_character, out var result))
@@ -462,9 +472,19 @@ internal class Player_Patch
 
     [HarmonyPatch(nameof(Player.SetCheckpoint))]
     [HarmonyPrefix]
-    public static void SetCheckpoint(int _checkpointID)
+    public static void SetCheckpoint(
+        Actor _actor,
+        int _checkpointID,
+        int _checkpointRoomID,
+        string _checkpointData,
+        int _checkpointArea,
+        Checkpoint.Type _checkpointType,
+        Vector2 _checkpointPosition
+    )
     {
-        Plugin.Logger.LogDebug($"Player.SetCheckpoint({_checkpointID})");
+        Plugin.Logger.LogDebug(
+            $"Player.SetCheckpoint({_actor}, {_checkpointID}, {_checkpointRoomID},{_checkpointData}, {_checkpointArea}, {_checkpointType}, {_checkpointPosition})"
+        );
         Game.CampfireVisited(_checkpointID);
     }
 
@@ -472,10 +492,14 @@ internal class Player_Patch
     [HarmonyPostfix]
     public static void CycleCharacters(Player __instance)
     {
-        Plugin.Logger.LogDebug($"Player.CycleCharacters({__instance.characterProperty.characterID})");
+        Plugin.Logger.LogDebug(
+            $"Player.CycleCharacters({__instance.characterProperty.characterID})"
+        );
         var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
         Game.StoreCurrentRoom(room);
-        Game.HandleTag(Array.IndexOf(Data.TaggedCharacters, Player.PlayerDataLocal.currentCharacter));
+        Game.HandleTag(
+            Array.IndexOf(Data.TaggedCharacters, Player.PlayerDataLocal.currentCharacter)
+        );
     }
 
     [HarmonyPatch(nameof(Player.CycleCharacterTo))]
@@ -664,10 +688,17 @@ internal class GameplayUIManager_Patch
 
     [HarmonyPatch(nameof(GameplayUIManager.OpenConfirmPurchaseMenu))]
     [HarmonyPostfix]
-    public static void OpenConfirmPurchaseMenu(DealProperties _confirmPurchaseDeal, GameplayUIManager __instance)
+    public static void OpenConfirmPurchaseMenu(
+        DealProperties _confirmPurchaseDeal,
+        GameplayUIManager __instance
+    )
     {
-        Plugin.Logger.LogDebug($"GameplayUIManager.OpenConfirmPurchaseMenu({_confirmPurchaseDeal.dealID})");
-        if (Game.TryUpdateDeal(_confirmPurchaseDeal.dealID, out _, out var name, out var playerName))
+        Plugin.Logger.LogDebug(
+            $"GameplayUIManager.OpenConfirmPurchaseMenu({_confirmPurchaseDeal.dealID})"
+        );
+        if (
+            Game.TryUpdateDeal(_confirmPurchaseDeal.dealID, out _, out var name, out var playerName)
+        )
         {
             // TODO: make text box wider
             var title = name;
@@ -685,7 +716,11 @@ internal class GameplayUIManager_Patch
     public static void TriggerFullScreen(ref Il2CppArrayBase<Dialogue> dialogueSequence)
     {
         Plugin.Logger.LogDebug("GameplayUIManager.TriggerFullScreen()");
-        if (Plugin.State.Valid && dialogueSequence.Length == 5 && dialogueSequence[0].dialogueLine.StartsWith(ScriptLocalization.SCENE_2_1))
+        if (
+            Plugin.State.Valid
+            && dialogueSequence.Length == 5
+            && dialogueSequence[0].dialogueLine.StartsWith(ScriptLocalization.SCENE_2_1)
+        )
         {
             List<Dialogue> newDialogue = new();
             newDialogue.Add(new("Good luck, have fun!"));
@@ -708,15 +743,27 @@ internal class Cutscene_PlayCutscene_Patch
 [HarmonyPatch(typeof(CutsceneManager))]
 internal class CutsceneManager_Patch
 {
-    [HarmonyPatch(nameof(CutsceneManager.PlayCutscene), typeof(string), typeof(Room), typeof(bool), typeof(Vector2))]
+    [HarmonyPatch(
+        nameof(CutsceneManager.PlayCutscene),
+        typeof(string),
+        typeof(Room),
+        typeof(bool),
+        typeof(Vector2)
+    )]
     [HarmonyPrefix]
     public static void PlayCutscene1(string ID)
     {
         Plugin.Logger.LogDebug($"CutsceneManager.PlayCutscene1({ID})");
     }
 
-    [HarmonyPatch(nameof(CutsceneManager.PlayCutscene), typeof(string), typeof(Room), typeof(bool), typeof(int),
-        typeof(int))]
+    [HarmonyPatch(
+        nameof(CutsceneManager.PlayCutscene),
+        typeof(string),
+        typeof(Room),
+        typeof(bool),
+        typeof(int),
+        typeof(int)
+    )]
     [HarmonyPostfix]
     public static void PlayCutscene2(string ID)
     {
@@ -893,7 +940,8 @@ internal class InputListener_Patch
     [HarmonyPrefix]
     public static bool Update()
     {
-        return (ArchipelagoConsole.Hidden || !Settings.ShowConsole) && !Il2CppBase.ConnectionFocused;
+        return (ArchipelagoConsole.Hidden || !Settings.ShowConsole)
+            && !Il2CppBase.ConnectionFocused;
     }
 }
 
@@ -932,7 +980,11 @@ internal class ShopItem_Patch
 {
     [HarmonyPatch(nameof(ShopItem.InitializeItem))]
     [HarmonyPrefix]
-    public static void InitializeItem(DealProperties.DealID _itemID, ref string _sprite, ref string _name)
+    public static void InitializeItem(
+        DealProperties.DealID _itemID,
+        ref string _sprite,
+        ref string _name
+    )
     {
         Plugin.Logger.LogDebug($"ShopItem.InitializeItem({_itemID})");
         if (Game.TryUpdateDeal(_itemID, out var sprite, out var name, out _))
@@ -1030,7 +1082,9 @@ internal class Room_Patch
     [HarmonyPostfix]
     public static void ActivateInisde(Room __instance)
     {
-        Plugin.Logger.LogDebug($"Room {__instance.RoomID} '{__instance.name}' (Area {__instance.GetRoomArea()})");
+        Plugin.Logger.LogDebug(
+            $"Room {__instance.RoomID} '{__instance.name}' (Area {__instance.GetRoomArea()})"
+        );
 
         // if (__instance.objectSwitches.Count > 0)
         // {
@@ -1051,7 +1105,7 @@ internal class Room_Patch
         //         ids.Add(switchObj.actorID);
         //     }
 
-        //     Plugin.Logger.LogDebug($"Switchables: {string.Join(", ", ids)}");
+        //     Plugin.Logger.LogDebug($"Switchable objects: {string.Join(", ", ids)}");
         // }
     }
 }
@@ -1064,7 +1118,8 @@ internal class ObjectSwitch_Patch
     public static void ActivateObject(ObjectSwitch __instance)
     {
         Plugin.Logger.LogDebug(
-            $"ObjectSwitch.ActivateObject({__instance.actorID}, {__instance.room?.roomID}, {__instance.switchID})");
+            $"ObjectSwitch.ActivateObject({__instance.actorID}, {__instance.room?.roomID}, {__instance.switchID})"
+        );
         var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
         Game.PressSwitch(roomId, __instance.switchID);
     }
@@ -1078,7 +1133,8 @@ internal class MagicCrystal_Patch
     public static void ActivateObject(MagicCrystal __instance)
     {
         Plugin.Logger.LogDebug(
-            $"MagicCrystal.ActivateObject({__instance.actorID}, {__instance.room?.roomID}, {__instance.switchID})");
+            $"MagicCrystal.ActivateObject({__instance.actorID}, {__instance.room?.roomID}, {__instance.switchID})"
+        );
         var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
         Game.PressSwitch(roomId, __instance.switchID);
     }
@@ -1092,7 +1148,8 @@ internal class AttackSwitch_Patch
     public static void ActivateObject(AttackSwitch __instance)
     {
         Plugin.Logger.LogDebug(
-            $"AttackSwitch.ActivateObject({__instance.actorID}, {__instance.room?.roomID}, {__instance.switchID})");
+            $"AttackSwitch.ActivateObject({__instance.actorID}, {__instance.room?.roomID}, {__instance.switchID})"
+        );
         var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
         Game.PressSwitch(roomId, __instance.switchID);
     }
@@ -1106,7 +1163,8 @@ internal class SwitchableObject_Patch
     public static bool ToggleObject(SwitchableObject __instance)
     {
         Plugin.Logger.LogDebug(
-            $"SwitchableObject.ToggleObject({__instance.actorID}, {__instance.objectType}, {__instance.linkID})");
+            $"SwitchableObject.ToggleObject({__instance.actorID}, {__instance.objectType}, {__instance.linkID})"
+        );
         var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
         return !Game.IsSwitchRandomized(roomId, __instance.linkID, out _);
     }
@@ -1140,7 +1198,9 @@ internal class Elevator_Patch
     [HarmonyPrefix]
     public static void Activate(Elevator __instance)
     {
-        Plugin.Logger.LogDebug($"Elevator.Activate({__instance.actorID}, {__instance.room?.roomID}, {__instance.playerInElevator})");
+        Plugin.Logger.LogDebug(
+            $"Elevator.Activate({__instance.actorID}, {__instance.room?.roomID}, {__instance.playerInElevator})"
+        );
         if (Player.Instance.isInElevator)
         {
             Game.ElevatorUnlocked(__instance.room?.roomID ?? -1);
@@ -1155,7 +1215,9 @@ internal class Elevator_Patch
     [HarmonyPrefix]
     public static void Deactivate(Elevator __instance)
     {
-        Plugin.Logger.LogDebug($"Elevator.Deactivate({__instance.actorID}, {__instance.room?.roomID})");
+        Plugin.Logger.LogDebug(
+            $"Elevator.Deactivate({__instance.actorID}, {__instance.room?.roomID})"
+        );
         Game.DeactivateElevator();
     }
 
@@ -1163,7 +1225,9 @@ internal class Elevator_Patch
     [HarmonyPrefix]
     public static void UnlockElevator(Elevator __instance)
     {
-        Plugin.Logger.LogDebug($"Elevator.UnlockElevator({__instance.actorID}, {__instance.room?.roomID})");
+        Plugin.Logger.LogDebug(
+            $"Elevator.UnlockElevator({__instance.actorID}, {__instance.room?.roomID})"
+        );
         Game.ElevatorUnlocked(__instance.room?.roomID ?? -1);
     }
 
@@ -1171,7 +1235,9 @@ internal class Elevator_Patch
     [HarmonyPrefix]
     public static void TriggerElevatorMenu(Elevator __instance)
     {
-        Plugin.Logger.LogDebug($"Elevator.TriggerElevatorMenu({__instance.actorID}, {__instance.room?.roomID})");
+        Plugin.Logger.LogDebug(
+            $"Elevator.TriggerElevatorMenu({__instance.actorID}, {__instance.room?.roomID})"
+        );
         Game.ElevatorUnlocked(__instance.room?.roomID ?? -1);
     }
 }

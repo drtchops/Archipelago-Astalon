@@ -1,6 +1,5 @@
 global using ActorIds = (int roomId, int actorId);
 global using DialogueLine = (string line, GameplayUIManager.DBPosition pos);
-
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -805,8 +804,7 @@ public enum ElevatorId
 
 public static class RoomId
 {
-    public const int
-        Zeek = 3228,
+    public const int Zeek = 3228,
         CyclopsDenDoor = 3728,
         FinalBoss = 5000,
         TutorialKyuli = 6671,
@@ -818,6 +816,7 @@ public readonly struct CheckpointData
 {
     public int Id { get; init; }
     public int RoomId { get; init; }
+    public int Area { get; init; }
     public Vector3 PlayerPos { get; init; }
     public Vector2 CameraPos { get; init; }
 }
@@ -842,36 +841,37 @@ public readonly struct CandleData
 
 public static class Data
 {
-    public static readonly Dictionary<ItemProperties.ItemID, ApLocationId> ItemToApLocationId = new()
-    {
-        { ItemProperties.ItemID.AmuletOfSol, ApLocationId.HotpAmulet },
-        { ItemProperties.ItemID.BanishSpell, ApLocationId.GtBanish },
-        { ItemProperties.ItemID.GorgonHeart, ApLocationId.GtGorgonheart },
-        { ItemProperties.ItemID.GriffonClaw, ApLocationId.HotpClaw },
-        { ItemProperties.ItemID.IcarusEmblem, ApLocationId.RoaIcarus },
-        { ItemProperties.ItemID.LunarianBow, ApLocationId.CataBow },
-        { ItemProperties.ItemID.RingOfTheAncients, ApLocationId.GtAncientsRing },
-        { ItemProperties.ItemID.SwordOfMirrors, ApLocationId.GtSword },
-        { ItemProperties.ItemID.GorgonEyeRed, ApLocationId.GtEyeRed },
-        { ItemProperties.ItemID.GorgonEyeBlue, ApLocationId.MechEyeBlue },
-        { ItemProperties.ItemID.GorgonEyeGreen, ApLocationId.RoaEyeGreen },
-        { ItemProperties.ItemID.DeadMaidensRing, ApLocationId.HotpMaidenRing },
-        { ItemProperties.ItemID.LinusMap, ApLocationId.GtMap },
-        { ItemProperties.ItemID.AthenasBell, ApLocationId.HotpBell },
-        { ItemProperties.ItemID.VoidCharm, ApLocationId.GtVoid },
-        { ItemProperties.ItemID.CloakOfLevitation, ApLocationId.MechCloak },
-        { ItemProperties.ItemID.AdornedKey, ApLocationId.TrAdornedKey },
-        { ItemProperties.ItemID.PrincesCrown, ApLocationId.CdCrown },
-        { ItemProperties.ItemID.AscendantKey, ApLocationId.GtAscendantKey },
-        { ItemProperties.ItemID.TalariaBoots, ApLocationId.MechBoots },
-        // { ItemProperties.ItemID.MonsterBall, LocationId.GtMonster },
-        { ItemProperties.ItemID.BloodChalice, ApLocationId.ApexChalice },
-        { ItemProperties.ItemID.MorningStar, ApLocationId.SpStar },
-        { ItemProperties.ItemID.ZeekItem, ApLocationId.MechCyclops },
-        { ItemProperties.ItemID.BoreasGauntlet, ApLocationId.HotpGauntlet },
-        // { ItemProperties.ItemID.FamiliarGil, LocationId.CataGil },
-        { ItemProperties.ItemID.MagicBlock, ApLocationId.CathBlock },
-    };
+    public static readonly Dictionary<ItemProperties.ItemID, ApLocationId> ItemToApLocationId =
+        new()
+        {
+            { ItemProperties.ItemID.AmuletOfSol, ApLocationId.HotpAmulet },
+            { ItemProperties.ItemID.BanishSpell, ApLocationId.GtBanish },
+            { ItemProperties.ItemID.GorgonHeart, ApLocationId.GtGorgonheart },
+            { ItemProperties.ItemID.GriffonClaw, ApLocationId.HotpClaw },
+            { ItemProperties.ItemID.IcarusEmblem, ApLocationId.RoaIcarus },
+            { ItemProperties.ItemID.LunarianBow, ApLocationId.CataBow },
+            { ItemProperties.ItemID.RingOfTheAncients, ApLocationId.GtAncientsRing },
+            { ItemProperties.ItemID.SwordOfMirrors, ApLocationId.GtSword },
+            { ItemProperties.ItemID.GorgonEyeRed, ApLocationId.GtEyeRed },
+            { ItemProperties.ItemID.GorgonEyeBlue, ApLocationId.MechEyeBlue },
+            { ItemProperties.ItemID.GorgonEyeGreen, ApLocationId.RoaEyeGreen },
+            { ItemProperties.ItemID.DeadMaidensRing, ApLocationId.HotpMaidenRing },
+            { ItemProperties.ItemID.LinusMap, ApLocationId.GtMap },
+            { ItemProperties.ItemID.AthenasBell, ApLocationId.HotpBell },
+            { ItemProperties.ItemID.VoidCharm, ApLocationId.GtVoid },
+            { ItemProperties.ItemID.CloakOfLevitation, ApLocationId.MechCloak },
+            { ItemProperties.ItemID.AdornedKey, ApLocationId.TrAdornedKey },
+            { ItemProperties.ItemID.PrincesCrown, ApLocationId.CdCrown },
+            { ItemProperties.ItemID.AscendantKey, ApLocationId.GtAscendantKey },
+            { ItemProperties.ItemID.TalariaBoots, ApLocationId.MechBoots },
+            // { ItemProperties.ItemID.MonsterBall, LocationId.GtMonster },
+            { ItemProperties.ItemID.BloodChalice, ApLocationId.ApexChalice },
+            { ItemProperties.ItemID.MorningStar, ApLocationId.SpStar },
+            { ItemProperties.ItemID.ZeekItem, ApLocationId.MechCyclops },
+            { ItemProperties.ItemID.BoreasGauntlet, ApLocationId.HotpGauntlet },
+            // { ItemProperties.ItemID.FamiliarGil, LocationId.CataGil },
+            { ItemProperties.ItemID.MagicBlock, ApLocationId.CathBlock },
+        };
 
     public static readonly Dictionary<ApItemId, ItemProperties.ItemID> ApItemIdToItem = new()
     {
@@ -1173,325 +1173,397 @@ public static class Data
     public static readonly Dictionary<string, CheckpointData> Checkpoints = new()
     {
         {
-            "Entrance", new()
+            "Entrance",
+            new()
             {
                 Id = -1,
                 RoomId = 5,
+                Area = 99,
                 PlayerPos = new(4584, -26901, 0),
                 CameraPos = new(4584, -26840),
             }
         },
         {
-            "Tutorial", new()
+            "Tutorial",
+            new()
             {
                 Id = 6696,
                 RoomId = 6670,
+                Area = 99,
                 PlayerPos = new(5024, -27381, 0),
                 CameraPos = new(5016, -27320),
             }
         },
         {
-            "GT Bottom", new()
+            "GT Bottom",
+            new()
             {
                 Id = 18,
                 RoomId = 15,
+                Area = 1,
                 PlayerPos = new(6744, -26853, 0),
                 CameraPos = new(6744, -26840),
             }
         },
         {
-            "GT Left", new()
+            "GT Left",
+            new()
             {
                 Id = 292,
                 RoomId = 38,
+                Area = 1,
                 PlayerPos = new(5080, -26181, 0),
                 CameraPos = new(5016, -26120),
             }
         },
         {
-            "GT Boss", new()
+            "GT Boss",
+            new()
             {
                 Id = 293,
                 RoomId = 63,
+                Area = 1,
                 PlayerPos = new(5880, -25429, 0),
                 CameraPos = new(5880, -25400),
             }
         },
         {
-            "Mechanism Start", new()
+            "Mechanism Start",
+            new()
             {
                 Id = 1140,
                 RoomId = 304,
+                Area = 2,
                 PlayerPos = new(7544, -25493, 0),
                 CameraPos = new(7608, -25400),
             }
         },
         {
-            "Mechanism Sword", new()
+            "Mechanism Sword",
+            new()
             {
                 Id = 1556,
                 RoomId = 333,
+                Area = 2,
                 PlayerPos = new(8088, -25877, 0),
                 CameraPos = new(8040, -25880),
             }
         },
         {
-            "Mechanism Bottom", new()
+            "Mechanism Bottom",
+            new()
             {
                 Id = 813,
                 RoomId = 1282,
+                Area = 2,
                 PlayerPos = new(8904, -26437, 0),
                 CameraPos = new(8904, -26360),
             }
         },
         {
-            "Mechanism Shortcut", new()
+            "Mechanism Shortcut",
+            new()
             {
                 Id = 712,
                 RoomId = 711,
+                Area = 2,
                 PlayerPos = new(7608, -24981, 0),
                 CameraPos = new(7608, -24920),
             }
         },
         {
-            "Mechanism Right", new()
+            "Mechanism Right",
+            new()
             {
                 Id = 3547,
                 RoomId = 3546,
+                Area = 2,
                 PlayerPos = new(10136, -24005, 0),
                 CameraPos = new(10200, -23960),
             }
         },
         {
-            "Mechanism Top", new()
+            "Mechanism Top",
+            new()
             {
                 Id = 1634,
                 RoomId = 1633,
+                Area = 2,
                 PlayerPos = new(9304, -23093, 0),
                 CameraPos = new(9336, -23000),
             }
         },
         {
-            "Mechanism Boss", new()
+            "Mechanism Boss",
+            new()
             {
                 Id = 819,
                 RoomId = 801,
+                Area = 2,
                 PlayerPos = new(7560, -23797, 0),
                 CameraPos = new(7608, -23720),
             }
         },
         {
-            "CD 1", new()
+            "CD 1",
+            new()
             {
                 Id = 7507,
                 RoomId = 7360,
+                Area = 11,
                 PlayerPos = new(11064, -22837, 0),
                 CameraPos = new(11064, -22760),
             }
         },
         {
-            "CD 2", new()
+            "CD 2",
+            new()
             {
                 Id = 7577,
                 RoomId = 7368,
+                Area = 11,
                 PlayerPos = new(10200, -22085, 0),
                 CameraPos = new(10200, -22040),
             }
         },
         {
-            "CD 3", new()
+            "CD 3",
+            new()
             {
                 Id = 7703,
                 RoomId = 7371,
+                Area = 11,
                 PlayerPos = new(10200, -21589, 0),
                 CameraPos = new(10200, -21560),
             }
         },
         {
-            "CD 4", new()
+            "CD 4",
+            new()
             {
                 Id = 7774,
                 RoomId = 7772,
+                Area = 11,
                 PlayerPos = new(9416, -20917, 0),
                 CameraPos = new(9336, -20840),
             }
         },
         {
-            "HotP Epimetheus", new()
+            "HotP Epimetheus",
+            new()
             {
                 Id = 5019,
                 RoomId = 5018,
+                Area = 3,
                 PlayerPos = new(6312, -24517, 0),
                 CameraPos = new(6312, -24440),
             }
         },
         {
-            "HotP Bell", new()
+            "HotP Bell",
+            new()
             {
                 Id = 6421,
                 RoomId = 6417,
+                Area = 3,
                 PlayerPos = new(4152, -24453, 0),
                 CameraPos = new(4152, -24440),
             }
         },
         {
-            "HotP Claw", new()
+            "HotP Claw",
+            new()
             {
                 Id = 3207,
                 RoomId = 2901,
+                Area = 3,
                 PlayerPos = new(5880, -22757, 0),
                 CameraPos = new(5880, -22760),
             }
         },
         {
-            "HotP Boss", new()
+            "HotP Boss",
+            new()
             {
                 Id = 2904,
                 RoomId = 2889,
+                Area = 3,
                 PlayerPos = new(6312, -21813, 0),
                 CameraPos = new(6312, -21800),
             }
         },
         {
-            "Cathedral 1", new()
+            "Cathedral 1",
+            new()
             {
                 Id = 10203,
                 RoomId = 7266,
+                Area = 7,
                 PlayerPos = new(2008, -23477, 0),
                 CameraPos = new(1992, -23480),
             }
         },
         {
-            "Cathedral 2", new()
+            "Cathedral 2",
+            new()
             {
                 Id = 10260,
                 RoomId = 7271,
+                Area = 7,
                 PlayerPos = new(1992, -22613, 0),
                 CameraPos = new(1992, -22520),
             }
         },
         {
-            "RoA Start", new()
+            "RoA Start",
+            new()
             {
                 Id = 3726,
                 RoomId = 3266,
+                Area = 5,
                 PlayerPos = new(8040, -21845, 0),
                 CameraPos = new(8040, -21800),
             }
         },
         {
-            "RoA Left", new()
+            "RoA Left",
+            new()
             {
                 Id = 7088,
                 RoomId = 7087,
+                Area = 5,
                 PlayerPos = new(5832, -20885, 0),
                 CameraPos = new(5880, -20840),
             }
         },
         {
-            "RoA Middle", new()
+            "RoA Middle",
+            new()
             {
                 Id = 7086,
                 RoomId = 4080,
+                Area = 5,
                 PlayerPos = new(7592, -20437, 0),
                 CameraPos = new(7608, -20360),
             }
         },
         {
-            "RoA Elevator", new()
+            "RoA Elevator",
+            new()
             {
                 Id = 4685,
                 RoomId = 4104,
+                Area = 5,
                 PlayerPos = new(7576, -18197, 0),
                 CameraPos = new(7608, -18200),
             }
         },
         {
-            "RoA Boss", new()
+            "RoA Boss",
+            new()
             {
                 Id = 10026,
                 RoomId = 10016,
+                Area = 5,
                 PlayerPos = new(5848, -17557, 0),
                 CameraPos = new(5880, -17480),
             }
         },
         {
-            "SP 1", new()
+            "SP 1",
+            new()
             {
                 Id = 7436,
                 RoomId = 7386,
+                Area = 8,
                 PlayerPos = new(3720, -19925, 0),
                 CameraPos = new(3720, -19880),
             }
         },
         {
-            "SP 2", new()
+            "SP 2",
+            new()
             {
                 Id = 8243,
                 RoomId = 7396,
+                Area = 8,
                 PlayerPos = new(4184, -21157, 0),
                 CameraPos = new(4152, -21080),
             }
         },
         {
-            "The Apex", new()
+            "The Apex",
+            new()
             {
                 Id = 4635,
                 RoomId = 4246,
+                Area = 6,
                 PlayerPos = new(8056, -17317, 0),
                 CameraPos = new(8040, -17240),
             }
         },
         {
-            "Catacombs Upper", new()
+            "Catacombs Upper",
+            new()
             {
                 Id = 7109,
                 RoomId = 7042,
+                Area = 21,
                 PlayerPos = new(8536, -27877, 0),
                 CameraPos = new(8472, -27800),
             }
         },
         {
-            "Catacombs Bow", new()
+            "Catacombs Bow",
+            new()
             {
                 Id = 2524,
                 RoomId = 978,
+                Area = 4,
                 PlayerPos = new(7208, -28357, 0),
                 CameraPos = new(7176, -28280),
             }
         },
         {
-            "Catacombs Roots", new()
+            "Catacombs Roots",
+            new()
             {
                 Id = 2610,
                 RoomId = 982,
+                Area = 4,
                 PlayerPos = new(7608, -29029, 0),
                 CameraPos = new(7608, -29000),
             }
         },
         {
-            "Catacombs Boss", new()
+            "Catacombs Boss",
+            new()
             {
                 Id = 2669,
                 RoomId = 2655,
+                Area = 4,
                 PlayerPos = new(6696, -29781, 0),
                 CameraPos = new(6744, -29720),
             }
         },
         {
-            "Tower Roots", new()
+            "Tower Roots",
+            new()
             {
                 Id = 9056,
                 RoomId = 2704,
+                Area = 0,
                 PlayerPos = new(5880, -30997, 0),
                 CameraPos = new(5880, -30920),
             }
         },
         {
-            "Dev Room", new()
+            "Dev Room",
+            new()
             {
                 Id = 9161,
                 RoomId = 2779,
+                Area = 4,
                 PlayerPos = new(11968, -28341, 0),
                 CameraPos = new(11928, -28280),
             }
@@ -1572,22 +1644,28 @@ public static class Data
         { CharacterProperties.Character.Bram, "Bram" },
     };
 
-    public static readonly Dictionary<CharacterProperties.Character, DealProperties.DealID> CharacterToStrDeal = new()
+    public static readonly Dictionary<
+        CharacterProperties.Character,
+        DealProperties.DealID
+    > CharacterToStrDeal = new()
     {
-        {CharacterProperties.Character.Algus, DealProperties.DealID.Deal_Algus_Strength },
-        {CharacterProperties.Character.Arias, DealProperties.DealID.Deal_Arias_Strength },
-        {CharacterProperties.Character.Kyuli, DealProperties.DealID.Deal_Kyuli_Strength },
-        {CharacterProperties.Character.Zeek, DealProperties.DealID.Deal_Zeek_Strength },
-        {CharacterProperties.Character.Bram, DealProperties.DealID.Deal_Bram_Strength },
+        { CharacterProperties.Character.Algus, DealProperties.DealID.Deal_Algus_Strength },
+        { CharacterProperties.Character.Arias, DealProperties.DealID.Deal_Arias_Strength },
+        { CharacterProperties.Character.Kyuli, DealProperties.DealID.Deal_Kyuli_Strength },
+        { CharacterProperties.Character.Zeek, DealProperties.DealID.Deal_Zeek_Strength },
+        { CharacterProperties.Character.Bram, DealProperties.DealID.Deal_Bram_Strength },
     };
 
-    public static readonly Dictionary<CharacterProperties.Character, DealProperties.DealID> CharacterToDefDeal = new()
+    public static readonly Dictionary<
+        CharacterProperties.Character,
+        DealProperties.DealID
+    > CharacterToDefDeal = new()
     {
-        {CharacterProperties.Character.Algus, DealProperties.DealID.Deal_Algus_Defense },
-        {CharacterProperties.Character.Arias, DealProperties.DealID.Deal_Arias_Defense },
-        {CharacterProperties.Character.Kyuli, DealProperties.DealID.Deal_Kyuli_Defense },
-        {CharacterProperties.Character.Zeek, DealProperties.DealID.Deal_Zeek_Defense },
-        {CharacterProperties.Character.Bram, DealProperties.DealID.Deal_Bram_Defense },
+        { CharacterProperties.Character.Algus, DealProperties.DealID.Deal_Algus_Defense },
+        { CharacterProperties.Character.Arias, DealProperties.DealID.Deal_Arias_Defense },
+        { CharacterProperties.Character.Kyuli, DealProperties.DealID.Deal_Kyuli_Defense },
+        { CharacterProperties.Character.Zeek, DealProperties.DealID.Deal_Zeek_Defense },
+        { CharacterProperties.Character.Bram, DealProperties.DealID.Deal_Bram_Defense },
     };
 
     #region switchdata
@@ -1907,7 +1985,21 @@ public static class Data
         {
             Id = "43",
             RoomId = 799,
-            ObjectsToEnable = [1527, 1528, 1525, 1526, 1523, 1524, 1529, 1532, 1521, 1522, 1530, 1531],
+            ObjectsToEnable =
+            [
+                1527,
+                1528,
+                1525,
+                1526,
+                1523,
+                1524,
+                1529,
+                1532,
+                1521,
+                1522,
+                1530,
+                1531,
+            ],
             ObjectsToDisable = [],
             ObjectsToTrigger = [],
             ApItemId = ApItemId.CrystalMechToBoss3,
@@ -3177,7 +3269,22 @@ public static class Data
         {
             Id = "244",
             RoomId = 4098,
-            ObjectsToEnable = [8697, 9479, 9480, 9481, 9482, 9483, 9484, 9485, 9486, 9487, 9488, 9489, 9490],
+            ObjectsToEnable =
+            [
+                8697,
+                9479,
+                9480,
+                9481,
+                9482,
+                9483,
+                9484,
+                9485,
+                9486,
+                9487,
+                9488,
+                9489,
+                9490,
+            ],
             ObjectsToDisable = [],
             ObjectsToTrigger = [],
             ApItemId = ApItemId.SwitchRoaAboveCentaur,
@@ -3517,9 +3624,14 @@ public static class Data
     #endregion
 
     public static readonly Dictionary<(int, string), ApLocationId> LinkToLocation =
-        Switches.ToDictionary(static (data) => (data.RoomId, data.Id), static (data) => data.ApLocationId);
+        Switches.ToDictionary(
+            static (data) => (data.RoomId, data.Id),
+            static (data) => data.ApLocationId
+        );
 
-    public static readonly Dictionary<ApItemId, SwitchData> ItemToLink = Switches.ToDictionary(static (data) => data.ApItemId);
+    public static readonly Dictionary<ApItemId, SwitchData> ItemToLink = Switches.ToDictionary(
+        static (data) => data.ApItemId
+    );
 
     public static readonly Dictionary<int, ApLocationId> ElevatorToLocation = new()
     {
@@ -3874,204 +3986,814 @@ public static class Data
         { ApItemId.FaceCathR, "Face (Cath Right)" },
     };
 
-    public static readonly List<CandleData> Candles = [
-        new() { Id=287, RoomId=268, ApLocationId=ApLocationId.GtCandleLinus },
-        new() { Id=288, RoomId=32, ApLocationId=ApLocationId.GtCandle1stCyclops },
-        new() { Id=289, RoomId=62, ApLocationId=ApLocationId.GtCandleBoss },
-        new() { Id=326, RoomId=322, ApLocationId=ApLocationId.MechCandleRoots },
-        new() { Id=905, RoomId=329, ApLocationId=ApLocationId.MechCandleBottom },
-        new() { Id=1213, RoomId=344, ApLocationId=ApLocationId.MechCandleChains },
-        new() { Id=2156, RoomId=809, ApLocationId=ApLocationId.MechCandleRight },
-        new() { Id=2157, RoomId=1214, ApLocationId=ApLocationId.MechCandlePots },
-        new() { Id=2619, RoomId=59, ApLocationId=ApLocationId.CataCandle1stRoom },
-        new() { Id=2622, RoomId=2103, ApLocationId=ApLocationId.CataCandleOrbMulti },
-        new() { Id=2623, RoomId=979, ApLocationId=ApLocationId.CataCandleAfterBow },
-        new() { Id=2624, RoomId=2573, ApLocationId=ApLocationId.CataCandleDevRoom },
-        new() { Id=2625, RoomId=981, ApLocationId=ApLocationId.CataCandleGriffon },
-        new() { Id=2626, RoomId=799, ApLocationId=ApLocationId.MechCandleBoss1 },
-        new() { Id=2627, RoomId=1932, ApLocationId=ApLocationId.MechCandleSlimes },
-        new() { Id=2665, RoomId=2416, ApLocationId=ApLocationId.CataCandleShortcut },
-        new() { Id=4028, RoomId=2906, ApLocationId=ApLocationId.MechCandleZeek },
-        new() { Id=5022, RoomId=1054, ApLocationId=ApLocationId.RoaCandle1stRoom },
-        new() { Id=5024, RoomId=3584, ApLocationId=ApLocationId.RoaCandle3Reapers },
-        new() { Id=5025, RoomId=4080, ApLocationId=ApLocationId.RoaCandleMiddleCampfire },
-        new() { Id=5026, RoomId=4085, ApLocationId=ApLocationId.RoaCandleLadderBottom },
-        new() { Id=5027, RoomId=4095, ApLocationId=ApLocationId.RoaCandleShaft },
-        new() { Id=5028, RoomId=4099, ApLocationId=ApLocationId.RoaCandleShaftTop },
-        new() { Id=5029, RoomId=4103, ApLocationId=ApLocationId.RoaCandleBabyGorgon },
-        new() { Id=5030, RoomId=4107, ApLocationId=ApLocationId.RoaCandleTopCentaur },
-        new() { Id=5031, RoomId=4110, ApLocationId=ApLocationId.ApexCandleElevator },
-        new() { Id=5032, RoomId=820, ApLocationId=ApLocationId.HotpCandle1stRoom },
-        new() { Id=5033, RoomId=2676, ApLocationId=ApLocationId.HotpCandleLower },
-        new() { Id=5035, RoomId=2681, ApLocationId=ApLocationId.HotpCandleBell },
-        new() { Id=5036, RoomId=2902, ApLocationId=ApLocationId.HotpCandleEyeball },
-        new() { Id=5037, RoomId=3617, ApLocationId=ApLocationId.HotpCandleOldMan },
-        new() { Id=5038, RoomId=2897, ApLocationId=ApLocationId.HotpCandleBeforeClaw },
-        new() { Id=5039, RoomId=2901, ApLocationId=ApLocationId.HotpCandleClawCampfire },
-        new() { Id=5040, RoomId=2890, ApLocationId=ApLocationId.HotpCandleTpPuzzle },
-        new() { Id=5041, RoomId=3259, ApLocationId=ApLocationId.HotpCandleTpFall },
-        new() { Id=5042, RoomId=1632, ApLocationId=ApLocationId.MechCandleMazeBackdoor },
-        new() { Id=5043, RoomId=2889, ApLocationId=ApLocationId.HotpCandleBoss },
-        new() { Id=6665, RoomId=453, ApLocationId=ApLocationId.GtCandleBottom },
-        new() { Id=6674, RoomId=3265, ApLocationId=ApLocationId.HotpCandleUpperVoid1 },
-        new() { Id=6675, RoomId=3265, ApLocationId=ApLocationId.HotpCandleUpperVoid2 },
-        new() { Id=6676, RoomId=3265, ApLocationId=ApLocationId.HotpCandleUpperVoid3 },
-        new() { Id=6677, RoomId=3265, ApLocationId=ApLocationId.HotpCandleUpperVoid4 },
-        new() { Id=6678, RoomId=4335, ApLocationId=ApLocationId.CataCandlePrison },
-        new() { Id=6679, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden4 },
-        new() { Id=6680, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden1 },
-        new() { Id=6681, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden2 },
-        new() { Id=6682, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden5 },
-        new() { Id=6684, RoomId=4763, ApLocationId=ApLocationId.RoaCandleHidden3 },
-        new() { Id=6734, RoomId=4307, ApLocationId=ApLocationId.CataCandleAboveRoots1 },
-        new() { Id=6735, RoomId=4307, ApLocationId=ApLocationId.CataCandleAboveRoots2 },
-        new() { Id=6736, RoomId=4307, ApLocationId=ApLocationId.CataCandleAboveRoots3 },
-        new() { Id=6737, RoomId=4307, ApLocationId=ApLocationId.CataCandleAboveRoots4 },
-        new() { Id=6738, RoomId=4307, ApLocationId=ApLocationId.CataCandleAboveRoots5 },
-        new() { Id=6878, RoomId=3795, ApLocationId=ApLocationId.CataCandleVoidR1 },
-        new() { Id=6879, RoomId=3795, ApLocationId=ApLocationId.CataCandleVoidR2 },
-        new() { Id=6915, RoomId=3273, ApLocationId=ApLocationId.RoaCandleBottomAscend },
-        new() { Id=6942, RoomId=4083, ApLocationId=ApLocationId.RoaCandleBranch },
-        new() { Id=7356, RoomId=3728, ApLocationId=ApLocationId.MechCandleCdAccess1 },
-        new() { Id=7357, RoomId=3728, ApLocationId=ApLocationId.MechCandleCdAccess2 },
-        new() { Id=7358, RoomId=3728, ApLocationId=ApLocationId.MechCandleCdAccess3 },
-        new() { Id=8236, RoomId=8219, ApLocationId=ApLocationId.CathCandleTop1 },
-        new() { Id=8237, RoomId=8219, ApLocationId=ApLocationId.CathCandleTop2 },
-        new() { Id=8540, RoomId=7361, ApLocationId=ApLocationId.CdCandle1 },
-        new() { Id=8541, RoomId=7368, ApLocationId=ApLocationId.CdCandle2ndCampfire1 },
-        new() { Id=8542, RoomId=7368, ApLocationId=ApLocationId.CdCandle2ndCampfire2 },
-        new() { Id=8543, RoomId=7772, ApLocationId=ApLocationId.CdCandleTopCampfire },
-        new() { Id=8721, RoomId=4101, ApLocationId=ApLocationId.RoaCandleIcarus1 },
-        new() { Id=8722, RoomId=4101, ApLocationId=ApLocationId.RoaCandleIcarus2 },
-        new() { Id=8772, RoomId=8771, ApLocationId=ApLocationId.RoaCandleElevator },
-        new() { Id=9655, RoomId=187, ApLocationId=ApLocationId.MechCandle1stRoom },
-        new() { Id=9656, RoomId=341, ApLocationId=ApLocationId.MechCandleBk },
-        new() { Id=9657, RoomId=800, ApLocationId=ApLocationId.MechCandleBoss2 },
-        new() { Id=9658, RoomId=810, ApLocationId=ApLocationId.MechCandleCampfireR },
-        new() { Id=9710, RoomId=9065, ApLocationId=ApLocationId.ApexCandleChalice1 },
-        new() { Id=9711, RoomId=9066, ApLocationId=ApLocationId.ApexCandleChalice2 },
-        new() { Id=9712, RoomId=9066, ApLocationId=ApLocationId.ApexCandleChalice3 },
-        new() { Id=9874, RoomId=6823, ApLocationId=ApLocationId.ApexCandleGarg1 },
-        new() { Id=9875, RoomId=6823, ApLocationId=ApLocationId.ApexCandleGarg2 },
-        new() { Id=9876, RoomId=6823, ApLocationId=ApLocationId.ApexCandleGarg3 },
-        new() { Id=9877, RoomId=6823, ApLocationId=ApLocationId.ApexCandleGarg4 },
-        new() { Id=9878, RoomId=4104, ApLocationId=ApLocationId.RoaCandleElevatorCampfire },
-        new() { Id=10037, RoomId=10017, ApLocationId=ApLocationId.RoaCandleBoss1 },
-        new() { Id=10038, RoomId=10017, ApLocationId=ApLocationId.RoaCandleBoss2 },
-        new() { Id=10282, RoomId=2706, ApLocationId=ApLocationId.TrCandle1stRoom1 },
-        new() { Id=10283, RoomId=2706, ApLocationId=ApLocationId.TrCandle1stRoom2 },
-        new() { Id=10284, RoomId=2706, ApLocationId=ApLocationId.TrCandle1stRoom3 },
-        new() { Id=10545, RoomId=2894, ApLocationId=ApLocationId.HotpCandleElevator },
-        new() { Id=10740, RoomId=4098, ApLocationId=ApLocationId.RoaCandleAboveCentaur },
-        new() { Id=10741, RoomId=4248, ApLocationId=ApLocationId.RoaCandleSpider },
-        new() { Id=10742, RoomId=4096, ApLocationId=ApLocationId.RoaCandleSpikeBalls },
-        new() { Id=10744, RoomId=4090, ApLocationId=ApLocationId.RoaCandleLadderR },
-        new() { Id=10747, RoomId=3585, ApLocationId=ApLocationId.RoaCandleArena },
+    public static readonly List<CandleData> Candles =
+    [
+        new()
+        {
+            Id = 287,
+            RoomId = 268,
+            ApLocationId = ApLocationId.GtCandleLinus,
+        },
+        new()
+        {
+            Id = 288,
+            RoomId = 32,
+            ApLocationId = ApLocationId.GtCandle1stCyclops,
+        },
+        new()
+        {
+            Id = 289,
+            RoomId = 62,
+            ApLocationId = ApLocationId.GtCandleBoss,
+        },
+        new()
+        {
+            Id = 326,
+            RoomId = 322,
+            ApLocationId = ApLocationId.MechCandleRoots,
+        },
+        new()
+        {
+            Id = 905,
+            RoomId = 329,
+            ApLocationId = ApLocationId.MechCandleBottom,
+        },
+        new()
+        {
+            Id = 1213,
+            RoomId = 344,
+            ApLocationId = ApLocationId.MechCandleChains,
+        },
+        new()
+        {
+            Id = 2156,
+            RoomId = 809,
+            ApLocationId = ApLocationId.MechCandleRight,
+        },
+        new()
+        {
+            Id = 2157,
+            RoomId = 1214,
+            ApLocationId = ApLocationId.MechCandlePots,
+        },
+        new()
+        {
+            Id = 2619,
+            RoomId = 59,
+            ApLocationId = ApLocationId.CataCandle1stRoom,
+        },
+        new()
+        {
+            Id = 2622,
+            RoomId = 2103,
+            ApLocationId = ApLocationId.CataCandleOrbMulti,
+        },
+        new()
+        {
+            Id = 2623,
+            RoomId = 979,
+            ApLocationId = ApLocationId.CataCandleAfterBow,
+        },
+        new()
+        {
+            Id = 2624,
+            RoomId = 2573,
+            ApLocationId = ApLocationId.CataCandleDevRoom,
+        },
+        new()
+        {
+            Id = 2625,
+            RoomId = 981,
+            ApLocationId = ApLocationId.CataCandleGriffon,
+        },
+        new()
+        {
+            Id = 2626,
+            RoomId = 799,
+            ApLocationId = ApLocationId.MechCandleBoss1,
+        },
+        new()
+        {
+            Id = 2627,
+            RoomId = 1932,
+            ApLocationId = ApLocationId.MechCandleSlimes,
+        },
+        new()
+        {
+            Id = 2665,
+            RoomId = 2416,
+            ApLocationId = ApLocationId.CataCandleShortcut,
+        },
+        new()
+        {
+            Id = 4028,
+            RoomId = 2906,
+            ApLocationId = ApLocationId.MechCandleZeek,
+        },
+        new()
+        {
+            Id = 5022,
+            RoomId = 1054,
+            ApLocationId = ApLocationId.RoaCandle1stRoom,
+        },
+        new()
+        {
+            Id = 5024,
+            RoomId = 3584,
+            ApLocationId = ApLocationId.RoaCandle3Reapers,
+        },
+        new()
+        {
+            Id = 5025,
+            RoomId = 4080,
+            ApLocationId = ApLocationId.RoaCandleMiddleCampfire,
+        },
+        new()
+        {
+            Id = 5026,
+            RoomId = 4085,
+            ApLocationId = ApLocationId.RoaCandleLadderBottom,
+        },
+        new()
+        {
+            Id = 5027,
+            RoomId = 4095,
+            ApLocationId = ApLocationId.RoaCandleShaft,
+        },
+        new()
+        {
+            Id = 5028,
+            RoomId = 4099,
+            ApLocationId = ApLocationId.RoaCandleShaftTop,
+        },
+        new()
+        {
+            Id = 5029,
+            RoomId = 4103,
+            ApLocationId = ApLocationId.RoaCandleBabyGorgon,
+        },
+        new()
+        {
+            Id = 5030,
+            RoomId = 4107,
+            ApLocationId = ApLocationId.RoaCandleTopCentaur,
+        },
+        new()
+        {
+            Id = 5031,
+            RoomId = 4110,
+            ApLocationId = ApLocationId.ApexCandleElevator,
+        },
+        new()
+        {
+            Id = 5032,
+            RoomId = 820,
+            ApLocationId = ApLocationId.HotpCandle1stRoom,
+        },
+        new()
+        {
+            Id = 5033,
+            RoomId = 2676,
+            ApLocationId = ApLocationId.HotpCandleLower,
+        },
+        new()
+        {
+            Id = 5035,
+            RoomId = 2681,
+            ApLocationId = ApLocationId.HotpCandleBell,
+        },
+        new()
+        {
+            Id = 5036,
+            RoomId = 2902,
+            ApLocationId = ApLocationId.HotpCandleEyeball,
+        },
+        new()
+        {
+            Id = 5037,
+            RoomId = 3617,
+            ApLocationId = ApLocationId.HotpCandleOldMan,
+        },
+        new()
+        {
+            Id = 5038,
+            RoomId = 2897,
+            ApLocationId = ApLocationId.HotpCandleBeforeClaw,
+        },
+        new()
+        {
+            Id = 5039,
+            RoomId = 2901,
+            ApLocationId = ApLocationId.HotpCandleClawCampfire,
+        },
+        new()
+        {
+            Id = 5040,
+            RoomId = 2890,
+            ApLocationId = ApLocationId.HotpCandleTpPuzzle,
+        },
+        new()
+        {
+            Id = 5041,
+            RoomId = 3259,
+            ApLocationId = ApLocationId.HotpCandleTpFall,
+        },
+        new()
+        {
+            Id = 5042,
+            RoomId = 1632,
+            ApLocationId = ApLocationId.MechCandleMazeBackdoor,
+        },
+        new()
+        {
+            Id = 5043,
+            RoomId = 2889,
+            ApLocationId = ApLocationId.HotpCandleBoss,
+        },
+        new()
+        {
+            Id = 6665,
+            RoomId = 453,
+            ApLocationId = ApLocationId.GtCandleBottom,
+        },
+        new()
+        {
+            Id = 6674,
+            RoomId = 3265,
+            ApLocationId = ApLocationId.HotpCandleUpperVoid1,
+        },
+        new()
+        {
+            Id = 6675,
+            RoomId = 3265,
+            ApLocationId = ApLocationId.HotpCandleUpperVoid2,
+        },
+        new()
+        {
+            Id = 6676,
+            RoomId = 3265,
+            ApLocationId = ApLocationId.HotpCandleUpperVoid3,
+        },
+        new()
+        {
+            Id = 6677,
+            RoomId = 3265,
+            ApLocationId = ApLocationId.HotpCandleUpperVoid4,
+        },
+        new()
+        {
+            Id = 6678,
+            RoomId = 4335,
+            ApLocationId = ApLocationId.CataCandlePrison,
+        },
+        new()
+        {
+            Id = 6679,
+            RoomId = 4763,
+            ApLocationId = ApLocationId.RoaCandleHidden4,
+        },
+        new()
+        {
+            Id = 6680,
+            RoomId = 4763,
+            ApLocationId = ApLocationId.RoaCandleHidden1,
+        },
+        new()
+        {
+            Id = 6681,
+            RoomId = 4763,
+            ApLocationId = ApLocationId.RoaCandleHidden2,
+        },
+        new()
+        {
+            Id = 6682,
+            RoomId = 4763,
+            ApLocationId = ApLocationId.RoaCandleHidden5,
+        },
+        new()
+        {
+            Id = 6684,
+            RoomId = 4763,
+            ApLocationId = ApLocationId.RoaCandleHidden3,
+        },
+        new()
+        {
+            Id = 6734,
+            RoomId = 4307,
+            ApLocationId = ApLocationId.CataCandleAboveRoots1,
+        },
+        new()
+        {
+            Id = 6735,
+            RoomId = 4307,
+            ApLocationId = ApLocationId.CataCandleAboveRoots2,
+        },
+        new()
+        {
+            Id = 6736,
+            RoomId = 4307,
+            ApLocationId = ApLocationId.CataCandleAboveRoots3,
+        },
+        new()
+        {
+            Id = 6737,
+            RoomId = 4307,
+            ApLocationId = ApLocationId.CataCandleAboveRoots4,
+        },
+        new()
+        {
+            Id = 6738,
+            RoomId = 4307,
+            ApLocationId = ApLocationId.CataCandleAboveRoots5,
+        },
+        new()
+        {
+            Id = 6878,
+            RoomId = 3795,
+            ApLocationId = ApLocationId.CataCandleVoidR1,
+        },
+        new()
+        {
+            Id = 6879,
+            RoomId = 3795,
+            ApLocationId = ApLocationId.CataCandleVoidR2,
+        },
+        new()
+        {
+            Id = 6915,
+            RoomId = 3273,
+            ApLocationId = ApLocationId.RoaCandleBottomAscend,
+        },
+        new()
+        {
+            Id = 6942,
+            RoomId = 4083,
+            ApLocationId = ApLocationId.RoaCandleBranch,
+        },
+        new()
+        {
+            Id = 7356,
+            RoomId = 3728,
+            ApLocationId = ApLocationId.MechCandleCdAccess1,
+        },
+        new()
+        {
+            Id = 7357,
+            RoomId = 3728,
+            ApLocationId = ApLocationId.MechCandleCdAccess2,
+        },
+        new()
+        {
+            Id = 7358,
+            RoomId = 3728,
+            ApLocationId = ApLocationId.MechCandleCdAccess3,
+        },
+        new()
+        {
+            Id = 8236,
+            RoomId = 8219,
+            ApLocationId = ApLocationId.CathCandleTop1,
+        },
+        new()
+        {
+            Id = 8237,
+            RoomId = 8219,
+            ApLocationId = ApLocationId.CathCandleTop2,
+        },
+        new()
+        {
+            Id = 8540,
+            RoomId = 7361,
+            ApLocationId = ApLocationId.CdCandle1,
+        },
+        new()
+        {
+            Id = 8541,
+            RoomId = 7368,
+            ApLocationId = ApLocationId.CdCandle2ndCampfire1,
+        },
+        new()
+        {
+            Id = 8542,
+            RoomId = 7368,
+            ApLocationId = ApLocationId.CdCandle2ndCampfire2,
+        },
+        new()
+        {
+            Id = 8543,
+            RoomId = 7772,
+            ApLocationId = ApLocationId.CdCandleTopCampfire,
+        },
+        new()
+        {
+            Id = 8721,
+            RoomId = 4101,
+            ApLocationId = ApLocationId.RoaCandleIcarus1,
+        },
+        new()
+        {
+            Id = 8722,
+            RoomId = 4101,
+            ApLocationId = ApLocationId.RoaCandleIcarus2,
+        },
+        new()
+        {
+            Id = 8772,
+            RoomId = 8771,
+            ApLocationId = ApLocationId.RoaCandleElevator,
+        },
+        new()
+        {
+            Id = 9655,
+            RoomId = 187,
+            ApLocationId = ApLocationId.MechCandle1stRoom,
+        },
+        new()
+        {
+            Id = 9656,
+            RoomId = 341,
+            ApLocationId = ApLocationId.MechCandleBk,
+        },
+        new()
+        {
+            Id = 9657,
+            RoomId = 800,
+            ApLocationId = ApLocationId.MechCandleBoss2,
+        },
+        new()
+        {
+            Id = 9658,
+            RoomId = 810,
+            ApLocationId = ApLocationId.MechCandleCampfireR,
+        },
+        new()
+        {
+            Id = 9710,
+            RoomId = 9065,
+            ApLocationId = ApLocationId.ApexCandleChalice1,
+        },
+        new()
+        {
+            Id = 9711,
+            RoomId = 9066,
+            ApLocationId = ApLocationId.ApexCandleChalice2,
+        },
+        new()
+        {
+            Id = 9712,
+            RoomId = 9066,
+            ApLocationId = ApLocationId.ApexCandleChalice3,
+        },
+        new()
+        {
+            Id = 9874,
+            RoomId = 6823,
+            ApLocationId = ApLocationId.ApexCandleGarg1,
+        },
+        new()
+        {
+            Id = 9875,
+            RoomId = 6823,
+            ApLocationId = ApLocationId.ApexCandleGarg2,
+        },
+        new()
+        {
+            Id = 9876,
+            RoomId = 6823,
+            ApLocationId = ApLocationId.ApexCandleGarg3,
+        },
+        new()
+        {
+            Id = 9877,
+            RoomId = 6823,
+            ApLocationId = ApLocationId.ApexCandleGarg4,
+        },
+        new()
+        {
+            Id = 9878,
+            RoomId = 4104,
+            ApLocationId = ApLocationId.RoaCandleElevatorCampfire,
+        },
+        new()
+        {
+            Id = 10037,
+            RoomId = 10017,
+            ApLocationId = ApLocationId.RoaCandleBoss1,
+        },
+        new()
+        {
+            Id = 10038,
+            RoomId = 10017,
+            ApLocationId = ApLocationId.RoaCandleBoss2,
+        },
+        new()
+        {
+            Id = 10282,
+            RoomId = 2706,
+            ApLocationId = ApLocationId.TrCandle1stRoom1,
+        },
+        new()
+        {
+            Id = 10283,
+            RoomId = 2706,
+            ApLocationId = ApLocationId.TrCandle1stRoom2,
+        },
+        new()
+        {
+            Id = 10284,
+            RoomId = 2706,
+            ApLocationId = ApLocationId.TrCandle1stRoom3,
+        },
+        new()
+        {
+            Id = 10545,
+            RoomId = 2894,
+            ApLocationId = ApLocationId.HotpCandleElevator,
+        },
+        new()
+        {
+            Id = 10740,
+            RoomId = 4098,
+            ApLocationId = ApLocationId.RoaCandleAboveCentaur,
+        },
+        new()
+        {
+            Id = 10741,
+            RoomId = 4248,
+            ApLocationId = ApLocationId.RoaCandleSpider,
+        },
+        new()
+        {
+            Id = 10742,
+            RoomId = 4096,
+            ApLocationId = ApLocationId.RoaCandleSpikeBalls,
+        },
+        new()
+        {
+            Id = 10744,
+            RoomId = 4090,
+            ApLocationId = ApLocationId.RoaCandleLadderR,
+        },
+        new()
+        {
+            Id = 10747,
+            RoomId = 3585,
+            ApLocationId = ApLocationId.RoaCandleArena,
+        },
     ];
 
-    public static readonly Dictionary<int, ApLocationId> CandleToLocation = Candles.ToDictionary(static (candle) => candle.Id, static (candle) => candle.ApLocationId);
+    public static readonly Dictionary<int, ApLocationId> CandleToLocation = Candles.ToDictionary(
+        static (candle) => candle.Id,
+        static (candle) => candle.ApLocationId
+    );
 
-    public static readonly DialogueLine[][] FakeCutscenes = [
+    public static readonly DialogueLine[][] FakeCutscenes =
+    [
         [
-            ("{char}Arias{/char}:\nHey Algus, something's been troubling me.", GameplayUIManager.DBPosition.TopRight),
+            (
+                "{char}Arias{/char}:\nHey Algus, something's been troubling me.",
+                GameplayUIManager.DBPosition.TopRight
+            ),
             ("{char}Algus{/char}:\nWhat is it, Arias?", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Arias{/char}:\nwhy do they call it oven when you of in the cold food of out hot eat the food", GameplayUIManager.DBPosition.TopRight),
+            (
+                "{char}Arias{/char}:\nwhy do they call it oven when you of in the cold food of out hot eat the food",
+                GameplayUIManager.DBPosition.TopRight
+            ),
             ("{char}Algus{/char}:\n...", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Algus{/char}:\nArias, what the hell are you talking about?", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Kyuli{/char}:\nBecause you off in the cold food so it gets hot, then you take it out to get it cooled off again.", GameplayUIManager.DBPosition.TopCenter),
+            (
+                "{char}Algus{/char}:\nArias, what the hell are you talking about?",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Kyuli{/char}:\nBecause you off in the cold food so it gets hot, then you take it out to get it cooled off again.",
+                GameplayUIManager.DBPosition.TopCenter
+            ),
             ("{char}Kyuli{/char}:\nLike an offin.", GameplayUIManager.DBPosition.TopCenter),
             ("{char}Arias{/char}:\nOhhh!", GameplayUIManager.DBPosition.TopRight),
             ("{char}Algus{/char}:\n...", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Algus{/char}:\nMaybe next time I should let them stay dead...", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Algus{/char}:\nMaybe next time I should let them stay dead...",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
         ],
         [
-            ("{char}Zeek{/char}:\nHave you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion up to level 60 for free with no restrictions on playtime!", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Bram{/char}:\nActually, that's not true anymore.", GameplayUIManager.DBPosition.TopRight),
-            ("{char}Bram{/char}:\nNow the critically acclaimed MMORPG Final Fantasy XIV has an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion and also the award-winning Stormblood expansion up to level 70 for free with no restrictions on playtime!", GameplayUIManager.DBPosition.TopRight),
+            (
+                "{char}Zeek{/char}:\nHave you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion up to level 60 for free with no restrictions on playtime!",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Bram{/char}:\nActually, that's not true anymore.",
+                GameplayUIManager.DBPosition.TopRight
+            ),
+            (
+                "{char}Bram{/char}:\nNow the critically acclaimed MMORPG Final Fantasy XIV has an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Heavensward expansion and also the award-winning Stormblood expansion up to level 70 for free with no restrictions on playtime!",
+                GameplayUIManager.DBPosition.TopRight
+            ),
             ("{char}Zeek{/char}:\nWow, what a steal!", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
-            ("{char}Algus{/char}:\nWhat is this strange old world device?", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Algus{/char}:\nWhat is this strange old world device?",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
             ("{char}BlackKnight{/char}:\nRing ring!", GameplayUIManager.DBPosition.TopRight),
             ("{char}Algus{/char}:\nUhh... Hello?", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}BlackKnight{/char}:\nHello, We've Been Trying To Reach You About Your Car's Extended Warranty.", GameplayUIManager.DBPosition.TopRight),
-            ("{char}Algus{/char}:\nI think you have the wrong number, sorry.", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}BlackKnight{/char}:\nHello, We've Been Trying To Reach You About Your Car's Extended Warranty.",
+                GameplayUIManager.DBPosition.TopRight
+            ),
+            (
+                "{char}Algus{/char}:\nI think you have the wrong number, sorry.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
         ],
         [
-            ("{char}Kyuli{/char}:\nZeek, did you just get that block stuck in the wall???", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Zeek{/char}:\nYeah! A cool wizard told me how to do neat tricks and now I can climb walls like you!", GameplayUIManager.DBPosition.TopRight),
-            ("{char}Kyuli{/char}:\nA wizard? The old man that Algus mentioned?", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Zeek{/char}:\nNo, I think he called himself some sort of \"Prize Wizard\".", GameplayUIManager.DBPosition.TopRight),
-            ("{char}Kyuli{/char}:\nMaybe you shouldn't be talking to strange old men...", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Kyuli{/char}:\nZeek, did you just get that block stuck in the wall???",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Zeek{/char}:\nYeah! A cool wizard told me how to do neat tricks and now I can climb walls like you!",
+                GameplayUIManager.DBPosition.TopRight
+            ),
+            (
+                "{char}Kyuli{/char}:\nA wizard? The old man that Algus mentioned?",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Zeek{/char}:\nNo, I think he called himself some sort of \"Prize Wizard\".",
+                GameplayUIManager.DBPosition.TopRight
+            ),
+            (
+                "{char}Kyuli{/char}:\nMaybe you shouldn't be talking to strange old men...",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
         ],
         [
-            ("{char}Bram{/char}:\nFood $200, Data $150, Rend $800, Candles $3,600, Utility $150.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Bram{/char}:\nSomeone who is good at the economy please help me budget this. My Family is dying.", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Bram{/char}:\nFood $200, Data $150, Rend $800, Candles $3,600, Utility $150.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Bram{/char}:\nSomeone who is good at the economy please help me budget this. My Family is dying.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
             ("{char}Algus{/char}:\nSpend less on candles.", GameplayUIManager.DBPosition.TopRight),
             ("{char}Bram{/char}:\nNo.", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
             ("{char}Arias{/char}:\nThis tower...", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Kyuli{/char}:\nWe've only been here for mere seconds, but... I already feel uneasy...", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Kyuli{/char}:\nWe've only been here for mere seconds, but... I already feel uneasy...",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
             ("{char}Arias{/char}:\nI feel it too.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Arias{/char}:\nBut it looks like the poison is coming from here.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Arias{/char}:\nIf we can stop it, we can prevent the people in our village from getting sick!", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Kyuli{/char}:\nI want that too, of course. But this tower seems different than the other ruins...", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Kyuli{/char}:\nI can't put my finger on it, but it almost emanates strong evil energy...", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Arias{/char}:\nBut it looks like the poison is coming from here.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Arias{/char}:\nIf we can stop it, we can prevent the people in our village from getting sick!",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Kyuli{/char}:\nI want that too, of course. But this tower seems different than the other ruins...",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Kyuli{/char}:\nI can't put my finger on it, but it almost emanates strong evil energy...",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
             ("{char}Zeek{/char}:\nHold on.", GameplayUIManager.DBPosition.TopRight),
-            ("{char}Zeek{/char}:\nIs this even randomized???", GameplayUIManager.DBPosition.TopRight),
+            (
+                "{char}Zeek{/char}:\nIs this even randomized???",
+                GameplayUIManager.DBPosition.TopRight
+            ),
         ],
         [
-            ("{char}Oldman{/char}:\nIngredients: 6 tbsp of cake mix, 4 tbsp of water, 2 tsp of canola or vegetable oil.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Oldman{/char}:\nStep 1: In a mug or bowl combine the chocolate cake mix, water, and oil. Mix well with a fork.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Oldman{/char}:\nStep 2: Microwave the mug for 1 minute 30 seconds to 1 minute 45 seconds.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Oldman{/char}:\nCheck it with a toothpick, when it comes out clean it is ready.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Oldman{/char}:\nStep 3: A small bowl measurement will take about 1 minute.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Oldman{/char}:\nStep 4: Top with whatever you like such as, frosting, sprinkles, powdered sugar, etc.", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Oldman{/char}:\nIngredients: 6 tbsp of cake mix, 4 tbsp of water, 2 tsp of canola or vegetable oil.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Oldman{/char}:\nStep 1: In a mug or bowl combine the chocolate cake mix, water, and oil. Mix well with a fork.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Oldman{/char}:\nStep 2: Microwave the mug for 1 minute 30 seconds to 1 minute 45 seconds.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Oldman{/char}:\nCheck it with a toothpick, when it comes out clean it is ready.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Oldman{/char}:\nStep 3: A small bowl measurement will take about 1 minute.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Oldman{/char}:\nStep 4: Top with whatever you like such as, frosting, sprinkles, powdered sugar, etc.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
         ],
         [
-            ("{char}Gargoyle{/char}:\nJust another stupid game.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Gargoyle{/char}:\nI get to where it say something about shooting black orbs with magic through walls.", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Gargoyle{/char}:\nJust another stupid game.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Gargoyle{/char}:\nI get to where it say something about shooting black orbs with magic through walls.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
             ("{char}Gargoyle{/char}:\nNOPE. Does not work.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Gargoyle{/char}:\nAnd, what imbecile developer decided to make [s] the jump key,", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Gargoyle{/char}:\nrather than the traditional [space bar] key.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Gargoyle{/char}:\nI have lost count of hon many times I have gone to jump, only for nothing to happen.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Gargoyle{/char}:\nBecause I am pressing [space bar]", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Gargoyle{/char}:\nAnd, what imbecile developer decided to make [s] the jump key,",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Gargoyle{/char}:\nrather than the traditional [space bar] key.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Gargoyle{/char}:\nI have lost count of hon many times I have gone to jump, only for nothing to happen.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Gargoyle{/char}:\nBecause I am pressing [space bar]",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
             ("{char}Gargoyle{/char}:\nNo thank you!", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
-            ("{char}Algus{/char}:\nSo I've been looking into optimizing Archipelago generation times.", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Algus{/char}:\nI think I have a way to speed things up significantly!", GameplayUIManager.DBPosition.TopLeft),
-            ("{char}Arias{/char}:\nSounds great! What is it?", GameplayUIManager.DBPosition.TopRight),
+            (
+                "{char}Algus{/char}:\nSo I've been looking into optimizing Archipelago generation times.",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Algus{/char}:\nI think I have a way to speed things up significantly!",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
+            (
+                "{char}Arias{/char}:\nSounds great! What is it?",
+                GameplayUIManager.DBPosition.TopRight
+            ),
             ("{char}Algus{/char}:\nSimply delete OoT.", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
-            ("{char}Kyuli{/char}:\nHey guys! There's a stone in the wall with something written on it!", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Kyuli{/char}:\nHey guys! There's a stone in the wall with something written on it!",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
             ("{char}Algus{/char}:\nWhat does it say?", GameplayUIManager.DBPosition.TopRight),
-            ("{char}Kyuli{/char}:\n\"ICE PALACE LEADS TO ICE PALACE\"", GameplayUIManager.DBPosition.TopLeft),
+            (
+                "{char}Kyuli{/char}:\n\"ICE PALACE LEADS TO ICE PALACE\"",
+                GameplayUIManager.DBPosition.TopLeft
+            ),
             ("{char}Algus{/char}:\n?", GameplayUIManager.DBPosition.TopRight),
             ("{char}Arias{/char}:\n?", GameplayUIManager.DBPosition.TopCenter),
             ("{char}Kyuli{/char}:\n?", GameplayUIManager.DBPosition.TopLeft),
         ],
         [
             ("{char}Kyuli{/char}:\nHey player!", GameplayUIManager.DBPosition.TopCenter),
-            ("{char}Kyuli{/char}:\nI know you're having a hard time...", GameplayUIManager.DBPosition.TopCenter),
+            (
+                "{char}Kyuli{/char}:\nI know you're having a hard time...",
+                GameplayUIManager.DBPosition.TopCenter
+            ),
             ("{char}Kyuli{/char}:\nBut remember,", GameplayUIManager.DBPosition.TopCenter),
-            ("{char}Kyuli{/char}:\nevery decision you have ever made in your life has led you to seeing this cutscene trap.", GameplayUIManager.DBPosition.TopCenter),
+            (
+                "{char}Kyuli{/char}:\nevery decision you have ever made in your life has led you to seeing this cutscene trap.",
+                GameplayUIManager.DBPosition.TopCenter
+            ),
             ("{char}Kyuli{/char}:\n:)", GameplayUIManager.DBPosition.TopCenter),
         ],
         [
-            ("{char}Algus{/char}:\nMario coin fragments, bonus coins, gold skulltulas, yoshi eggs, jiggies, power stars,", GameplayUIManager.DBPosition.TopCenter),
-            ("{char}Algus{/char}:\ntime pieces, triforce pieces, strawberries, special1s, special2s, grubs, ", GameplayUIManager.DBPosition.TopCenter),
-            ("{char}Algus{/char}:\nrupees, grass, questagons, piece of luigis, gorgon eye (gold)s...", GameplayUIManager.DBPosition.TopCenter),
-            ("{char}Algus{/char}:\nI can't see why anyone wants to flood the multiworld with these!", GameplayUIManager.DBPosition.TopCenter),
+            (
+                "{char}Algus{/char}:\nMario coin fragments, bonus coins, gold skulltulas, yoshi eggs, jiggies, power stars,",
+                GameplayUIManager.DBPosition.TopCenter
+            ),
+            (
+                "{char}Algus{/char}:\ntime pieces, triforce pieces, strawberries, special1s, special2s, grubs, ",
+                GameplayUIManager.DBPosition.TopCenter
+            ),
+            (
+                "{char}Algus{/char}:\nrupees, grass, questagons, piece of luigis, gorgon eye (gold)s...",
+                GameplayUIManager.DBPosition.TopCenter
+            ),
+            (
+                "{char}Algus{/char}:\nI can't see why anyone wants to flood the multiworld with these!",
+                GameplayUIManager.DBPosition.TopCenter
+            ),
             ("{char}Algus{/char}:\nAm I so out of touch?", GameplayUIManager.DBPosition.TopCenter),
             ("{char}Algus{/char}:\n...", GameplayUIManager.DBPosition.TopCenter),
-            ("{char}Algus{/char}:\nNo, it's the hosts who are wrong.", GameplayUIManager.DBPosition.TopCenter),
+            (
+                "{char}Algus{/char}:\nNo, it's the hosts who are wrong.",
+                GameplayUIManager.DBPosition.TopCenter
+            ),
         ],
     ];
 
-    public static readonly CharacterProperties.Character[] TaggedCharacters = [
+    public static readonly CharacterProperties.Character[] TaggedCharacters =
+    [
         CharacterProperties.Character.Algus,
         CharacterProperties.Character.Zeek,
         CharacterProperties.Character.Arias,

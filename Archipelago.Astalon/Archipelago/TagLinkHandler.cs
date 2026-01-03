@@ -24,10 +24,12 @@ public class TagLink(string sourcePlayer, int kong = 5, bool tag = true) : IEqua
     /// The Timestamp of the created TagLink object
     /// </summary>
     public DateTime Time { get; internal set; } = DateTime.UtcNow;
+
     /// <summary>
     /// The name of the player who sent the TagLink
     /// </summary>
     public string Source { get; } = sourcePlayer;
+
     /// <summary>
     /// The character to switch to for players receiving the TagLink. Can be null
     /// </summary>
@@ -38,7 +40,10 @@ public class TagLink(string sourcePlayer, int kong = 5, bool tag = true) : IEqua
     {
         try
         {
-            if (!data.TryGetValue("time", out var timeStampToken) || !data.TryGetValue("source", out var sourceToken))
+            if (
+                !data.TryGetValue("time", out var timeStampToken)
+                || !data.TryGetValue("source", out var sourceToken)
+            )
             {
                 tagLink = null;
                 return false;
@@ -67,12 +72,16 @@ public class TagLink(string sourcePlayer, int kong = 5, bool tag = true) : IEqua
     public bool Equals(TagLink other)
     {
         return !ReferenceEquals(null, other)
-            && (ReferenceEquals(this, other)
-                || (Source == other.Source
+            && (
+                ReferenceEquals(this, other)
+                || (
+                    Source == other.Source
                     && Time.Date.Equals(other.Time.Date)
                     && Time.Hour == other.Time.Hour
                     && Time.Minute == other.Time.Minute
-                    && Time.Second == other.Time.Second));
+                    && Time.Second == other.Time.Second
+                )
+            );
     }
 
     /// <inheritdoc/>
@@ -121,13 +130,17 @@ public class TagLinkService
     /// received <see cref="TagLink"/>
     /// </summary>
     public delegate void TagLinkReceivedHandler(TagLink tagLink);
+
     /// <summary>
     /// Delegate event that supplies the created <see cref="TagLink"/> whenever one is received from the server
     /// as a bounce packet.
     /// </summary>
     public event TagLinkReceivedHandler OnTagLinkReceived;
 
-    internal TagLinkService(IArchipelagoSocketHelper socket, IConnectionInfoProvider connectionInfoProvider)
+    internal TagLinkService(
+        IArchipelagoSocketHelper socket,
+        IConnectionInfoProvider connectionInfoProvider
+    )
     {
         this.socket = socket;
         this.connectionInfoProvider = connectionInfoProvider;
@@ -169,12 +182,13 @@ public class TagLinkService
         var bouncePacket = new BouncePacket
         {
             Tags = ["TagLink"],
-            Data = new Dictionary<string, JToken> {
-                    {"time", tagLink.Time.ToUnixTimeStamp()},
-                    {"source", tagLink.Source},
-                    {"kong", tagLink.Kong},
-                    {"tag", tagLink.Tag},
-                }
+            Data = new Dictionary<string, JToken>
+            {
+                { "time", tagLink.Time.ToUnixTimeStamp() },
+                { "source", tagLink.Source },
+                { "kong", tagLink.Kong },
+                { "tag", tagLink.Tag },
+            },
         };
 
         lastSendTagLink = tagLink;
@@ -190,8 +204,10 @@ public class TagLinkService
     {
         if (Array.IndexOf(connectionInfoProvider.Tags, "TagLink") == -1)
         {
-            connectionInfoProvider.UpdateConnectionOptions(
-                [.. connectionInfoProvider.Tags, .. new[] { "TagLink" }]);
+            connectionInfoProvider.UpdateConnectionOptions([
+                .. connectionInfoProvider.Tags,
+                .. new[] { "TagLink" },
+            ]);
         }
     }
 
@@ -207,7 +223,8 @@ public class TagLinkService
         }
 
         connectionInfoProvider.UpdateConnectionOptions(
-            connectionInfoProvider.Tags.Where(static t => t != "TagLink").ToArray());
+            connectionInfoProvider.Tags.Where(static t => t != "TagLink").ToArray()
+        );
     }
 }
 

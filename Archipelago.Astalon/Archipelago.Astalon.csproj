@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>Archipelago.Astalon</AssemblyName>
@@ -24,31 +23,56 @@
   <Target Name="CopyMod" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <OutputFiles Include="$(TargetPath)" />
-      <OutputFiles Include="$(TargetDir)/$(TargetName).pdb" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+      <OutputFiles
+        Include="$(TargetDir)/$(TargetName).pdb"
+        Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "
+      />
       <OutputFiles Include="$(TargetDir)/Archipelago.MultiClient.Net.dll" />
       <OutputFiles Include="$(TargetDir)/Newtonsoft.Json.dll" />
     </ItemGroup>
     <RemoveDir Directories="$(ExportDir)/" />
     <MakeDir Directories="$(ExportDir)/" />
     <MakeDir Directories="$(ExportDir)/zip/BepInEx/plugins/$(TargetName)/" />
-    <MakeDir Condition="!Exists('$(AstalonRefs)/plugins/$(TargetName)/')" Directories="$(AstalonRefs)/plugins/$(TargetName)/" />
-    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(AstalonRefs)/plugins/$(TargetName)/"></Copy>
+    <MakeDir
+      Condition="!Exists('$(AstalonRefs)/plugins/$(TargetName)/')"
+      Directories="$(AstalonRefs)/plugins/$(TargetName)/"
+    />
+    <Copy
+      SourceFiles="@(OutputFiles)"
+      DestinationFolder="$(AstalonRefs)/plugins/$(TargetName)/"
+    ></Copy>
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ExportDir)/" />
     <Copy SourceFiles="$(SolutionDir)/README.md" DestinationFolder="$(ExportDir)/zip/" />
-    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(ExportDir)/zip/BepInEx/plugins/$(TargetName)/" />
-    <ZipDirectory SourceDirectory="$(ExportDir)/zip/" DestinationFile="$(ExportDir)/$(TargetName)-v$(Version).zip" />
+    <Copy
+      SourceFiles="@(OutputFiles)"
+      DestinationFolder="$(ExportDir)/zip/BepInEx/plugins/$(TargetName)/"
+    />
+    <ZipDirectory
+      SourceDirectory="$(ExportDir)/zip/"
+      DestinationFile="$(ExportDir)/$(TargetName)-v$(Version).zip"
+    />
     <RemoveDir Directories="$(ExportDir)/zip/" />
     <GetFileHash Files="$(ExportDir)/$(TargetName)-v$(Version).zip" Algorithm="SHA256">
       <Output TaskParameter="Items" ItemName="FilesWithHashes" />
     </GetFileHash>
-    <WriteLinesToFile File="$(ExportDir)/SHA.txt" Lines="@(FilesWithHashes->'%(FileHash)')" Overwrite="true" Encoding="UTF-8" />
+    <WriteLinesToFile
+      File="$(ExportDir)/SHA.txt"
+      Lines="@(FilesWithHashes->'%(FileHash)')"
+      Overwrite="true"
+      Encoding="UTF-8"
+    />
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="Targets" />
     </GetAssemblyIdentity>
     <ItemGroup>
       <VersionNumber Include="@(Targets->'%(Version)')" />
     </ItemGroup>
-    <WriteLinesToFile File="$(ExportDir)/VERSION.txt" Lines="@(VersionNumber)" Overwrite="true" Encoding="UTF-8" />
+    <WriteLinesToFile
+      File="$(ExportDir)/VERSION.txt"
+      Lines="@(VersionNumber)"
+      Overwrite="true"
+      Encoding="UTF-8"
+    />
   </Target>
 
   <ItemGroup>

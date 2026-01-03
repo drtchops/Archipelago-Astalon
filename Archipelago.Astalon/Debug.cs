@@ -35,21 +35,24 @@ public static class Debug
     private static string _roomWarp = "";
     private static string _orbs = "";
 
-    private static readonly Group[] ButtonGroups = [
+    private static readonly Group[] ButtonGroups =
+    [
         new(
             left: (Screen.width / 2) - ButtonWidth - (ButtonPadding / 2),
             top: -ButtonPadding,
-            buttons: [
+            buttons:
+            [
+                new(label: static () => "Die", callback: static () => Game.TriggerDeath = true),
                 new(
-                    label: static () => "Die",
-                    callback: static () => Game.TriggerDeath = true
-                ),
-                new(
-                    label: static () => Archipelago.ArchipelagoClient.DeathLinkEnabled() ? "Disable Death Link" : "Enable Death Link",
+                    label: static () =>
+                        Archipelago.ArchipelagoClient.DeathLinkEnabled()
+                            ? "Disable Death Link"
+                            : "Enable Death Link",
                     callback: Plugin.ArchipelagoClient.ToggleDeathLink
                 ),
                 new(
-                    label: static () => Settings.ShowConnection ? "Hide Connection" : "Show Connection",
+                    label: static () =>
+                        Settings.ShowConnection ? "Hide Connection" : "Show Connection",
                     callback: Plugin.ToggleConnection
                 ),
                 new(
@@ -57,7 +60,8 @@ public static class Debug
                     callback: Plugin.ToggleConsole
                 ),
                 new(
-                    label: static () => Settings.RunInBackground ? "Pause In Background" : "Run In Background",
+                    label: static () =>
+                        Settings.RunInBackground ? "Pause In Background" : "Run In Background",
                     callback: Plugin.ToggleRunInBackground
                 ),
             ]
@@ -65,25 +69,31 @@ public static class Debug
         new(
             left: (Screen.width / 2) + (ButtonPadding / 2),
             top: -ButtonPadding,
-            buttons: [
+            buttons:
+            [
                 new(
-                    label: static () => Settings.Invincibility ? "Disable Invincibility" : "Enable Invincibility",
+                    label: static () =>
+                        Settings.Invincibility ? "Disable Invincibility" : "Enable Invincibility",
                     callback: static () => Settings.Invincibility = !Settings.Invincibility
                 ),
                 new(
-                    label: static () => Settings.MaxDamage ? "Disable Max Damage" : "Enable Max Damage",
+                    label: static () =>
+                        Settings.MaxDamage ? "Disable Max Damage" : "Enable Max Damage",
                     callback: static () => Settings.MaxDamage = !Settings.MaxDamage
                 ),
                 new(
-                    label: static () => Settings.FreeKeys ? "Disable Free Keys" : "Enable Free Keys",
+                    label: static () =>
+                        Settings.FreeKeys ? "Disable Free Keys" : "Enable Free Keys",
                     callback: static () => Settings.FreeKeys = !Settings.FreeKeys
                 ),
                 new(
-                    label: static () => Settings.FreePurchases ? "Disable Free Purchases" : "Enable Free Purchases",
+                    label: static () =>
+                        Settings.FreePurchases ? "Disable Free Purchases" : "Enable Free Purchases",
                     callback: static () => Settings.FreePurchases = !Settings.FreePurchases
                 ),
                 new(
-                    label: static () => Settings.InfiniteJumps ? "Disable Infinite Jumps" : "Enable Infinite Jumps",
+                    label: static () =>
+                        Settings.InfiniteJumps ? "Disable Infinite Jumps" : "Enable Infinite Jumps",
                     callback: Game.ToggleInfiniteJumps
                 ),
                 new(
@@ -96,7 +106,8 @@ public static class Debug
         new(
             left: ButtonPadding,
             top: -ButtonPadding,
-            buttons: [
+            buttons:
+            [
                 new(
                     label: static () => "Dump Room Data",
                     callback: static () => Game.DumpRoom = true
@@ -210,8 +221,14 @@ public static class Debug
 
     private static void CampfireWarps()
     {
-        GUI.BeginGroup(new(ButtonPadding * 2, 124, WarpButtons.GetLength(1) * (ButtonWidth + ButtonPadding),
-            WarpButtons.GetLength(0) * (ButtonHeight + ButtonPadding)));
+        GUI.BeginGroup(
+            new(
+                ButtonPadding * 2,
+                124,
+                WarpButtons.GetLength(1) * (ButtonWidth + ButtonPadding),
+                WarpButtons.GetLength(0) * (ButtonHeight + ButtonPadding)
+            )
+        );
 
         var y = 0;
 
@@ -223,7 +240,11 @@ public static class Debug
             {
                 var label = WarpButtons[i, j];
 
-                if (label != null && Game.CanWarp(label) && GUI.Button(new(x, y, ButtonWidth, ButtonHeight), label))
+                if (
+                    label != null
+                    && Game.CanWarp(label)
+                    && GUI.Button(new(x, y, ButtonWidth, ButtonHeight), label)
+                )
                 {
                     Game.WarpDestination = label;
                 }

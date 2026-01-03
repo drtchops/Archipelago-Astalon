@@ -28,23 +28,56 @@ public class Plugin : BasePlugin
 
     public override void Load()
     {
-        var configEnabled = Config.Bind("Archipelago", "enabled", true, "Enable or disable the mod as a whole");
+        var configEnabled = Config.Bind(
+            "Archipelago",
+            "enabled",
+            true,
+            "Enable or disable the mod as a whole"
+        );
 
-        _configUri = Config.Bind("Archipelago", "uri", "archipelago.gg:38281",
-            "The address and port of the archipelago server to connect to");
-        _configSlotName = Config.Bind("Archipelago", "slotName", "Player1",
-            "The slot name of the player you are connecting as");
-        _configPassword = Config.Bind("Archipelago", "password", "",
-            "The password for the player you are connecting as");
+        _configUri = Config.Bind(
+            "Archipelago",
+            "uri",
+            "archipelago.gg:38281",
+            "The address and port of the archipelago server to connect to"
+        );
+        _configSlotName = Config.Bind(
+            "Archipelago",
+            "slotName",
+            "Player1",
+            "The slot name of the player you are connecting as"
+        );
+        _configPassword = Config.Bind(
+            "Archipelago",
+            "password",
+            "",
+            "The password for the player you are connecting as"
+        );
 
-        _configShowConnection = Config.Bind("UI", "showConnection", true,
-            "Show or hide the AP connection info when connected");
-        _configShowConsole = Config.Bind("UI", "showConsole", true,
-            "Show or hide the AP message console at the top of the screen");
-        _configRunInBackground = Config.Bind("UI", "runInBackground", true,
-            "Control if the game should continue running when not in focus");
-        _configSkipIntroScenes = Config.Bind("UI", "skipIntroScenes", true,
-            "Whether to automatically skip the intro screens when opening the game");
+        _configShowConnection = Config.Bind(
+            "UI",
+            "showConnection",
+            true,
+            "Show or hide the AP connection info when connected"
+        );
+        _configShowConsole = Config.Bind(
+            "UI",
+            "showConsole",
+            true,
+            "Show or hide the AP message console at the top of the screen"
+        );
+        _configRunInBackground = Config.Bind(
+            "UI",
+            "runInBackground",
+            true,
+            "Control if the game should continue running when not in focus"
+        );
+        _configSkipIntroScenes = Config.Bind(
+            "UI",
+            "skipIntroScenes",
+            true,
+            "Whether to automatically skip the intro screens when opening the game"
+        );
 
         if (!configEnabled.Value)
         {
@@ -71,7 +104,9 @@ public class Plugin : BasePlugin
 
         Il2CppBase.Initialize(this);
 
-        Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} is loaded!");
+        Logger.LogInfo(
+            $"Plugin {MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} is loaded!"
+        );
 
         AttemptAutomaticConnection();
     }
@@ -148,7 +183,8 @@ public class Plugin : BasePlugin
 //  adapted from https://github.com/gmh5225/IL2CPP-GUI-BepInEx-IL2CPPBase
 public class Il2CppBase : MonoBehaviour
 {
-    public const string ModDisplayInfo = $"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION}";
+    public const string ModDisplayInfo =
+        $"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION}";
     private const string ArchipelagoDisplayInfo = "Archipelago";
 
     public static bool ConnectionFocused { get; private set; }
@@ -200,9 +236,10 @@ public class Il2CppBase : MonoBehaviour
 
         var e = Event.current;
         var control = GUI.GetNameOfFocusedControl();
-        var pressedEnter = e.type == EventType.KeyUp &&
-                            control is "uri" or "slotName" or "password" &&
-                            e.keyCode is KeyCode.KeypadEnter or KeyCode.Return;
+        var pressedEnter =
+            e.type == EventType.KeyUp
+            && control is "uri" or "slotName" or "password"
+            && e.keyCode is KeyCode.KeypadEnter or KeyCode.Return;
 
         ConnectionFocused = control is "uri" or "slotName" or "password";
 

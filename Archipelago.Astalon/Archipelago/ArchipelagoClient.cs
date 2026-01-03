@@ -42,7 +42,10 @@ public class ArchipelagoClient
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(Plugin.State.Uri) || string.IsNullOrWhiteSpace(Plugin.State.SlotName))
+        if (
+            string.IsNullOrWhiteSpace(Plugin.State.Uri)
+            || string.IsNullOrWhiteSpace(Plugin.State.SlotName)
+        )
         {
             return;
         }
@@ -84,7 +87,8 @@ public class ArchipelagoClient
                 ItemsHandlingFlags.AllItems,
                 new(MinArchipelagoVersion),
                 password: Plugin.State.Password,
-                requestSlotData: true);
+                requestSlotData: true
+            );
         }
         catch (Exception e)
         {
@@ -94,13 +98,17 @@ public class ArchipelagoClient
         if (loginResult is LoginFailure loginFailure)
         {
             _attemptingConnection = false;
-            Plugin.Logger.LogError("AP connection failed: " + string.Join("\n", loginFailure.Errors));
+            Plugin.Logger.LogError(
+                "AP connection failed: " + string.Join("\n", loginFailure.Errors)
+            );
             _session = null;
             return;
         }
 
         var login = loginResult as LoginSuccessful;
-        Plugin.Logger.LogInfo($"Successfully connected to {Plugin.State.Uri} as {Plugin.State.SlotName}");
+        Plugin.Logger.LogInfo(
+            $"Successfully connected to {Plugin.State.Uri} as {Plugin.State.SlotName}"
+        );
         OnConnect(login);
     }
 
@@ -112,8 +120,16 @@ public class ArchipelagoClient
         }
 
         _ignoreLocations = false;
-        _deathLinkHandler = new(_session.CreateDeathLinkService(), Plugin.State.SlotName, Plugin.State.SlotData.DeathLink);
-        _tagLinkHandler = new(_session.CreateTagLinkService(), _clientId, Plugin.State.SlotData.TagLink);
+        _deathLinkHandler = new(
+            _session.CreateDeathLinkService(),
+            Plugin.State.SlotName,
+            Plugin.State.SlotData.DeathLink
+        );
+        _tagLinkHandler = new(
+            _session.CreateTagLinkService(),
+            _clientId,
+            Plugin.State.SlotData.TagLink
+        );
         _attemptingConnection = false;
         _session.DataStorage[Scope.Slot, CampfiresDSKey].Initialize(Array.Empty<int>());
     }
@@ -126,7 +142,11 @@ public class ArchipelagoClient
         }
 
         _attemptingConnection = false;
-        Task.Run(() => { _ = _session.Socket.DisconnectAsync(); }).Wait();
+        Task.Run(() =>
+            {
+                _ = _session.Socket.DisconnectAsync();
+            })
+            .Wait();
         _deathLinkHandler = null;
         _tagLinkHandler = null;
         _session = null;
@@ -159,7 +179,9 @@ public class ArchipelagoClient
     {
         if (!Connected)
         {
-            Plugin.Logger.LogWarning($"Trying to send location {location} when there's no connection");
+            Plugin.Logger.LogWarning(
+                $"Trying to send location {location} when there's no connection"
+            );
             return;
         }
 
@@ -191,35 +213,40 @@ public class ArchipelagoClient
         }
 
         List<long> locations = [.. _session.Locations.AllLocations];
-        var scouts = _session.Locations.ScoutLocationsAsync([.. locations]).ContinueWith(task =>
-        {
-            Dictionary<long, ApItemInfo> itemInfos = [];
-            foreach (var entry in task.Result)
+        var scouts = _session
+            .Locations.ScoutLocationsAsync([.. locations])
+            .ContinueWith(task =>
             {
-                var itemName = entry.Value.ItemDisplayName;
-                var isAstalon = entry.Value.ItemGame == Game.Name;
-                if (isAstalon && Data.ItemNames.TryGetValue((ApItemId)entry.Value.ItemId, out var name))
+                Dictionary<long, ApItemInfo> itemInfos = [];
+                foreach (var entry in task.Result)
                 {
-                    itemName = name;
+                    var itemName = entry.Value.ItemDisplayName;
+                    var isAstalon = entry.Value.ItemGame == Game.Name;
+                    if (
+                        isAstalon
+                        && Data.ItemNames.TryGetValue((ApItemId)entry.Value.ItemId, out var name)
+                    )
+                    {
+                        itemName = name;
+                    }
+
+                    var player = entry.Value.Player;
+                    var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
+
+                    itemInfos[entry.Key] = new ApItemInfo
+                    {
+                        Id = entry.Value.ItemId,
+                        Name = itemName,
+                        Flags = entry.Value.Flags,
+                        Player = player,
+                        PlayerName = playerName,
+                        IsLocal = player == GetCurrentPlayer(),
+                        LocationId = entry.Key,
+                        IsAstalon = isAstalon,
+                    };
                 }
-
-                var player = entry.Value.Player;
-                var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
-
-                itemInfos[entry.Key] = new ApItemInfo
-                {
-                    Id = entry.Value.ItemId,
-                    Name = itemName,
-                    Flags = entry.Value.Flags,
-                    Player = player,
-                    PlayerName = playerName,
-                    IsLocal = player == GetCurrentPlayer(),
-                    LocationId = entry.Key,
-                    IsAstalon = isAstalon,
-                };
-            }
-            return itemInfos;
-        });
+                return itemInfos;
+            });
         scouts.Wait();
         return scouts.Result;
     }
@@ -249,19 +276,21 @@ public class ArchipelagoClient
         var player = item.Player;
         var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
 
-        Game.IncomingItems.Enqueue(new()
-        {
-            Id = item.ItemId,
-            Name = itemName,
-            Flags = item.Flags,
-            Player = player,
-            PlayerName = playerName,
-            IsLocal = player == GetCurrentPlayer(),
-            LocationId = item.LocationId,
-            Receiving = true,
-            Index = index,
-            IsAstalon = true,
-        });
+        Game.IncomingItems.Enqueue(
+            new()
+            {
+                Id = item.ItemId,
+                Name = itemName,
+                Flags = item.Flags,
+                Player = player,
+                PlayerName = playerName,
+                IsLocal = player == GetCurrentPlayer(),
+                LocationId = item.LocationId,
+                Receiving = true,
+                Index = index,
+                IsAstalon = true,
+            }
+        );
     }
 
     public void SessionCheckedLocationsUpdated(ReadOnlyCollection<long> newCheckedLocations)
@@ -276,7 +305,9 @@ public class ArchipelagoClient
         {
             if (Plugin.State.LocationInfos.TryGetValue(id, out var itemInfo))
             {
-                Plugin.Logger.LogInfo($"Checked location: {id} - {itemInfo.Name} for {itemInfo.PlayerName}");
+                Plugin.Logger.LogInfo(
+                    $"Checked location: {id} - {itemInfo.Name} for {itemInfo.PlayerName}"
+                );
                 if (!itemInfo.IsLocal)
                 {
                     Game.IncomingMessages.Enqueue(itemInfo);
@@ -287,7 +318,6 @@ public class ArchipelagoClient
                 Plugin.Logger.LogWarning($"Scouting failed for location {id}");
                 continue;
             }
-
         }
     }
 
@@ -346,7 +376,9 @@ public class ArchipelagoClient
             return;
         }
 
-        _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_room"] = room;
+        _session.DataStorage[
+            $"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_room"
+        ] = room;
 
         PlayerCoords coords = new()
         {
@@ -356,11 +388,15 @@ public class ArchipelagoClient
             Y = y,
             Character = character,
         };
-        _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_coords"] = JObject.FromObject(coords);
+        _session.DataStorage[
+            $"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_coords"
+        ] = JObject.FromObject(coords);
 
         if (area is not 0 and not 22)
         {
-            _session.DataStorage[$"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_area"] = area;
+            _session.DataStorage[
+                $"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_area"
+            ] = area;
         }
     }
 
@@ -374,7 +410,11 @@ public class ArchipelagoClient
         _session.DataStorage[Scope.Slot, CampfiresDSKey] = ids;
     }
 
-    private static void OnUpdateVisitedCampfires(JToken originalValue, JToken newValue, Dictionary<string, JToken> additionalArguments)
+    private static void OnUpdateVisitedCampfires(
+        JToken originalValue,
+        JToken newValue,
+        Dictionary<string, JToken> additionalArguments
+    )
     {
         var ids = newValue.ToObject<List<int>>();
         Game.AddVisitedCampfires(ids);

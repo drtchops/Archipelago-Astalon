@@ -18,7 +18,11 @@ public class DeathLinkHandler
     /// </param>
     /// <param name="name">The slot name for the current player</param>
     /// <param name="enableDeathLink">Whether we should enable death link or not on startup</param>
-    public DeathLinkHandler(DeathLinkService deathLinkService, string name, bool enableDeathLink = false)
+    public DeathLinkHandler(
+        DeathLinkService deathLinkService,
+        string name,
+        bool enableDeathLink = false
+    )
     {
         _service = deathLinkService;
         _service.OnDeathLinkReceived += DeathLinkReceived;
@@ -54,7 +58,9 @@ public class DeathLinkHandler
     /// <param name="deathLink">Received Death Link object to handle</param>
     private void DeathLinkReceived(DeathLink deathLink)
     {
-        var cause = string.IsNullOrWhiteSpace(deathLink.Cause) ? $"{deathLink.Source} died" : deathLink.Cause;
+        var cause = string.IsNullOrWhiteSpace(deathLink.Cause)
+            ? $"{deathLink.Source} died"
+            : deathLink.Cause;
         Game.QueueDeath(cause);
         Plugin.Logger.LogDebug(cause);
     }

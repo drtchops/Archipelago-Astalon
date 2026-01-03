@@ -90,8 +90,10 @@ public static class ArchipelagoConsole
 
         var e = Event.current;
         var control = GUI.GetNameOfFocusedControl();
-        var pressedEnter = e.type == EventType.KeyDown && control == "message" &&
-                           e.keyCode is KeyCode.KeypadEnter or KeyCode.Return;
+        var pressedEnter =
+            e.type == EventType.KeyDown
+            && control == "message"
+            && e.keyCode is KeyCode.KeypadEnter or KeyCode.Return;
 
         GUI.SetNextControlName("message");
         _commandText = GUI.TextField(_commandTextRect, _commandText);
@@ -146,7 +148,9 @@ public static class ArchipelagoConsole
         _text = new(0, 0, width, scrollDepth);
 
         TextStyle.alignment = TextAnchor.LowerLeft;
-        TextStyle.fontSize = Hidden ? (int)(Screen.height * 0.0165f) : (int)(Screen.height * 0.0185f);
+        TextStyle.fontSize = Hidden
+            ? (int)(Screen.height * 0.0165f)
+            : (int)(Screen.height * 0.0185f);
         TextStyle.normal.textColor = Color.white;
         TextStyle.wordWrap = !Hidden;
 
@@ -160,8 +164,12 @@ public static class ArchipelagoConsole
         var buttonWidth = (int)(Screen.width * 0.12f);
         var buttonHeight = (int)(Screen.height * 0.03f);
 
-        _hideShowButton = new((Screen.width / 2f) + (width / 2f) + (buttonWidth / 3f), Screen.height * 0.004f, buttonWidth,
-            buttonHeight);
+        _hideShowButton = new(
+            (Screen.width / 2f) + (width / 2f) + (buttonWidth / 3f),
+            Screen.height * 0.004f,
+            buttonWidth,
+            buttonHeight
+        );
 
         // draw server command text field and button
         width = (int)(Screen.width * 0.4f);

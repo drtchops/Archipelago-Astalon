@@ -63,6 +63,7 @@ public static class Game
     private static tk2dBaseSprite _baseSprite;
     private static tk2dSpriteCollectionData _spriteCollectionData;
     private static tk2dSpriteAnimationClip _spriteAnimationClip;
+
     // private static bool _injectedSprite;
     // private static int _injectedSpriteId;
     private static bool _injectedAnimation;
@@ -76,7 +77,8 @@ public static class Game
             apTexture,
             tk2dSpriteCollectionSize.ForTk2dCamera(),
             new(0, 0, apTexture.width, apTexture.height),
-            new(0.5f, 0.5f));
+            new(0.5f, 0.5f)
+        );
         _baseSprite = gameObject.GetComponent<tk2dSprite>();
         _baseSprite.collection.spriteDefinitions[0].name = "AP_ITEM";
 
@@ -85,7 +87,8 @@ public static class Game
             tk2dSpriteCollectionSize.ForTk2dCamera(),
             new(["AP_ITEM", "AP_ITEM_BRIGHT"]),
             new([new(0, 0, 16, 16), new(16, 0, 16, 16)]),
-            new([new(8, 8), new(8, 8)]));
+            new([new(8, 8), new(8, 8)])
+        );
 
         _spriteAnimationClip = new()
         {
@@ -93,8 +96,7 @@ public static class Game
             loopStart = 0,
             name = "AP_ITEM",
             wrapMode = tk2dSpriteAnimationClip.WrapMode.Loop,
-            frames = new(
-            [
+            frames = new([
                 new()
                 {
                     eventFloat = 0,
@@ -170,7 +172,11 @@ public static class Game
 
     public static void UpdateItem(Item item)
     {
-        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeKeyItems || item.itemProperties?.itemID == null)
+        if (
+            !Plugin.State.Valid
+            || !Plugin.State.SlotData.RandomizeKeyItems
+            || item.itemProperties?.itemID == null
+        )
         {
             return;
         }
@@ -190,42 +196,65 @@ public static class Game
 
         ApLocationId? location = null;
 
-        if (Plugin.State.SlotData.RandomizeHealthPickups &&
-            Data.HealthMap.TryGetValue(actorId, out var healthLocation))
+        if (
+            Plugin.State.SlotData.RandomizeHealthPickups
+            && Data.HealthMap.TryGetValue(actorId, out var healthLocation)
+        )
         {
             location = healthLocation;
         }
 
-        if (Plugin.State.SlotData.RandomizeAttackPickups &&
-            Data.AttackMap.TryGetValue(actorId, out var attackLocation))
+        if (
+            Plugin.State.SlotData.RandomizeAttackPickups
+            && Data.AttackMap.TryGetValue(actorId, out var attackLocation)
+        )
         {
             location = attackLocation;
         }
 
-        if (Plugin.State.SlotData.RandomizeWhiteKeys &&
-            Data.WhiteKeyMap.TryGetValue(actorId, out var whiteLocation))
+        if (
+            Plugin.State.SlotData.RandomizeWhiteKeys
+            && Data.WhiteKeyMap.TryGetValue(actorId, out var whiteLocation)
+        )
         {
             location = whiteLocation;
         }
 
-        if (Plugin.State.SlotData.RandomizeBlueKeys &&
-            Data.BlueKeyMap.TryGetValue(actorId, out var blueLocation))
+        if (
+            Plugin.State.SlotData.RandomizeBlueKeys
+            && Data.BlueKeyMap.TryGetValue(actorId, out var blueLocation)
+        )
         {
             location = blueLocation;
         }
 
-        if (actorId == 0 &&
-            Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedLocation))
+        if (
+            actorId == 0
+            && Data.SpawnedKeyMap.TryGetValue(
+                Player.PlayerDataLocal.currentRoomID,
+                out var spawnedLocation
+            )
+        )
         {
-            if ((spawnedLocation == ApLocationId.MechWhiteKeyArena && Plugin.State.SlotData.RandomizeWhiteKeys) ||
-                (spawnedLocation != ApLocationId.MechWhiteKeyArena && Plugin.State.SlotData.RandomizeBlueKeys))
+            if (
+                (
+                    spawnedLocation == ApLocationId.MechWhiteKeyArena
+                    && Plugin.State.SlotData.RandomizeWhiteKeys
+                )
+                || (
+                    spawnedLocation != ApLocationId.MechWhiteKeyArena
+                    && Plugin.State.SlotData.RandomizeBlueKeys
+                )
+            )
             {
                 location = spawnedLocation;
             }
         }
 
-        if (Plugin.State.SlotData.RandomizeRedKeys &&
-            Data.RedKeyMap.TryGetValue(actorId, out var redLocation))
+        if (
+            Plugin.State.SlotData.RandomizeRedKeys
+            && Data.RedKeyMap.TryGetValue(actorId, out var redLocation)
+        )
         {
             location = redLocation;
         }
@@ -317,7 +346,11 @@ public static class Game
 
         if (!Plugin.ArchipelagoClient.Connected)
         {
-            Plugin.UpdateConnectionInfo(Plugin.State.Uri, Plugin.State.SlotName, Plugin.State.Password);
+            Plugin.UpdateConnectionInfo(
+                Plugin.State.Uri,
+                Plugin.State.SlotName,
+                Plugin.State.Password
+            );
             Plugin.ArchipelagoClient.Connect();
         }
 
@@ -367,36 +400,54 @@ public static class Game
                 if (!slotData.StartingCharacters.Contains("Algus"))
                 {
                     Player.PlayerDataLocal.LockCharacter(CharacterProperties.Character.Algus);
-                    Player.PlayerDataLocal.MakeDealNonAvailable(DealProperties.DealID.Deal_SubMenu_Algus);
+                    Player.PlayerDataLocal.MakeDealNonAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Algus
+                    );
                 }
 
                 if (!slotData.StartingCharacters.Contains("Arias"))
                 {
                     Player.PlayerDataLocal.LockCharacter(CharacterProperties.Character.Arias);
-                    Player.PlayerDataLocal.MakeDealNonAvailable(DealProperties.DealID.Deal_SubMenu_Arias);
+                    Player.PlayerDataLocal.MakeDealNonAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Arias
+                    );
                 }
 
                 if (!slotData.StartingCharacters.Contains("Kyuli"))
                 {
                     Player.PlayerDataLocal.LockCharacter(CharacterProperties.Character.Kyuli);
-                    Player.PlayerDataLocal.MakeDealNonAvailable(DealProperties.DealID.Deal_SubMenu_Kyuli);
+                    Player.PlayerDataLocal.MakeDealNonAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Kyuli
+                    );
                 }
 
                 if (slotData.StartingCharacters.Contains("Zeek"))
                 {
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Zeek);
-                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Zeek, false);
+                    Player.PlayerDataLocal.MakeDealAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Zeek,
+                        false
+                    );
                 }
 
                 if (slotData.StartingCharacters.Contains("Bram"))
                 {
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
-                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Bram, false);
+                    Player.PlayerDataLocal.MakeDealAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Bram,
+                        false
+                    );
                 }
 
-                if (!slotData.StartingCharacters.Contains(Data.CharacterToName[Player.PlayerDataLocal.currentCharacter]))
+                if (
+                    !slotData.StartingCharacters.Contains(
+                        Data.CharacterToName[Player.PlayerDataLocal.currentCharacter]
+                    )
+                )
                 {
-                    Player.Instance.CycleCharacterTo(Data.NameToCharacter[slotData.StartingCharacters[0]]);
+                    Player.Instance.CycleCharacterTo(
+                        Data.NameToCharacter[slotData.StartingCharacters[0]]
+                    );
                 }
             }
 
@@ -511,8 +562,12 @@ public static class Game
             UpdateObjectData(9114, 985, "talkZeek", "True");
         }
 
-        if (Plugin.State.SlotData.CostMultiplier != 100 && GameManager.Instance.itemManager
-                .GetDealProperties(DealProperties.DealID.Deal_Gift).DealPrice == 666)
+        if (
+            Plugin.State.SlotData.CostMultiplier != 100
+            && GameManager
+                .Instance.itemManager.GetDealProperties(DealProperties.DealID.Deal_Gift)
+                .DealPrice == 666
+        )
         {
             var mul = Plugin.State.SlotData.CostMultiplier / 100f;
             foreach (var deal in GameManager.Instance.itemManager.gameDeals)
@@ -606,36 +661,30 @@ public static class Game
 
     public static bool CanGetItem()
     {
-        return
-            Plugin.State.Valid &&
-            _saveInitialized &&
-            (GameManager.Instance?.player?.playerData) != null &&
-            Player.Instance != null &&
-            Player.Instance.playerDataLoaded
-        ;
+        return Plugin.State.Valid
+            && _saveInitialized
+            && (GameManager.Instance?.player?.playerData) != null
+            && Player.Instance != null
+            && Player.Instance.playerDataLoaded;
     }
 
     public static bool CanDisplayMessage()
     {
-        return
-            CanGetItem() &&
-            GameplayUIManager.Instance != null &&
-            GameplayUIManager.Instance.itemBox != null &&
-            !GameplayUIManager.Instance.itemBox.active
-        ;
+        return CanGetItem()
+            && GameplayUIManager.Instance != null
+            && GameplayUIManager.Instance.itemBox != null
+            && !GameplayUIManager.Instance.itemBox.active;
     }
 
     public static bool CanBeKilled()
     {
-        return
-            CanGetItem() &&
-            Player.PlayerDataLocal.currentHealth > 0 &&
-            !Player.Instance.isDead &&
-            !Player.Instance.isInElevator &&
-            !GameplayUIManager.Instance.ESOpen &&
-            !GameplayUIManager.Instance.inGameMenuOpen &&
-            Player.Instance.ControllerEnabled()
-        ;
+        return CanGetItem()
+            && Player.PlayerDataLocal.currentHealth > 0
+            && !Player.Instance.isDead
+            && !Player.Instance.isInElevator
+            && !GameplayUIManager.Instance.ESOpen
+            && !GameplayUIManager.Instance.inGameMenuOpen
+            && Player.Instance.ControllerEnabled();
     }
 
     public static void QueueDeath(string cause)
@@ -655,7 +704,9 @@ public static class Game
 
     public static string GetDefaultIcon(ItemFlags flags = ItemFlags.None)
     {
-        return flags.HasFlag(ItemFlags.Advancement) || flags.HasFlag(ItemFlags.Trap) ? "BlueOrb_1" : "Orb_Idle_1";
+        return flags.HasFlag(ItemFlags.Advancement) || flags.HasFlag(ItemFlags.Trap)
+            ? "BlueOrb_1"
+            : "Orb_Idle_1";
     }
 
     public static string GetIcon(ApItemInfo itemInfo)
@@ -679,18 +730,15 @@ public static class Game
 
         var itemName = itemId.ToString();
 
-        return itemName.StartsWith("WhiteDoor")
-            ? "WhiteKey_1"
-            : itemName.StartsWith("BlueDoor")
-            ? "BlueKey_1"
-            : itemName.StartsWith("RedDoor")
-            ? "RedKey_1"
-            : itemName.StartsWith("Orbs")
-            ? "SoulOrb_Big"
-            : itemName.StartsWith("Elevator")
-            ? "ElevatorMenu_Icon_OldMan"
-            : itemName.StartsWith("Switch") || itemName.StartsWith("Crystal") || itemName.StartsWith("Face")
-            ? "Frog"
+        return itemName.StartsWith("WhiteDoor") ? "WhiteKey_1"
+            : itemName.StartsWith("BlueDoor") ? "BlueKey_1"
+            : itemName.StartsWith("RedDoor") ? "RedKey_1"
+            : itemName.StartsWith("Orbs") ? "SoulOrb_Big"
+            : itemName.StartsWith("Elevator") ? "ElevatorMenu_Icon_OldMan"
+            : itemName.StartsWith("Switch")
+            || itemName.StartsWith("Crystal")
+            || itemName.StartsWith("Face")
+                ? "Frog"
             : GetDefaultIcon(itemInfo.Flags);
     }
 
@@ -735,7 +783,9 @@ public static class Game
                 playerName = "Server";
             }
 
-            message = itemInfo.Receiving ? $"{message} from {playerName}" : $"{playerName}'s {message}";
+            message = itemInfo.Receiving
+                ? $"{message} from {playerName}"
+                : $"{playerName}'s {message}";
         }
 
         var icon = GetIcon(itemInfo);
@@ -765,8 +815,12 @@ public static class Game
         }
 
         var itemBox = FormatItemBox(itemInfo);
-        GameplayUIManager.Instance.DisplayItemBox(itemBox.Icon, itemBox.Message, itemBox.Duration,
-            itemBox.DisableController);
+        GameplayUIManager.Instance.DisplayItemBox(
+            itemBox.Icon,
+            itemBox.Message,
+            itemBox.Duration,
+            itemBox.DisableController
+        );
         AudioManager.Play(itemBox.Sound);
         return true;
     }
@@ -904,23 +958,38 @@ public static class Game
                     break;
                 case ApItemId.CharacterAlgus:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Algus);
-                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Algus, false);
+                    Player.PlayerDataLocal.MakeDealAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Algus,
+                        false
+                    );
                     break;
                 case ApItemId.CharacterArias:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Arias);
-                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Arias, false);
+                    Player.PlayerDataLocal.MakeDealAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Arias,
+                        false
+                    );
                     break;
                 case ApItemId.CharacterKyuli:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Kyuli);
-                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Kyuli, false);
+                    Player.PlayerDataLocal.MakeDealAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Kyuli,
+                        false
+                    );
                     break;
                 case ApItemId.CharacterZeek:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Zeek);
-                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Zeek, false);
+                    Player.PlayerDataLocal.MakeDealAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Zeek,
+                        false
+                    );
                     break;
                 case ApItemId.CharacterBram:
                     Player.PlayerDataLocal.UnlockCharacter(CharacterProperties.Character.Bram);
-                    Player.PlayerDataLocal.MakeDealAvailable(DealProperties.DealID.Deal_SubMenu_Bram, false);
+                    Player.PlayerDataLocal.MakeDealAvailable(
+                        DealProperties.DealID.Deal_SubMenu_Bram,
+                        false
+                    );
                     break;
                 case ApItemId.KeyWhite:
                     Player.PlayerDataLocal.AddKey(Key.KeyType.White);
@@ -958,7 +1027,12 @@ public static class Game
             return;
         }
 
-        if ((roomId != ((int)ElevatorId.Apex) || Plugin.State.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.TryGetValue(roomId, out var location))
+        if (
+            (
+                roomId != ((int)ElevatorId.Apex)
+                || Plugin.State.SlotData.ApexElevator == ApexElevator.Included
+            ) && Data.ElevatorToLocation.TryGetValue(roomId, out var location)
+        )
         {
             SendLocation(location);
             Plugin.State.CheckedElevators.Add(roomId);
@@ -979,7 +1053,14 @@ public static class Game
 
             foreach (var elevatorId in existingElevators)
             {
-                if (elevatorId != ((int)ElevatorId.Gt1) && (elevatorId != ((int)ElevatorId.Apex) || Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla) && !Plugin.State.ReceivedElevators.Contains(elevatorId))
+                if (
+                    elevatorId != ((int)ElevatorId.Gt1)
+                    && (
+                        elevatorId != ((int)ElevatorId.Apex)
+                        || Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla
+                    )
+                    && !Plugin.State.ReceivedElevators.Contains(elevatorId)
+                )
                 {
                     _ = elevators.Remove(elevatorId);
                 }
@@ -998,14 +1079,21 @@ public static class Game
                 elevators.Add((int)ElevatorId.Gt1);
             }
 
-            if (Plugin.State.SlotData.ApexElevator == ApexElevator.Vanilla && !existingElevators.Contains((int)ElevatorId.Apex))
+            if (
+                Plugin.State.SlotData.ApexElevator == ApexElevator.Vanilla
+                && !existingElevators.Contains((int)ElevatorId.Apex)
+            )
             {
                 elevators.Add((int)ElevatorId.Apex);
             }
 
             Player.PlayerDataLocal.elevatorsFound = elevators;
         }
-        else if (Player.PlayerDataLocal.elevatorsFound != null && Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla && !Player.PlayerDataLocal.discoveredRooms.Contains((int)ElevatorId.Apex))
+        else if (
+            Player.PlayerDataLocal.elevatorsFound != null
+            && Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla
+            && !Player.PlayerDataLocal.discoveredRooms.Contains((int)ElevatorId.Apex)
+        )
         {
             _ = Player.PlayerDataLocal.elevatorsFound.Remove((int)ElevatorId.Apex);
         }
@@ -1013,7 +1101,11 @@ public static class Game
 
     public static void CampfireVisited(int id)
     {
-        if (!Plugin.State.Valid || !Plugin.State.SlotData.CampfireWarp || Plugin.State.VisitedCampfires.Contains(id))
+        if (
+            !Plugin.State.Valid
+            || !Plugin.State.SlotData.CampfireWarp
+            || Plugin.State.VisitedCampfires.Contains(id)
+        )
         {
             return;
         }
@@ -1040,19 +1132,30 @@ public static class Game
 
     public static bool CharacterUnlocked(CharacterProperties.Character character)
     {
-        if (!Plugin.State.Valid || !_saveInitialized || ReceivingItem || !Plugin.State.SlotData.RandomizeCharacters)
+        if (
+            !Plugin.State.Valid
+            || !_saveInitialized
+            || ReceivingItem
+            || !Plugin.State.SlotData.RandomizeCharacters
+        )
         {
             return false;
         }
 
-        if (character == CharacterProperties.Character.Zeek && !Plugin.State.SlotData.StartingCharacters.Contains("Zeek"))
+        if (
+            character == CharacterProperties.Character.Zeek
+            && !Plugin.State.SlotData.StartingCharacters.Contains("Zeek")
+        )
         {
             SendLocation(ApLocationId.MechZeek);
             Plugin.State.CheckedZeek = true;
             return true;
         }
 
-        if (character == CharacterProperties.Character.Bram && !Plugin.State.SlotData.StartingCharacters.Contains("Bram"))
+        if (
+            character == CharacterProperties.Character.Bram
+            && !Plugin.State.SlotData.StartingCharacters.Contains("Bram")
+        )
         {
             SendLocation(ApLocationId.TrBram);
             Plugin.State.CheckedBram = true;
@@ -1123,47 +1226,70 @@ public static class Game
             return false;
         }
 
-        if (Plugin.State.SlotData.RandomizeHealthPickups &&
-            Data.HealthMap.TryGetValue(entityId, out var healthLocation))
+        if (
+            Plugin.State.SlotData.RandomizeHealthPickups
+            && Data.HealthMap.TryGetValue(entityId, out var healthLocation)
+        )
         {
             location = healthLocation;
             return true;
         }
 
-        if (Plugin.State.SlotData.RandomizeAttackPickups &&
-            Data.AttackMap.TryGetValue(entityId, out var attackLocation))
+        if (
+            Plugin.State.SlotData.RandomizeAttackPickups
+            && Data.AttackMap.TryGetValue(entityId, out var attackLocation)
+        )
         {
             location = attackLocation;
             return true;
         }
 
-        if (Plugin.State.SlotData.RandomizeWhiteKeys &&
-            Data.WhiteKeyMap.TryGetValue(entityId, out var whiteKeyLocation))
+        if (
+            Plugin.State.SlotData.RandomizeWhiteKeys
+            && Data.WhiteKeyMap.TryGetValue(entityId, out var whiteKeyLocation)
+        )
         {
             location = whiteKeyLocation;
             return true;
         }
 
-        if (Plugin.State.SlotData.RandomizeBlueKeys &&
-            Data.BlueKeyMap.TryGetValue(entityId, out var blueKeyLocation))
+        if (
+            Plugin.State.SlotData.RandomizeBlueKeys
+            && Data.BlueKeyMap.TryGetValue(entityId, out var blueKeyLocation)
+        )
         {
             location = blueKeyLocation;
             return true;
         }
 
-        if (entityId == 0 &&
-            Data.SpawnedKeyMap.TryGetValue(Player.PlayerDataLocal.currentRoomID, out var spawnedKeyLocation))
+        if (
+            entityId == 0
+            && Data.SpawnedKeyMap.TryGetValue(
+                Player.PlayerDataLocal.currentRoomID,
+                out var spawnedKeyLocation
+            )
+        )
         {
-            if ((spawnedKeyLocation == ApLocationId.MechWhiteKeyArena && Plugin.State.SlotData.RandomizeWhiteKeys) ||
-                (spawnedKeyLocation != ApLocationId.MechWhiteKeyArena && Plugin.State.SlotData.RandomizeBlueKeys))
+            if (
+                (
+                    spawnedKeyLocation == ApLocationId.MechWhiteKeyArena
+                    && Plugin.State.SlotData.RandomizeWhiteKeys
+                )
+                || (
+                    spawnedKeyLocation != ApLocationId.MechWhiteKeyArena
+                    && Plugin.State.SlotData.RandomizeBlueKeys
+                )
+            )
             {
                 location = spawnedKeyLocation;
                 return true;
             }
         }
 
-        if (Plugin.State.SlotData.RandomizeRedKeys &&
-            Data.RedKeyMap.TryGetValue(entityId, out var redKeyLocation))
+        if (
+            Plugin.State.SlotData.RandomizeRedKeys
+            && Data.RedKeyMap.TryGetValue(entityId, out var redKeyLocation)
+        )
         {
             location = redKeyLocation;
             return true;
@@ -1173,7 +1299,12 @@ public static class Game
         return false;
     }
 
-    public static bool TryUpdateDeal(DealProperties.DealID dealId, out string sprite, out string name, out string playerName)
+    public static bool TryUpdateDeal(
+        DealProperties.DealID dealId,
+        out string sprite,
+        out string name,
+        out string playerName
+    )
     {
         sprite = null;
         name = null;
@@ -1184,8 +1315,11 @@ public static class Game
             return false;
         }
 
-        if (Plugin.State.SlotData.RandomizeShop && Data.DealToLocation.TryGetValue(dealId, out var location) &&
-            Plugin.State.LocationInfos.TryGetValue((long)location, out var shopItem))
+        if (
+            Plugin.State.SlotData.RandomizeShop
+            && Data.DealToLocation.TryGetValue(dealId, out var location)
+            && Plugin.State.LocationInfos.TryGetValue((long)location, out var shopItem)
+        )
         {
             name = shopItem.Name;
             playerName = shopItem.IsLocal ? null : shopItem.PlayerName;
@@ -1211,14 +1345,25 @@ public static class Game
             return false;
         }
 
-        if (Player.PlayerDataLocal.currentRoomID == 4112 && itemId == ItemProperties.ItemID.GorgonEyeGreen &&
-            Plugin.State.IsEyeHunt() && (Player.PlayerDataLocal.collectedItems?.Contains(ItemProperties.ItemID.GorgonEyeGreen) ?? false))
+        if (
+            Player.PlayerDataLocal.currentRoomID == 4112
+            && itemId == ItemProperties.ItemID.GorgonEyeGreen
+            && Plugin.State.IsEyeHunt()
+            && (
+                Player.PlayerDataLocal.collectedItems?.Contains(
+                    ItemProperties.ItemID.GorgonEyeGreen
+                ) ?? false
+            )
+        )
         {
             result = Plugin.State.CollectedGoldEyes >= Plugin.State.SlotData.AdditionalEyesRequired;
             return true;
         }
 
-        if (Plugin.State.SlotData.RandomizeKeyItems && Player.PlayerDataLocal.currentRoomID == RoomId.Zeek)
+        if (
+            Plugin.State.SlotData.RandomizeKeyItems
+            && Player.PlayerDataLocal.currentRoomID == RoomId.Zeek
+        )
         {
             if (itemId == ItemProperties.ItemID.PrincesCrown)
             {
@@ -1236,7 +1381,10 @@ public static class Game
         return false;
     }
 
-    public static bool TryHasUnlockedCharacter(CharacterProperties.Character character, out bool result)
+    public static bool TryHasUnlockedCharacter(
+        CharacterProperties.Character character,
+        out bool result
+    )
     {
         result = false;
 
@@ -1245,7 +1393,10 @@ public static class Game
             return false;
         }
 
-        if (Player.PlayerDataLocal.currentRoomID == RoomId.Zeek && character == CharacterProperties.Character.Zeek)
+        if (
+            Player.PlayerDataLocal.currentRoomID == RoomId.Zeek
+            && character == CharacterProperties.Character.Zeek
+        )
         {
             if (!Plugin.State.SlotData.RandomizeCharacters)
             {
@@ -1264,7 +1415,11 @@ public static class Game
             return true;
         }
 
-        if (_activatingBramRoom && character == CharacterProperties.Character.Bram && Plugin.State.SlotData.RandomizeCharacters)
+        if (
+            _activatingBramRoom
+            && character == CharacterProperties.Character.Bram
+            && Plugin.State.SlotData.RandomizeCharacters
+        )
         {
             result = Plugin.State.CheckedBram;
             return true;
@@ -1277,12 +1432,21 @@ public static class Game
     {
         result = false;
 
-        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeElevator || _activatingElevator != roomId)
+        if (
+            !Plugin.State.Valid
+            || !Plugin.State.SlotData.RandomizeElevator
+            || _activatingElevator != roomId
+        )
         {
             return false;
         }
 
-        if ((roomId != ((int)ElevatorId.Apex) || Plugin.State.SlotData.ApexElevator == ApexElevator.Included) && Data.ElevatorToLocation.ContainsKey(roomId))
+        if (
+            (
+                roomId != ((int)ElevatorId.Apex)
+                || Plugin.State.SlotData.ApexElevator == ApexElevator.Included
+            ) && Data.ElevatorToLocation.ContainsKey(roomId)
+        )
         {
             result = Plugin.State.CheckedElevators.Contains(roomId);
             return true;
@@ -1322,11 +1486,14 @@ public static class Game
         }
 
         savePoint.algusSpriteAnimator.gameObject.SetActive(
-            Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Algus));
+            Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Algus)
+        );
         savePoint.ariasSpriteAnimator.gameObject.SetActive(
-            Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Arias));
+            Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Arias)
+        );
         savePoint.kyuliSpriteAnimator.gameObject.SetActive(
-            Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Kyuli));
+            Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Kyuli)
+        );
     }
 
     public static bool IsSwitchRandomized(int roomId, string linkId, out ApLocationId? location)
@@ -1338,8 +1505,10 @@ public static class Game
             return false;
         }
 
-        if (Plugin.State.SlotData.RandomizeSwitches &&
-            Data.LinkToLocation.TryGetValue((roomId, linkId), out var switchLocation))
+        if (
+            Plugin.State.SlotData.RandomizeSwitches
+            && Data.LinkToLocation.TryGetValue((roomId, linkId), out var switchLocation)
+        )
         {
             location = switchLocation;
             return true;
@@ -1391,7 +1560,13 @@ public static class Game
         }
 
         var area = GetRoomArea(room);
-        Plugin.ArchipelagoClient.StorePosition(area, room.roomID, (int)room.roomInitialPosition.x, (int)room.roomInitialPosition.y, (int)Player.Instance.characterProperty.characterID);
+        Plugin.ArchipelagoClient.StorePosition(
+            area,
+            room.roomID,
+            (int)room.roomInitialPosition.x,
+            (int)room.roomInitialPosition.y,
+            (int)Player.Instance.characterProperty.characterID
+        );
     }
 
     public static void ExploreRoom(Room room)
@@ -1403,9 +1578,15 @@ public static class Game
 
         StoreCurrentRoom(room);
 
-        var newRegen = Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always || (Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.NotBosses && room.roomType != "boss" && room.roomID != RoomId.FinalBoss)
-            ? 0.2f
-            : 1f;
+        var newRegen =
+            Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Always
+            || (
+                Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.NotBosses
+                && room.roomType != "boss"
+                && room.roomID != RoomId.FinalBoss
+            )
+                ? 0.2f
+                : 1f;
         ChangeRegen(newRegen);
 
         if (room.roomID == RoomId.CyclopsDenDoor && Plugin.State.SlotData.RandomizeKeyItems)
@@ -1420,13 +1601,16 @@ public static class Game
 
         switch (room.roomID)
         {
-            case RoomId.TutorialAlgus when !Plugin.State.SlotData.StartingCharacters.Contains("Algus"):
+            case RoomId.TutorialAlgus
+                when !Plugin.State.SlotData.StartingCharacters.Contains("Algus"):
                 SendLocation(ApLocationId.GtAlgus);
                 break;
-            case RoomId.TutorialArias when !Plugin.State.SlotData.StartingCharacters.Contains("Arias"):
+            case RoomId.TutorialArias
+                when !Plugin.State.SlotData.StartingCharacters.Contains("Arias"):
                 SendLocation(ApLocationId.GtArias);
                 break;
-            case RoomId.TutorialKyuli when !Plugin.State.SlotData.StartingCharacters.Contains("Kyuli"):
+            case RoomId.TutorialKyuli
+                when !Plugin.State.SlotData.StartingCharacters.Contains("Kyuli"):
                 SendLocation(ApLocationId.GtKyuli);
                 break;
         }
@@ -1437,7 +1621,11 @@ public static class Game
             {
                 Player.PlayerDataLocal.zeekQuestStatus = Room_Zeek.ZeekQuestStatus.None;
             }
-            else if (Plugin.State.ReceivedCrown && !Plugin.State.CheckedZeek && Plugin.State.SlotData.RandomizeCharacters)
+            else if (
+                Plugin.State.ReceivedCrown
+                && !Plugin.State.CheckedZeek
+                && Plugin.State.SlotData.RandomizeCharacters
+            )
             {
                 Player.PlayerDataLocal.zeekQuestStatus = Room_Zeek.ZeekQuestStatus.RewardPickedUp;
             }
@@ -1459,7 +1647,10 @@ public static class Game
 
     public static void CampfireTriggerEntered()
     {
-        if (Plugin.State.Valid && Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Campfires)
+        if (
+            Plugin.State.Valid
+            && Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Campfires
+        )
         {
             ChangeRegen(0.2f);
         }
@@ -1467,7 +1658,10 @@ public static class Game
 
     public static void CampfireTriggerExited()
     {
-        if (Plugin.State.Valid && Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Campfires)
+        if (
+            Plugin.State.Valid
+            && Plugin.State.SlotData.FastBloodChalice == FastBloodChalice.Campfires
+        )
         {
             ChangeRegen(1f);
         }
@@ -1561,12 +1755,20 @@ public static class Game
 
     public static bool ShouldCheckDeal(DealProperties.DealID dealId)
     {
-        return Plugin.State.Valid && Plugin.State.SlotData.RandomizeShop && !IsInShop && Data.ItemToDeal.ContainsValue(dealId);
+        return Plugin.State.Valid
+            && Plugin.State.SlotData.RandomizeShop
+            && !IsInShop
+            && Data.ItemToDeal.ContainsValue(dealId);
     }
 
     public static bool ShouldUnlockDeal(DealProperties.DealID dealId)
     {
-        return !Plugin.State.Valid || !Plugin.State.SlotData.RandomizeCharacters || dealId is not DealProperties.DealID.Deal_SubMenu_Zeek and not DealProperties.DealID.Deal_SubMenu_Bram || ReceivingItem;
+        return !Plugin.State.Valid
+            || !Plugin.State.SlotData.RandomizeCharacters
+            || dealId
+                is not DealProperties.DealID.Deal_SubMenu_Zeek
+                    and not DealProperties.DealID.Deal_SubMenu_Bram
+            || ReceivingItem;
     }
 
     public static bool IsDealReceived(DealProperties.DealID dealId)
@@ -1578,8 +1780,11 @@ public static class Game
 
     public static bool PurchaseDeal(DealProperties.DealID dealId)
     {
-        if (Plugin.State.Valid && Plugin.State.SlotData.RandomizeShop &&
-            Data.DealToLocation.TryGetValue(dealId, out var location))
+        if (
+            Plugin.State.Valid
+            && Plugin.State.SlotData.RandomizeShop
+            && Data.DealToLocation.TryGetValue(dealId, out var location)
+        )
         {
             SendLocation(location);
             return true;
@@ -1601,7 +1806,11 @@ public static class Game
             return true;
         }
 
-        if (Plugin.State.SlotData.RandomizeCandles && Data.CandleToLocation.TryGetValue(actor.actorID, out var candleLocation) && !IsLocationChecked(candleLocation))
+        if (
+            Plugin.State.SlotData.RandomizeCandles
+            && Data.CandleToLocation.TryGetValue(actor.actorID, out var candleLocation)
+            && !IsLocationChecked(candleLocation)
+        )
         {
             SendLocation(candleLocation);
             return false;
@@ -1704,13 +1913,15 @@ public static class Game
         if (_queuedDeath != null && _deathCounter == -1 && CanBeKilled())
         {
             _deathCounter = 60;
-            IncomingMessages.Enqueue(new()
-            {
-                Name = "Death",
-                PlayerName = _queuedDeath,
-                Receiving = true,
-                Flags = ItemFlags.Trap,
-            });
+            IncomingMessages.Enqueue(
+                new()
+                {
+                    Name = "Death",
+                    PlayerName = _queuedDeath,
+                    Receiving = true,
+                    Flags = ItemFlags.Trap,
+                }
+            );
             Player.Instance.Kill(false, false);
         }
 
@@ -1739,9 +1950,16 @@ public static class Game
             {
                 character = Data.TaggedCharacters[TaggedKong];
             }
-            if (character == CharacterProperties.Character.None || !Player.PlayerDataLocal.unlockedCharacters.Contains(character))
+            if (
+                character == CharacterProperties.Character.None
+                || !Player.PlayerDataLocal.unlockedCharacters.Contains(character)
+            )
             {
-                character = Player.PlayerDataLocal.unlockedCharacters.ToArray().Where(static (c) => c != Player.PlayerDataLocal.currentCharacter).OrderBy(static (x) => Guid.NewGuid()).First();
+                character = Player
+                    .PlayerDataLocal.unlockedCharacters.ToArray()
+                    .Where(static (c) => c != Player.PlayerDataLocal.currentCharacter)
+                    .OrderBy(static (x) => Guid.NewGuid())
+                    .First();
             }
             Player.Instance.CycleCharacterTo(character);
         }
@@ -1856,8 +2074,7 @@ public static class Game
                 Plugin.Logger.LogDebug($"resetting doors for room {room.roomID}");
                 foreach (var data in room.GetRoomEntitiesData())
                 {
-                    Plugin.Logger.LogDebug(
-                        $"{data.ID} ({data.ObjectType}) - '{data.Data}'");
+                    Plugin.Logger.LogDebug($"{data.ID} ({data.ObjectType}) - '{data.Data}'");
                     if (!string.IsNullOrWhiteSpace(data.GetValue("wasOpened")))
                     {
                         UpdateObjectData(data.ID, data.RoomID, "wasOpened", "False");
@@ -1913,7 +2130,8 @@ public static class Game
                 var room = GameManager.GetRoomFromID(roomId);
                 if (room != null)
                 {
-                    Player.Instance.transform.position = room.roomInitialPosition + new Vector2(50, 50);
+                    Player.Instance.transform.position =
+                        room.roomInitialPosition + new Vector2(50, 50);
                     CameraManager.MoveCameraTo(room.roomInitialPosition);
                 }
             }
@@ -1947,7 +2165,9 @@ public static class Game
 
         if (destination == "Last Checkpoint")
         {
-            return Player.PlayerDataLocal.lastCheckpointData != null && Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID != Player.PlayerDataLocal.currentRoomID;
+            return Player.PlayerDataLocal.lastCheckpointData != null
+                && Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID
+                    != Player.PlayerDataLocal.currentRoomID;
         }
 
         if (destination == "Entrance")
@@ -1973,28 +2193,26 @@ public static class Game
 
     private static bool IsGameStateNormal()
     {
-        return
-            !_cutscenePlaying &&
-            !_isWarping &&
-            Plugin.State.Valid &&
-            GameplayUIManager.Instance != null &&
-            GameplayUIManager.Instance.IGMObject != null &&
-            !GameplayUIManager.Instance.InGameMenuOpen &&
-            GameplayUIManager.Instance.fullMapObject != null &&
-            !GameplayUIManager.Instance.FullMapOpen &&
-            !(GameplayUIManager.Instance.elevatorMenuHolder?.activeInHierarchy ?? false) &&
-            Player.Instance != null &&
-            Player.Instance.PlayerPhysics != null &&
-            Player.Instance.PlayerPhysics.isIdle &&
-            Player.Instance.gameObject.active &&
-            !Player.Instance.isInElevator &&
-            Player.Instance.allowRoomTransition &&
-            !Player.Instance.isDead &&
-            !Player.Instance.meteorInProgress &&
-            !(Player.Instance.currentSubWeaponClass?.isShooting ?? false) &&
-            !(Player.Instance.currentSubWeaponClass?.isAttacking ?? false) &&
-            Player.Instance.ControllerEnabled()
-        ;
+        return !_cutscenePlaying
+            && !_isWarping
+            && Plugin.State.Valid
+            && GameplayUIManager.Instance != null
+            && GameplayUIManager.Instance.IGMObject != null
+            && !GameplayUIManager.Instance.InGameMenuOpen
+            && GameplayUIManager.Instance.fullMapObject != null
+            && !GameplayUIManager.Instance.FullMapOpen
+            && !(GameplayUIManager.Instance.elevatorMenuHolder?.activeInHierarchy ?? false)
+            && Player.Instance != null
+            && Player.Instance.PlayerPhysics != null
+            && Player.Instance.PlayerPhysics.isIdle
+            && Player.Instance.gameObject.active
+            && !Player.Instance.isInElevator
+            && Player.Instance.allowRoomTransition
+            && !Player.Instance.isDead
+            && !Player.Instance.meteorInProgress
+            && !(Player.Instance.currentSubWeaponClass?.isShooting ?? false)
+            && !(Player.Instance.currentSubWeaponClass?.isAttacking ?? false)
+            && Player.Instance.ControllerEnabled();
     }
 
     private static void CheckWarp()
@@ -2018,8 +2236,13 @@ public static class Game
 
         if (destination == "Last Checkpoint")
         {
-            targetRoom = GameManager.GetRoomFromID(Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID);
-            targetDestination = new(Player.PlayerDataLocal.lastCheckpointX, Player.PlayerDataLocal.lastCheckpointY);
+            targetRoom = GameManager.GetRoomFromID(
+                Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID
+            );
+            targetDestination = new(
+                Player.PlayerDataLocal.lastCheckpointX,
+                Player.PlayerDataLocal.lastCheckpointY
+            );
             checkpointId = Player.PlayerDataLocal.lastCheckpointData.checkpointID;
         }
         else if (Data.Checkpoints.TryGetValue(destination, out var checkpoint))
@@ -2043,10 +2266,16 @@ public static class Game
         }
 
         _isWarping = true;
-        _ = GameManager.Instance.StartCoroutine(Warp_Routine(targetDestination, targetRoom, checkpointId));
+        _ = GameManager.Instance.StartCoroutine(
+            Warp_Routine(targetDestination, targetRoom, checkpointId)
+        );
     }
 
-    private static IEnumerator Warp_Routine(Vector2 targetDestination, Room targetRoom, int checkpointId)
+    private static IEnumerator Warp_Routine(
+        Vector2 targetDestination,
+        Room targetRoom,
+        int checkpointId
+    )
     {
         var currentRoom = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
         if (!Plugin.State.SlotData.AllowBlockWarping)
@@ -2060,7 +2289,8 @@ public static class Game
         var lightning = PoolManager.Pools["Particles"].Spawn("Lightning");
         lightning.position = new(
             Player.Instance.selfTransform.position.x,
-            Player.Instance.selfTransform.position.y + (lightning.GetComponent<BoxCollider2D>().size.y / 2f),
+            Player.Instance.selfTransform.position.y
+                + (lightning.GetComponent<BoxCollider2D>().size.y / 2f),
             Player.Instance.selfTransform.position.z
         );
         AudioManager.Play("wall-gem");
@@ -2088,7 +2318,8 @@ public static class Game
         lightning = PoolManager.Pools["Particles"].Spawn("Lightning");
         lightning.position = new(
             Player.Instance.selfTransform.position.x,
-            Player.Instance.selfTransform.position.y + (lightning.GetComponent<BoxCollider2D>().size.y / 2f),
+            Player.Instance.selfTransform.position.y
+                + (lightning.GetComponent<BoxCollider2D>().size.y / 2f),
             Player.Instance.selfTransform.position.z
         );
         AudioManager.Play("wall-gem");
@@ -2113,7 +2344,8 @@ public static class Game
 
         if (Player.Instance?.PlayerPhysics != null)
         {
-            Player.Instance.PlayerPhysics.infiniteJump = enabled || Player.Instance.CharacterProperty.infiniteJump;
+            Player.Instance.PlayerPhysics.infiniteJump =
+                enabled || Player.Instance.CharacterProperty.infiniteJump;
         }
 
         Settings.InfiniteJumps = enabled;
@@ -2143,7 +2375,15 @@ public static class Game
         foreach ((var line, var pos) in cutscene)
         {
             Dialogue[] lines = [new(line)];
-            yield return GameManager.Instance.StartCoroutine(GameplayUIManager.Instance.TriggerDialogueSequence_Routine(lines, null, true, true, pos));
+            yield return GameManager.Instance.StartCoroutine(
+                GameplayUIManager.Instance.TriggerDialogueSequence_Routine(
+                    lines,
+                    null,
+                    true,
+                    true,
+                    pos
+                )
+            );
         }
         // Player.Instance.ShowPlayerSprite();
         Player.Instance.godMode = false;
@@ -2156,18 +2396,16 @@ public static class Game
 
     public static bool CanEnableRocks()
     {
-        return
-            IsGameStateNormal() &&
-            Player.Instance.Room != null &&
-            !Player.Instance.Room.isRocks &&
-            !Player.Instance.Room.savePoint &&
-            !Player.Instance.Room.voidPortal &&
-            !Player.Instance.Room.titanStatue &&
-            Player.Instance.Room.roomType != "elevator" &&
-            Player.Instance.Room.roomType != "boss" &&
-            Player.Instance.Room.roomID != 5 &&
-            Player.Instance.Room.roomID != 4112
-        ;
+        return IsGameStateNormal()
+            && Player.Instance.Room != null
+            && !Player.Instance.Room.isRocks
+            && !Player.Instance.Room.savePoint
+            && !Player.Instance.Room.voidPortal
+            && !Player.Instance.Room.titanStatue
+            && Player.Instance.Room.roomType != "elevator"
+            && Player.Instance.Room.roomType != "boss"
+            && Player.Instance.Room.roomID != 5
+            && Player.Instance.Room.roomID != 4112;
     }
 
     public static void StartRocksTrap()

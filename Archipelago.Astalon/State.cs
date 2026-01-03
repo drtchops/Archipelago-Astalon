@@ -51,6 +51,7 @@ public enum FastBloodChalice
 public class SlotData
 {
     public string Version { get; set; }
+
     // public Campaign Campaign { get; set; } = Campaign.TearsOfTheEarth;
     public Goal Goal { get; set; } = Goal.Vanilla;
     public int AdditionalEyesRequired { get; set; }
@@ -171,7 +172,8 @@ public class SlotData
         return defaultValue;
     }
 
-    public static T ParseEnum<T>(JObject settings, string key, T defaultValue = default) where T : Enum
+    public static T ParseEnum<T>(JObject settings, string key, T defaultValue = default)
+        where T : Enum
     {
         if (settings.TryGetValue(key, out var value))
         {
