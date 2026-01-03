@@ -19,18 +19,21 @@ public class ApItemInfo
     public bool IsAstalon { get; set; }
 }
 
-public enum Campaign
-{
-    TearsOfTheEarth = 0,
-    NewGamePlus = 1,
-    BlackKnight = 2,
-    MonsterMode = 3,
-}
-
 public enum Goal
 {
     Vanilla = 0,
     EyeHunt = 1,
+}
+
+public enum StartingLocation
+{
+    GorgonTomb = 0,
+    Mechanism = 1,
+    HallOfThePhantoms = 2,
+    RuinsOfAsh = 3,
+    Apex = 4,
+    Catacombs = 5,
+    TowerRoots = 6,
 }
 
 public enum ApexElevator
@@ -52,9 +55,9 @@ public class SlotData
 {
     public string Version { get; set; }
 
-    // public Campaign Campaign { get; set; } = Campaign.TearsOfTheEarth;
     public Goal Goal { get; set; } = Goal.Vanilla;
     public int AdditionalEyesRequired { get; set; }
+    public StartingLocation StartingLocation { get; set; } = StartingLocation.GorgonTomb;
     public bool RandomizeCharacters { get; set; }
     public bool RandomizeKeyItems { get; set; } = true;
     public bool RandomizeAttackPickups { get; set; } = true;
@@ -90,6 +93,7 @@ public class SlotData
         // Campaign = ParseEnum<Campaign>(options, "campaign");
         Goal = ParseEnum<Goal>(options, "goal");
         AdditionalEyesRequired = ParseInt(options, "additional_eyes_required");
+        StartingLocation = ParseEnum<StartingLocation>(options, "starting_location");
         RandomizeCharacters = ParseInt(options, "randomize_characters") != 0;
         RandomizeKeyItems = ParseBool(options, "randomize_key_items", true);
         RandomizeAttackPickups = ParseBool(options, "randomize_attack_pickups", true);

@@ -412,6 +412,20 @@ internal class PlayerData_Patch
 
         return true;
     }
+
+    [HarmonyPatch(nameof(PlayerData.InitCheckpoint)), HarmonyPrefix]
+    public static bool InitCheckpoint()
+    {
+        Plugin.Logger.LogDebug("PlayerData.InitCheckpoint()");
+        return Game.ResetCheckpoint(true);
+    }
+
+    [HarmonyPatch(nameof(PlayerData.InitializeStartingData)), HarmonyPrefix]
+    public static void InitializeStartingData()
+    {
+        Plugin.Logger.LogDebug("PlayerData.InitializeStartingData()");
+        Game.SetupInitialPosition();
+    }
 }
 
 [HarmonyPatch(typeof(Player))]
@@ -486,6 +500,13 @@ internal class Player_Patch
             $"Player.SetCheckpoint({_actor}, {_checkpointID}, {_checkpointRoomID},{_checkpointData}, {_checkpointArea}, {_checkpointType}, {_checkpointPosition})"
         );
         Game.CampfireVisited(_checkpointID);
+    }
+
+    [HarmonyPatch(nameof(Player.ClearCheckpoint)), HarmonyPrefix]
+    public static bool ClearCheckpoint()
+    {
+        Plugin.Logger.LogDebug("Player.ClearCheckpoint()");
+        return Game.ResetCheckpoint();
     }
 
     [HarmonyPatch(nameof(Player.CycleCharacters))]
@@ -1166,7 +1187,23 @@ internal class SwitchableObject_Patch
             $"SwitchableObject.ToggleObject({__instance.actorID}, {__instance.objectType}, {__instance.linkID})"
         );
         var roomId = __instance.room?.roomID ?? Player.PlayerDataLocal.currentRoomID;
-        return !Game.IsSwitchRandomized(roomId, __instance.linkID, out _);
+        if (roomId == 6629 && __instance.linkID == "189")
+        {
+            // prevent tutorial blocks from blocking first elevator again
+            return __instance.objectOn;
+        }
+        var isRandomized = Game.IsSwitchRandomized(roomId, __instance.linkID, out var location);
+        if (
+            isRandomized
+            && (
+                location == ApLocationId.MechSkullPuzzle || location == ApLocationId.HotpSkullPuzzle
+            )
+            && !Game.ReceivingItem
+        )
+        {
+            Game.PressSwitch(roomId, __instance.linkID);
+        }
+        return !isRandomized;
     }
 }
 

@@ -459,6 +459,9 @@ public enum ApLocationId
     CdCandleTopCampfire,
     CathCandleTop1,
     CathCandleTop2,
+    GtElevator1,
+    MechSkullPuzzle,
+    HotpSkullPuzzle,
 }
 
 public enum ApItemId
@@ -785,6 +788,9 @@ public enum ApItemId
     Heal5,
     TrapCutscene,
     TrapRocks,
+    ElevatorGt1,
+    SwitchMechSkullPuzzle,
+    SwitchHotpSkullPuzzle,
 }
 
 public enum ElevatorId
@@ -1953,6 +1959,16 @@ public static class Data
         },
         new()
         {
+            Id = "36",
+            RoomId = 808,
+            ObjectsToEnable = [1338, 1341, 1342],
+            ObjectsToDisable = [1343],
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchMechSkullPuzzle,
+            ApLocationId = ApLocationId.MechSkullPuzzle,
+        },
+        new()
+        {
             Id = "37",
             RoomId = 811,
             ObjectsToEnable = [],
@@ -2344,6 +2360,16 @@ public static class Data
             ObjectsToTrigger = [],
             ApItemId = ApItemId.SwitchHotpBell,
             ApLocationId = ApLocationId.HotpSwitchBell,
+        },
+        new()
+        {
+            Id = "83",
+            RoomId = 2679,
+            ObjectsToEnable = [],
+            ObjectsToDisable = [2872],
+            ObjectsToTrigger = [],
+            ApItemId = ApItemId.SwitchHotpSkullPuzzle,
+            ApLocationId = ApLocationId.HotpSkullPuzzle,
         },
         new()
         {
@@ -3635,7 +3661,7 @@ public static class Data
 
     public static readonly Dictionary<int, ApLocationId> ElevatorToLocation = new()
     {
-        // { 6629, ApLocationId.GtElevator1 },
+        { 6629, ApLocationId.GtElevator1 },
         { 248, ApLocationId.GtElevator2 },
         { 3947, ApLocationId.MechElevator1 },
         { 803, ApLocationId.MechElevator2 },
@@ -3650,7 +3676,7 @@ public static class Data
 
     public static readonly Dictionary<ApItemId, int> ItemToElevator = new()
     {
-        // { ApItemId.ElevatorGt1, 6629 },
+        { ApItemId.ElevatorGt1, 6629 },
         { ApItemId.ElevatorGt2, 248 },
         { ApItemId.ElevatorMech1, 3947 },
         { ApItemId.ElevatorMech2, 803 },

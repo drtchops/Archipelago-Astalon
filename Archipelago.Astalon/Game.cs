@@ -519,16 +519,19 @@ public static class Game
                 Player.PlayerDataLocal.deaths = 1;
             }
 
-            if (!Player.PlayerDataLocal.firstElevatorLit)
+            if (
+                !Player.PlayerDataLocal.firstElevatorLit
+                && Plugin.State.SlotData.StartingLocation == StartingLocation.GorgonTomb
+            )
             {
                 Player.PlayerDataLocal.firstElevatorLit = true;
                 UpdateElevatorList();
+            }
 
-                // blocks around first elevator
-                for (var i = 6641; i < 6647; i++)
-                {
-                    UpdateObjectData(i, 6629, "objectOn", "False");
-                }
+            // blocks around first elevator
+            for (var i = 6641; i < 6647; i++)
+            {
+                UpdateObjectData(i, 6629, "objectOn", "False");
             }
 
             // Tauros cutscenes
@@ -876,7 +879,10 @@ public static class Game
                     {
                         Player.PlayerDataLocal.UnlockElevator((int)ElevatorId.Apex);
                     }
-                    Player.PlayerDataLocal.UnlockElevator((int)ElevatorId.Gt1);
+                    if (Plugin.State.SlotData.StartingLocation == StartingLocation.GorgonTomb)
+                    {
+                        Player.PlayerDataLocal.UnlockElevator((int)ElevatorId.Gt1);
+                    }
 
                     break;
                 case ItemProperties.ItemID.ZeekItem:
@@ -1054,7 +1060,10 @@ public static class Game
             foreach (var elevatorId in existingElevators)
             {
                 if (
-                    elevatorId != ((int)ElevatorId.Gt1)
+                    (
+                        elevatorId != ((int)ElevatorId.Gt1)
+                        || Plugin.State.SlotData.StartingLocation != StartingLocation.GorgonTomb
+                    )
                     && (
                         elevatorId != ((int)ElevatorId.Apex)
                         || Plugin.State.SlotData.ApexElevator != ApexElevator.Vanilla
@@ -1074,7 +1083,10 @@ public static class Game
                 }
             }
 
-            if (!existingElevators.Contains((int)ElevatorId.Gt1))
+            if (
+                !existingElevators.Contains((int)ElevatorId.Gt1)
+                && Plugin.State.SlotData.StartingLocation == StartingLocation.GorgonTomb
+            )
             {
                 elevators.Add((int)ElevatorId.Gt1);
             }
@@ -1128,6 +1140,72 @@ public static class Game
                 Plugin.State.VisitedCampfires.Add(id);
             }
         }
+    }
+
+    public static void SetupInitialPosition()
+    {
+        if (
+            !Plugin.ArchipelagoClient.Connected
+            || Plugin.State.SlotData.StartingLocation == StartingLocation.GorgonTomb
+        )
+        {
+            return;
+        }
+
+        var checkpoint = GetStartingCheckpoint();
+        GameManager.Instance.gameStartingRoom = checkpoint.RoomId;
+        GameManager.Instance.gameStartingPositionX = (int)checkpoint.PlayerPos.x;
+        GameManager.Instance.gameStartingPositionY = (int)checkpoint.PlayerPos.y;
+    }
+
+    public static CheckpointData GetStartingCheckpoint()
+    {
+        return Plugin.State.SlotData.StartingLocation switch
+        {
+            StartingLocation.GorgonTomb => Data.Checkpoints["Entrance"],
+            StartingLocation.Mechanism => Data.Checkpoints["Mechanism Start"],
+            StartingLocation.HallOfThePhantoms => Data.Checkpoints["HotP Bell"],
+            StartingLocation.RuinsOfAsh => Data.Checkpoints["RoA Start"],
+            StartingLocation.Apex => Data.Checkpoints["The Apex"],
+            StartingLocation.Catacombs => Data.Checkpoints["Catacombs Bow"],
+            StartingLocation.TowerRoots => Data.Checkpoints["Tower Roots"],
+            _ => Data.Checkpoints["Entrance"],
+        };
+    }
+
+    public static bool ResetCheckpoint(bool isNewGame = false)
+    {
+        if (
+            !Plugin.State.Valid
+            || Plugin.State.SlotData.StartingLocation == StartingLocation.GorgonTomb
+        )
+        {
+            return true;
+        }
+
+        var checkpoint = GetStartingCheckpoint();
+
+        if (!isNewGame)
+        {
+            Player.Instance.previousCheckpoint.checkpointID = 0;
+            Player.Instance.previousCheckpoint.checkpointRoomID = checkpoint.RoomId;
+            Player.Instance.previousCheckpoint.checkpointData = string.Empty;
+            Player.Instance.previousCheckpoint.checkpointArea = checkpoint.Area;
+        }
+
+        Player.PlayerDataLocal.lastCheckpointData = new Checkpoint
+        {
+            checkpointID = checkpoint.Id,
+            checkpointRoomID = checkpoint.RoomId,
+            checkpointData = string.Empty,
+            checkpointArea = checkpoint.Area,
+            checkpointType = isNewGame ? Checkpoint.Type.NewGame : Checkpoint.Type.Start,
+        };
+        Player.PlayerDataLocal.lastCheckpointX = checkpoint.PlayerPos.x;
+        Player.PlayerDataLocal.lastCheckpointY = checkpoint.PlayerPos.y;
+        SaveManager.ApplyCurrentCheckpoint(checkpoint.PlayerPos.x, checkpoint.PlayerPos.y);
+
+        return false;
     }
 
     public static bool CharacterUnlocked(CharacterProperties.Character character)
@@ -2166,6 +2244,7 @@ public static class Game
         if (destination == "Last Checkpoint")
         {
             return Player.PlayerDataLocal.lastCheckpointData != null
+                && Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID != 0
                 && Player.PlayerDataLocal.lastCheckpointData.checkpointRoomID
                     != Player.PlayerDataLocal.currentRoomID;
         }
