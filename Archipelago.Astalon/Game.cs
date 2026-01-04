@@ -940,7 +940,7 @@ public static class Game
                 Player.PlayerDataLocal.EnableItem(ItemProperties.ItemID.MarkOfEpimetheus);
             }
         }
-        else if (Data.ItemToLink.TryGetValue(apItemId, out var switchData))
+        else if (Data.ItemToSwitch.TryGetValue(apItemId, out var switchData))
         {
             ToggleSwitchLink(switchData);
         }
@@ -1586,10 +1586,10 @@ public static class Game
 
         if (
             Plugin.State.SlotData.RandomizeSwitches
-            && Data.LinkToLocation.TryGetValue((roomId, linkId), out var switchLocation)
+            && Data.LinkToSwitch.TryGetValue((roomId, linkId), out var switchData)
         )
         {
-            location = switchLocation;
+            location = switchData.ApLocationId;
             return true;
         }
 

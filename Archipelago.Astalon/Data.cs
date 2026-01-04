@@ -3662,13 +3662,10 @@ public static class Data
     ];
     #endregion
 
-    public static readonly Dictionary<(int, string), ApLocationId> LinkToLocation =
-        Switches.ToDictionary(
-            static (data) => (data.RoomId, data.Id),
-            static (data) => data.ApLocationId
-        );
+    public static readonly Dictionary<(int, string), SwitchData> LinkToSwitch =
+        Switches.ToDictionary(static (data) => (data.RoomId, data.Id));
 
-    public static readonly Dictionary<ApItemId, SwitchData> ItemToLink = Switches.ToDictionary(
+    public static readonly Dictionary<ApItemId, SwitchData> ItemToSwitch = Switches.ToDictionary(
         static (data) => data.ApItemId
     );
 
