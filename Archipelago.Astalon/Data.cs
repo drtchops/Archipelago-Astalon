@@ -462,6 +462,9 @@ public enum ApLocationId
     GtElevator1,
     MechSkullPuzzle,
     HotpSkullPuzzle,
+    GtOrbMulti,
+    MechOrbMulti,
+    CataOrbMulti,
 }
 
 public enum ApItemId
@@ -791,6 +794,7 @@ public enum ApItemId
     ElevatorGt1,
     SwitchMechSkullPuzzle,
     SwitchHotpSkullPuzzle,
+    OrbMulti,
 }
 
 public enum ElevatorId
@@ -4836,4 +4840,11 @@ public static class Data
         CharacterProperties.Character.Kyuli,
         CharacterProperties.Character.Bram,
     ];
+
+    public static readonly Dictionary<int, ApLocationId> MultiToLocation = new()
+    {
+        { 1117, ApLocationId.GtOrbMulti },
+        { 1308, ApLocationId.MechOrbMulti },
+        { 2074, ApLocationId.CataOrbMulti },
+    };
 }

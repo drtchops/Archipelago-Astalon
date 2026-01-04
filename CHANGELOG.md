@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added starting location option
 - Added skull puzzles to switch rando
+- Added option to randomize orb multipliers
 - Walking into a locked door with key rando on will now tell you the name of the item you need to open it
 - Removed old Astalon Tracker, you can use Universal Tracker directly now
 

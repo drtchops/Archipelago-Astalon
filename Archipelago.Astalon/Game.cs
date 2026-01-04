@@ -1016,6 +1016,12 @@ public static class Game
                 case ApItemId.TrapRocks:
                     QueuedRocks++;
                     break;
+                case ApItemId.OrbMulti:
+                    if (Player.PlayerDataLocal.SoulMultiplier < 8)
+                    {
+                        Player.PlayerDataLocal.IncreaseSoulMultiplier();
+                    }
+                    break;
                 default:
                     Plugin.Logger.LogWarning($"Item {itemInfo.Id} - {itemName} not found");
                     ReceivingItem = false;
@@ -1913,6 +1919,22 @@ public static class Game
         return true;
     }
 
+    public static bool ShouldMultiplyOrbs(int entityId)
+    {
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeOrbMultipliers)
+        {
+            return true;
+        }
+
+        if (Data.MultiToLocation.TryGetValue(entityId, out var apLocationId))
+        {
+            SendLocation(apLocationId);
+            return false;
+        }
+
+        return true;
+    }
+
     public static void DisplayRequiredMessage(Door door, string name)
     {
         _ = GameManager.Instance.StartCoroutine(door.FlashRenderer());
@@ -1923,6 +1945,22 @@ public static class Game
             2.5f,
             false
         );
+    }
+
+    public static void ClearStatuses()
+    {
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeOrbMultipliers)
+        {
+            return;
+        }
+
+        for (var i = 0; i < Plugin.ArchipelagoClient.CountItem((long)ApItemId.OrbMulti); i++)
+        {
+            if (Player.PlayerDataLocal.SoulMultiplier < 8)
+            {
+                Player.PlayerDataLocal.IncreaseSoulMultiplier();
+            }
+        }
     }
 
     public static bool SpawnParticle(Transform particleParent)

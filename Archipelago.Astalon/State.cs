@@ -69,6 +69,7 @@ public class SlotData
     public bool RandomizeElevator { get; set; }
     public bool RandomizeSwitches { get; set; }
     public bool RandomizeCandles { get; set; }
+    public bool RandomizeOrbMultipliers { get; set; }
     public bool SkipCutscenes { get; set; } = true;
     public ApexElevator ApexElevator { get; set; } = ApexElevator.Vanilla;
     public int CostMultiplier { get; set; } = 100;
@@ -105,6 +106,7 @@ public class SlotData
         RandomizeElevator = ParseBool(options, "randomize_elevator");
         RandomizeSwitches = ParseBool(options, "randomize_switches");
         RandomizeCandles = ParseBool(options, "randomize_candles");
+        RandomizeOrbMultipliers = ParseBool(options, "randomize_orb_multipliers");
         SkipCutscenes = ParseBool(options, "skip_cutscenes", true);
         ApexElevator = ParseEnum<ApexElevator>(options, "apex_elevator");
         CostMultiplier = ParseInt(options, "cost_multiplier", 100);

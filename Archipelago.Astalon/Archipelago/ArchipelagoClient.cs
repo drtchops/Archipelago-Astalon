@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
@@ -431,5 +432,10 @@ public class ArchipelagoClient
         {
             Plugin.Logger.LogError($"Unexpected issue unlocking campfires from server data: {ex}");
         }
+    }
+
+    public int CountItem(long id)
+    {
+        return !Connected ? 0 : _session.Items.AllItemsReceived.Count((item) => item.ItemId == id);
     }
 }

@@ -426,6 +426,13 @@ internal class PlayerData_Patch
         Plugin.Logger.LogDebug("PlayerData.InitializeStartingData()");
         Game.SetupInitialPosition();
     }
+
+    [HarmonyPatch(nameof(PlayerData.ClearStatuses)), HarmonyPostfix]
+    public static void ClearStatusesPostfix()
+    {
+        Plugin.Logger.LogDebug("PlayerData.ClearStatuses() Postfix");
+        Game.ClearStatuses();
+    }
 }
 
 [HarmonyPatch(typeof(Player))]
@@ -560,6 +567,17 @@ internal class EnemyEntity_Patch
         {
             damageAmount = 999;
         }
+    }
+}
+
+[HarmonyPatch(typeof(EnemyMultiplier))]
+internal class EnemyMultiplierPatch
+{
+    [HarmonyPatch(nameof(EnemyMultiplier.TriggerReward)), HarmonyPrefix]
+    public static bool TriggerReward(EnemyMultiplier __instance)
+    {
+        Plugin.Logger.LogDebug($"EnemyMultiplier.TriggerReward({__instance.entityID})");
+        return Game.ShouldMultiplyOrbs(__instance.entityID);
     }
 }
 
