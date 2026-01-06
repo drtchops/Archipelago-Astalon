@@ -109,7 +109,7 @@ public class SlotData
         RandomizeSwitches = ParseBool(options, "randomize_switches");
         RandomizeCandles = ParseBool(options, "randomize_candles");
         RandomizeOrbMultipliers = ParseBool(options, "randomize_orb_multipliers");
-        ShuffleVoidPortals = ParseBool(options, "shuffle_void_portals");
+        ShuffleVoidPortals = ParseInt(options, "shuffle_void_portals") != 0;
         SkipCutscenes = ParseBool(options, "skip_cutscenes", true);
         ApexElevator = ParseEnum<ApexElevator>(options, "apex_elevator");
         CostMultiplier = ParseInt(options, "cost_multiplier", 100);
