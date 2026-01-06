@@ -70,6 +70,7 @@ public class SlotData
     public bool RandomizeSwitches { get; set; }
     public bool RandomizeCandles { get; set; }
     public bool RandomizeOrbMultipliers { get; set; }
+    public bool ShuffleVoidPortals { get; set; }
     public bool SkipCutscenes { get; set; } = true;
     public ApexElevator ApexElevator { get; set; } = ApexElevator.Vanilla;
     public int CostMultiplier { get; set; } = 100;
@@ -83,6 +84,7 @@ public class SlotData
     public bool DeathLink { get; set; }
     public string[] StartingCharacters { get; set; } = [];
     public Dictionary<string, float> CharacterStrengths { get; set; } = [];
+    public string[][] PortalPairs { get; set; } = [];
 
     public SlotData() { }
 
@@ -107,6 +109,7 @@ public class SlotData
         RandomizeSwitches = ParseBool(options, "randomize_switches");
         RandomizeCandles = ParseBool(options, "randomize_candles");
         RandomizeOrbMultipliers = ParseBool(options, "randomize_orb_multipliers");
+        ShuffleVoidPortals = ParseBool(options, "shuffle_void_portals");
         SkipCutscenes = ParseBool(options, "skip_cutscenes", true);
         ApexElevator = ParseEnum<ApexElevator>(options, "apex_elevator");
         CostMultiplier = ParseInt(options, "cost_multiplier", 100);
@@ -139,6 +142,17 @@ public class SlotData
         {
             Plugin.Logger.LogError($"Error parsing slot_data.character_strengths: {e.Message}");
             CharacterStrengths = [];
+        }
+
+        try
+        {
+            var portalPairs = (JArray)slotData["portal_pairs"];
+            PortalPairs = portalPairs.ToObject<string[][]>();
+        }
+        catch (Exception e)
+        {
+            Plugin.Logger.LogError($"Error parsing slot_data.portal_pairs: {e.Message}");
+            PortalPairs = [];
         }
     }
 

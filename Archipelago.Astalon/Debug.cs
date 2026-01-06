@@ -115,6 +115,7 @@ public static class Debug
             top: -ButtonPadding,
             buttons:
             [
+                new(label: static () => "Dump Room Entities", callback: DumpRoomEntities),
                 new(
                     label: static () => "Dump Room Data",
                     callback: static () => Game.DumpRoom = true
@@ -334,5 +335,20 @@ public static class Debug
         style.normal.textColor = eyes >= goal ? Color.green : Color.red;
         style.normal.background = MakeTexture();
         GUI.Box(new(Screen.width - 164, 124, 160, 25), $"Eye Hunt Goal: {eyes} / {goal}", style);
+    }
+
+    private static void DumpRoomEntities()
+    {
+        if (Player.PlayerDataLocal?.currentRoomID == null)
+        {
+            return;
+        }
+
+        var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
+        Plugin.Logger.LogDebug($"Entity data for roomId={room.roomID} name={room.name}");
+        foreach (var entity in room.GetRoomEntitiesData())
+        {
+            Plugin.Logger.LogDebug($"id={entity.ID} type={entity.ObjectType} data={entity.Data}");
+        }
     }
 }

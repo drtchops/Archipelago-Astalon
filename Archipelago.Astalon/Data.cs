@@ -4847,4 +4847,23 @@ public static class Data
         { 1308, ApLocationId.MechOrbMulti },
         { 2074, ApLocationId.CataOrbMulti },
     };
+
+    public static readonly Dictionary<ActorIds, string> VoidPortalsById = new()
+    {
+        { (1099, 1057), "Gorgon Tomb - Entrance Portal" },
+        { (186, 1056), "Gorgon Tomb - Void Portal" },
+        { (877, 1058), "Mechanism - Lower Void Portal" },
+        { (1315, 1317), "Mechanism - Upper Void Portal" },
+        { (879, 1059), "Hall of the Phantoms - Lower Void Portal" },
+        { (3264, 3194), "Hall of the Phantoms - Upper Void Portal" },
+        { (7056, 7249), "Hall of the Phantoms - Cathedral Void Portal" },
+        { (7272, 7274), "Cathedral - Start Portal" },
+        { (7437, 10748), "Ruins of Ash - Lower Void Portal" },
+        { (4094, 10749), "Ruins of Ash - Upper Void Portal" },
+        { (3795, 4344), "Catacombs - Void Right Portal" },
+        { (4336, 4343), "Catacombs - Void Left Portal" },
+    };
+
+    public static readonly Dictionary<string, ActorIds> VoidPortalsByName =
+        VoidPortalsById.ToDictionary(static (data) => data.Value, static (data) => data.Key);
 }

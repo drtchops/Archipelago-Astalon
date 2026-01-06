@@ -1352,3 +1352,13 @@ internal class DoorPatch
         return Game.ShouldCheckDoor(__instance);
     }
 }
+
+[HarmonyPatch(typeof(INT_VoidPortal))]
+internal class VoidPortalPatch
+{
+    [HarmonyPatch(nameof(INT_VoidPortal.Trigger)), HarmonyPrefix]
+    public static bool Trigger(INT_VoidPortal __instance)
+    {
+        return Game.TryTriggerVoidPortal(__instance);
+    }
+}

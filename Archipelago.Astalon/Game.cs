@@ -1540,6 +1540,28 @@ public static class Game
         return false;
     }
 
+    public static bool TryTriggerVoidPortal(INT_VoidPortal portal)
+    {
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.ShuffleVoidPortals)
+        {
+            return true;
+        }
+
+        var fromPortal = Data.VoidPortalsById[(portal.Room.RoomID, portal.actorID)];
+        foreach (var pair in Plugin.State.SlotData.PortalPairs)
+        {
+            if (pair[0] == fromPortal)
+            {
+                var (roomId, _) = Data.VoidPortalsByName[pair[1]];
+                var toRoom = GameManager.GetRoomFromID(roomId);
+                _ = portal.StartCoroutine(portal.Trigger_Routine(toRoom));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static void MakeCharacterDealsUnavailable()
     {
         if (!Plugin.State.Valid)
