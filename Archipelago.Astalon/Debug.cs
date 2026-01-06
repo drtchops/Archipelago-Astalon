@@ -52,6 +52,13 @@ public static class Debug
                 ),
                 new(
                     label: static () =>
+                        Archipelago.ArchipelagoClient.TagLinkEnabled()
+                            ? "Disable Tag Link"
+                            : "Enable Tag Link",
+                    callback: Plugin.ArchipelagoClient.ToggleTagLink
+                ),
+                new(
+                    label: static () =>
                         Settings.ShowConnection ? "Hide Connection" : "Show Connection",
                     callback: Plugin.ToggleConnection
                 ),
