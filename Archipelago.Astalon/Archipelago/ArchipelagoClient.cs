@@ -252,6 +252,18 @@ public class ArchipelagoClient
         return scouts.Result;
     }
 
+    public bool HintLocations(List<long> locations)
+    {
+        if (!Connected || locations == null || locations.Count == 0)
+        {
+            return false;
+        }
+
+        Plugin.Logger.LogInfo($"Creating hints for locations: {string.Join(", ", locations)}");
+        _session.Hints.CreateHints(locationIds: [.. locations]);
+        return true;
+    }
+
     public void SendCompletion()
     {
         if (!Connected)

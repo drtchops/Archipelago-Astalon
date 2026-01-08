@@ -2100,6 +2100,62 @@ public static class Game
             : Plugin.State.CheckedLocations.Contains((long)location);
     }
 
+    public static void CreateShopHints()
+    {
+        if (
+            !Plugin.State.Valid
+            || !Plugin.State.SlotData.RandomizeShop
+            || Plugin.State.SlotData.HintShopItems == HintShopItems.None
+            || !Plugin.ArchipelagoClient.Connected
+        )
+        {
+            return;
+        }
+
+        List<long> locationIds = [];
+        locationIds.AddRange(Data.ShopLocationIds.Where(IncludeItemForHint));
+        if (Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Algus))
+        {
+            locationIds.AddRange(Data.ShopAlgusLocationIds.Where(IncludeItemForHint));
+        }
+        if (Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Arias))
+        {
+            locationIds.AddRange(Data.ShopAriasLocationIds.Where(IncludeItemForHint));
+        }
+        if (Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Kyuli))
+        {
+            locationIds.AddRange(Data.ShopKyuliLocationIds.Where(IncludeItemForHint));
+        }
+        if (Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Zeek))
+        {
+            locationIds.AddRange(Data.ShopZeekLocationIds.Where(IncludeItemForHint));
+        }
+        if (Player.PlayerDataLocal.HasUnlockedCharacter(CharacterProperties.Character.Bram))
+        {
+            locationIds.AddRange(Data.ShopBramLocationIds.Where(IncludeItemForHint));
+        }
+
+        _ = Plugin.ArchipelagoClient.HintLocations(locationIds);
+    }
+
+    public static bool IncludeItemForHint(long id)
+    {
+        return !Plugin.ArchipelagoClient.IsLocationChecked(id)
+            && (
+                Plugin.State.SlotData.HintShopItems == HintShopItems.All
+                || (
+                    Plugin.State.LocationInfos.TryGetValue(id, out var item)
+                    && (
+                        item.Flags.HasFlag(ItemFlags.Advancement)
+                        || (
+                            Plugin.State.SlotData.HintShopItems == HintShopItems.Useful
+                            && item.Flags.HasFlag(ItemFlags.NeverExclude)
+                        )
+                    )
+                )
+            );
+    }
+
     public static void Update()
     {
         if (_queuedDeath != null && _deathCounter == -1 && CanBeKilled())

@@ -4866,4 +4866,47 @@ public static class Data
 
     public static readonly Dictionary<string, ActorIds> VoidPortalsByName =
         VoidPortalsById.ToDictionary(static (data) => data.Value, static (data) => data.Key);
+
+    public static readonly long[] ShopLocationIds =
+    [
+        (long)ApLocationId.ShopGift,
+        (long)ApLocationId.ShopKnowledge,
+        (long)ApLocationId.ShopMercy,
+        (long)ApLocationId.ShopOrbSeeker,
+        // (long)ApLocationId.ShopMapReveal,
+        (long)ApLocationId.ShopCartographer,
+        (long)ApLocationId.ShopDeathOrb,
+        (long)ApLocationId.ShopDeathPoint,
+        (long)ApLocationId.ShopTitansEgo,
+    ];
+    public static readonly long[] ShopAlgusLocationIds =
+    [
+        (long)ApLocationId.ShopAlgusArcanist,
+        (long)ApLocationId.ShopAlgusShock,
+        (long)ApLocationId.ShopAlgusMeteor,
+    ];
+    public static readonly long[] ShopAriasLocationIds =
+    [
+        (long)ApLocationId.ShopAriasGorgonslayer,
+        (long)ApLocationId.ShopAriasLastStand,
+        (long)ApLocationId.ShopAriasLionheart,
+    ];
+    public static readonly long[] ShopKyuliLocationIds =
+    [
+        (long)ApLocationId.ShopKyuliAssassin,
+        (long)ApLocationId.ShopKyuliBullseye,
+        (long)ApLocationId.ShopKyuliRay,
+    ];
+    public static readonly long[] ShopZeekLocationIds =
+    [
+        (long)ApLocationId.ShopZeekJunkyard,
+        (long)ApLocationId.ShopZeekOrbs,
+        (long)ApLocationId.ShopZeekLoot,
+    ];
+    public static readonly long[] ShopBramLocationIds =
+    [
+        (long)ApLocationId.ShopBramAxe,
+        (long)ApLocationId.ShopBramHunter,
+        (long)ApLocationId.ShopBramWhiplash,
+    ];
 }

@@ -536,6 +536,13 @@ internal class Player_Patch
     {
         Plugin.Logger.LogDebug($"Player.CycleCharacterTo({_character})");
     }
+
+    [HarmonyPatch(nameof(Player.Respawn), typeof(bool)), HarmonyPrefix]
+    public static void Respawn()
+    {
+        Plugin.Logger.LogDebug("Player.Respawn()");
+        Game.CreateShopHints();
+    }
 }
 
 [HarmonyPatch(typeof(EnemyMiniboss._ColorScroll_d__17))]

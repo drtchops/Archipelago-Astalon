@@ -51,6 +51,14 @@ public enum FastBloodChalice
     Always = 3,
 }
 
+public enum HintShopItems
+{
+    None = 0,
+    Progression = 1,
+    Useful = 2,
+    All = 3,
+}
+
 public class SlotData
 {
     public string Version { get; set; }
@@ -80,6 +88,7 @@ public class SlotData
     public bool CheapKyuliRay { get; set; }
     public bool AlwaysRestoreCandles { get; set; }
     public bool ScaleCharacterStats { get; set; } = true;
+    public HintShopItems HintShopItems { get; set; } = HintShopItems.Progression;
     public bool TagLink { get; set; }
     public bool DeathLink { get; set; }
     public string[] StartingCharacters { get; set; } = [];
@@ -119,6 +128,7 @@ public class SlotData
         CheapKyuliRay = ParseBool(options, "cheap_kyuli_ray");
         AlwaysRestoreCandles = ParseBool(options, "always_restore_candles");
         ScaleCharacterStats = ParseBool(options, "scale_character_stats", true);
+        HintShopItems = ParseEnum<HintShopItems>(options, "hint_shop_items");
         TagLink = ParseBool(options, "tag_link");
         DeathLink = ParseBool(options, "death_link");
 
