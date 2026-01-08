@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added option to randomize orb multipliers
 - Added option to shuffle void portals
 - Added toggle for tag link
+- Add option to autohint shop items
 - Walking into a locked door with key rando on will now tell you the name of the item you need to open it
 - Removed old Astalon Tracker, you can use Universal Tracker directly now
 - Added custom `/explain` command to UT integration

@@ -40,7 +40,7 @@ internal class Item_Patch
     [HarmonyPostfix]
     public static void Activate(Item __instance)
     {
-        Plugin.Logger.LogDebug($"Item.Activate({__instance}, {__instance.actorID})");
+        // Plugin.Logger.LogDebug($"Item.Activate({__instance}, {__instance.actorID})");
         Game.UpdateItem(__instance);
     }
 }
@@ -68,7 +68,7 @@ internal class Item_PlayerHeart_Patch
     [HarmonyPostfix]
     public static void Activate(Item_PlayerHeart __instance)
     {
-        Plugin.Logger.LogDebug($"Item_PlayerHeart.Activate({__instance}, {__instance.actorID})");
+        // Plugin.Logger.LogDebug($"Item_PlayerHeart.Activate({__instance}, {__instance.actorID})");
         Game.UpdateEntity(__instance.sprite.gameObject, __instance.actorID);
     }
 }
@@ -125,7 +125,7 @@ internal class Item_PlayerStrength_Patch
     [HarmonyPostfix]
     public static void Activate(Item_PlayerStrength __instance)
     {
-        Plugin.Logger.LogDebug($"Item_PlayerStrength.Activate({__instance}, {__instance.actorID})");
+        // Plugin.Logger.LogDebug($"Item_PlayerStrength.Activate({__instance}, {__instance.actorID})");
         Game.UpdateEntity(__instance.sprite.gameObject, __instance.actorID);
     }
 }
@@ -162,7 +162,7 @@ internal class ItemGorgonHeart_Patch
     [HarmonyPostfix]
     public static void Activate(ItemGorgonHeart __instance)
     {
-        Plugin.Logger.LogDebug($"ItemGorgonHeart.Activate({__instance}, {__instance.actorID})");
+        // Plugin.Logger.LogDebug($"ItemGorgonHeart.Activate({__instance}, {__instance.actorID})");
         Game.UpdateItem(__instance);
     }
 
@@ -170,7 +170,7 @@ internal class ItemGorgonHeart_Patch
     [HarmonyPostfix]
     public static void OnDamaged(ItemGorgonHeart __instance)
     {
-        Plugin.Logger.LogDebug($"ItemGorgonHeart.OnDamaged({__instance}, {__instance.actorID})");
+        // Plugin.Logger.LogDebug($"ItemGorgonHeart.OnDamaged({__instance}, {__instance.actorID})");
         Game.UpdateItem(__instance);
     }
 }
@@ -356,7 +356,7 @@ internal class PlayerData_Patch
     [HarmonyPostfix]
     public static void AddDefaultDeals()
     {
-        Plugin.Logger.LogDebug("PlayerData.AddDefaultDeals()");
+        // Plugin.Logger.LogDebug("PlayerData.AddDefaultDeals()");
         Game.MakeCharacterDealsUnavailable();
     }
 
@@ -395,7 +395,7 @@ internal class PlayerData_Patch
     [HarmonyPrefix]
     public static bool MakeDealAvailable(DealProperties.DealID deal)
     {
-        Plugin.Logger.LogDebug($"PlayerData.MakeDealAvailable({deal})");
+        // Plugin.Logger.LogDebug($"PlayerData.MakeDealAvailable({deal})");
         return Game.ShouldUnlockDeal(deal);
     }
 
@@ -416,21 +416,21 @@ internal class PlayerData_Patch
     [HarmonyPatch(nameof(PlayerData.InitCheckpoint)), HarmonyPrefix]
     public static bool InitCheckpoint()
     {
-        Plugin.Logger.LogDebug("PlayerData.InitCheckpoint()");
+        // Plugin.Logger.LogDebug("PlayerData.InitCheckpoint()");
         return Game.ResetCheckpoint(true);
     }
 
     [HarmonyPatch(nameof(PlayerData.InitializeStartingData)), HarmonyPrefix]
     public static void InitializeStartingData()
     {
-        Plugin.Logger.LogDebug("PlayerData.InitializeStartingData()");
+        // Plugin.Logger.LogDebug("PlayerData.InitializeStartingData()");
         Game.SetupInitialPosition();
     }
 
     [HarmonyPatch(nameof(PlayerData.ClearStatuses)), HarmonyPostfix]
     public static void ClearStatusesPostfix()
     {
-        Plugin.Logger.LogDebug("PlayerData.ClearStatuses() Postfix");
+        // Plugin.Logger.LogDebug("PlayerData.ClearStatuses() Postfix");
         Game.ClearStatuses();
     }
 }
@@ -456,22 +456,22 @@ internal class Player_Patch
     [HarmonyPrefix]
     public static void Activate()
     {
-        Plugin.Logger.LogDebug("Player.Activate()");
+        // Plugin.Logger.LogDebug("Player.Activate()");
         Game.LoadSave();
     }
 
-    [HarmonyPatch(nameof(Player.Deactivate))]
-    [HarmonyPrefix]
-    public static void Deactivate()
-    {
-        Plugin.Logger.LogDebug("Player.Deactivate()");
-    }
+    // [HarmonyPatch(nameof(Player.Deactivate))]
+    // [HarmonyPrefix]
+    // public static void Deactivate()
+    // {
+    //     Plugin.Logger.LogDebug("Player.Deactivate()");
+    // }
 
     [HarmonyPatch(nameof(Player.DeathSequence), typeof(bool), typeof(bool))]
     [HarmonyPrefix]
     public static void DeathSequence()
     {
-        Plugin.Logger.LogDebug("Player.DeathSequence()");
+        // Plugin.Logger.LogDebug("Player.DeathSequence()");
         Game.HandleDeath();
     }
 
@@ -487,7 +487,7 @@ internal class Player_Patch
     [HarmonyPrefix]
     public static bool ChangeCharacters()
     {
-        Plugin.Logger.LogDebug("Player.ChangeCharacters()");
+        // Plugin.Logger.LogDebug("Player.ChangeCharacters()");
         return Game.CanCycleCharacter();
     }
 
@@ -512,7 +512,7 @@ internal class Player_Patch
     [HarmonyPatch(nameof(Player.ClearCheckpoint)), HarmonyPrefix]
     public static bool ClearCheckpoint()
     {
-        Plugin.Logger.LogDebug("Player.ClearCheckpoint()");
+        // Plugin.Logger.LogDebug("Player.ClearCheckpoint()");
         return Game.ResetCheckpoint();
     }
 
@@ -530,19 +530,12 @@ internal class Player_Patch
         );
     }
 
-    [HarmonyPatch(nameof(Player.CycleCharacterTo))]
-    [HarmonyPrefix]
-    public static void CycleCharacterTo(CharacterProperties.Character _character)
-    {
-        Plugin.Logger.LogDebug($"Player.CycleCharacterTo({_character})");
-    }
-
-    [HarmonyPatch(nameof(Player.Respawn), typeof(bool)), HarmonyPrefix]
-    public static void Respawn()
-    {
-        Plugin.Logger.LogDebug("Player.Respawn()");
-        Game.CreateShopHints();
-    }
+    // [HarmonyPatch(nameof(Player.CycleCharacterTo))]
+    // [HarmonyPrefix]
+    // public static void CycleCharacterTo(CharacterProperties.Character _character)
+    // {
+    //     Plugin.Logger.LogDebug($"Player.CycleCharacterTo({_character})");
+    // }
 }
 
 [HarmonyPatch(typeof(EnemyMiniboss._ColorScroll_d__17))]
@@ -595,7 +588,7 @@ internal class Boss_Tauros_Patch
     [HarmonyPrefix]
     public static void Death(Boss_Tauros __instance)
     {
-        Plugin.Logger.LogDebug($"Boss_Tauros.Death()");
+        // Plugin.Logger.LogDebug($"Boss_Tauros.Death()");
         if (__instance.taurosEye.gameObject.TryGetComponent(out Item item))
         {
             Game.UpdateItem(item);
@@ -610,7 +603,7 @@ internal class Boss_Worm_Patch
     [HarmonyPrefix]
     public static void Death(Boss_Worm __instance)
     {
-        Plugin.Logger.LogDebug($"Boss_Worm.Death()");
+        // Plugin.Logger.LogDebug($"Boss_Worm.Death()");
         if (__instance.gorgonEye.gameObject.TryGetComponent(out Item item))
         {
             Game.UpdateItem(item);
@@ -661,7 +654,7 @@ internal class Boss_Worm_Patch
     [HarmonyPrefix]
     public static void StartBoss()
     {
-        Plugin.Logger.LogDebug("Boss_Worm.StartBoss()");
+        // Plugin.Logger.LogDebug("Boss_Worm.StartBoss()");
         if (Plugin.State.Valid && Player.Instance.selfTransform.position.x < 6645)
         {
             Player.Instance.selfTransform.position = new(6780, -23710, 0);
@@ -676,7 +669,7 @@ internal class Boss_Maw_Patch
     [HarmonyPrefix]
     public static void Death(Boss_Maw __instance)
     {
-        Plugin.Logger.LogDebug($"Boss_Maw.Death()");
+        // Plugin.Logger.LogDebug($"Boss_Maw.Death()");
         if (__instance.gorgonEye.gameObject.TryGetComponent(out Item item))
         {
             Game.UpdateItem(item);
@@ -699,23 +692,24 @@ internal class GameplayUIManager_Patch
     [HarmonyPrefix]
     public static void OpenEpimetheusShop()
     {
-        Plugin.Logger.LogDebug("GameplayUIManager.OpenEpimetheusShop()");
+        // Plugin.Logger.LogDebug("GameplayUIManager.OpenEpimetheusShop()");
         Game.IsInShop = true;
     }
 
-    [HarmonyPatch(nameof(GameplayUIManager.InitializeEpimetheusShop))]
-    [HarmonyPrefix]
-    public static void InitializeEpimetheusShop()
-    {
-        Plugin.Logger.LogDebug("GameplayUIManager.InitializeEpimetheusShop()");
-    }
+    // [HarmonyPatch(nameof(GameplayUIManager.InitializeEpimetheusShop))]
+    // [HarmonyPrefix]
+    // public static void InitializeEpimetheusShop()
+    // {
+    //     Plugin.Logger.LogDebug("GameplayUIManager.InitializeEpimetheusShop()");
+    // }
 
     [HarmonyPatch(nameof(GameplayUIManager.CloseEpimetheusShop))]
     [HarmonyPrefix]
     public static void CloseEpimetheusShop()
     {
-        Plugin.Logger.LogDebug("GameplayUIManager.CloseEpimetheusShop()");
+        // Plugin.Logger.LogDebug("GameplayUIManager.CloseEpimetheusShop()");
         Game.IsInShop = false;
+        Game.CreateShopHints();
     }
 
     [HarmonyPatch(nameof(GameplayUIManager.ReplaceVariable))]
@@ -775,48 +769,6 @@ internal class GameplayUIManager_Patch
     }
 }
 
-[HarmonyPatch(typeof(Cutscene))]
-internal class Cutscene_PlayCutscene_Patch
-{
-    [HarmonyPatch(nameof(Cutscene.PlayCutscene))]
-    [HarmonyPrefix]
-    public static void PlayCutscene(Cutscene __instance)
-    {
-        Plugin.Logger.LogDebug($"Cutscene.PlayCutscene({__instance.cutsceneID})");
-    }
-}
-
-[HarmonyPatch(typeof(CutsceneManager))]
-internal class CutsceneManager_Patch
-{
-    [HarmonyPatch(
-        nameof(CutsceneManager.PlayCutscene),
-        typeof(string),
-        typeof(Room),
-        typeof(bool),
-        typeof(Vector2)
-    )]
-    [HarmonyPrefix]
-    public static void PlayCutscene1(string ID)
-    {
-        Plugin.Logger.LogDebug($"CutsceneManager.PlayCutscene1({ID})");
-    }
-
-    [HarmonyPatch(
-        nameof(CutsceneManager.PlayCutscene),
-        typeof(string),
-        typeof(Room),
-        typeof(bool),
-        typeof(int),
-        typeof(int)
-    )]
-    [HarmonyPostfix]
-    public static void PlayCutscene2(string ID)
-    {
-        Plugin.Logger.LogDebug($"CutsceneManager.PlayCutscene2({ID})");
-    }
-}
-
 [HarmonyPatch(typeof(CS_Scene3._PlayScene_d__4))]
 internal class CS_Scene3_PlayScene_Patch
 {
@@ -843,7 +795,7 @@ internal class SplashScreen_StartDeveloperSplashScreen_Patch
     [HarmonyPrefix]
     public static bool MoveNext(ref bool __result)
     {
-        Plugin.Logger.LogDebug("SplashScreen._StartDeveloperSplashScreen_d__5.MoveNext()");
+        // Plugin.Logger.LogDebug("SplashScreen._StartDeveloperSplashScreen_d__5.MoveNext()");
 
         if (Settings.SkipIntroScreens)
         {
@@ -862,7 +814,7 @@ internal class SplashScreen_StartPublisherSplashScreen_Patch
     [HarmonyPrefix]
     public static bool MoveNext(ref bool __result)
     {
-        Plugin.Logger.LogDebug("SplashScreen._StartPublisherSplashScreen_d__6.MoveNext()");
+        // Plugin.Logger.LogDebug("SplashScreen._StartPublisherSplashScreen_d__6.MoveNext()");
 
         if (Settings.SkipIntroScreens)
         {
@@ -881,7 +833,7 @@ internal class SeizureWarningScreen_StartScreen_Patch
     [HarmonyPrefix]
     public static bool MoveNext(ref bool __result)
     {
-        Plugin.Logger.LogDebug("SeizureWarningScreen._StartScreen_d__5.MoveNext()");
+        // Plugin.Logger.LogDebug("SeizureWarningScreen._StartScreen_d__5.MoveNext()");
 
         if (Settings.SkipIntroScreens)
         {
@@ -896,13 +848,6 @@ internal class SeizureWarningScreen_StartScreen_Patch
 [HarmonyPatch(typeof(GameLoader))]
 internal class GameLoader_Patch
 {
-    [HarmonyPatch(nameof(GameLoader.LoadGame))]
-    [HarmonyPostfix]
-    public static void LoadGame(int slot)
-    {
-        Plugin.Logger.LogDebug($"GameLoader.LoadGame({slot})");
-    }
-
     [HarmonyPatch(nameof(GameLoader.LoadNewGame))]
     [HarmonyPostfix]
     public static void LoadNewGame(int slot)
@@ -915,23 +860,9 @@ internal class GameLoader_Patch
     [HarmonyPostfix]
     public static void RestartGame()
     {
-        Plugin.Logger.LogDebug($"GameLoader.RestartGame()");
+        // Plugin.Logger.LogDebug($"GameLoader.RestartGame()");
         Game.ExitSave();
         Plugin.ArchipelagoClient.Disconnect();
-    }
-
-    [HarmonyPatch(nameof(GameLoader.PlayIntro))]
-    [HarmonyPostfix]
-    public static void PlayIntro()
-    {
-        Plugin.Logger.LogDebug($"GameLoader.PlayIntro()");
-    }
-
-    [HarmonyPatch(nameof(GameLoader.LoadMainMenu))]
-    [HarmonyPostfix]
-    public static void LoadMainMenu()
-    {
-        Plugin.Logger.LogDebug("GameLoader.LoadMainMenu()");
     }
 }
 
@@ -942,17 +873,10 @@ internal class SaveManager_Patch
     [HarmonyPrefix]
     public static void ApplyCurrentSave(bool showIcon)
     {
-        Plugin.Logger.LogDebug($"SaveManager.ApplyCurrentSave({showIcon})");
+        // Plugin.Logger.LogDebug($"SaveManager.ApplyCurrentSave({showIcon})");
         Game.LoadSave();
         _ = Game.ConnectSave();
         Game.UpdateSaveData();
-    }
-
-    [HarmonyPatch(nameof(SaveManager.InitializeFirstSave))]
-    [HarmonyPostfix]
-    public static void InitializeFirstSave()
-    {
-        Plugin.Logger.LogDebug("SaveManager.InitializeFirstSave()");
     }
 }
 
@@ -963,7 +887,7 @@ internal class Boss_BlackKnightFinal_Patch
     [HarmonyPrefix]
     public static void MedusaDied()
     {
-        Plugin.Logger.LogDebug("Boss_BlackKnightFinal.MedusaDied()");
+        // Plugin.Logger.LogDebug("Boss_BlackKnightFinal.MedusaDied()");
         Plugin.ArchipelagoClient.SendCompletion();
     }
 }
@@ -998,7 +922,7 @@ internal class PlayerPhysics_Patch
     [HarmonyPostfix]
     public static void SetCharacterProperties(PlayerPhysics __instance)
     {
-        Plugin.Logger.LogDebug("PlayerPhysics.SetCharacterProperties()");
+        // Plugin.Logger.LogDebug("PlayerPhysics.SetCharacterProperties()");
         if (Settings.InfiniteJumps)
         {
             __instance.infiniteJump = true;
@@ -1032,7 +956,7 @@ internal class ShopItem_Patch
         ref string _name
     )
     {
-        Plugin.Logger.LogDebug($"ShopItem.InitializeItem({_itemID})");
+        // Plugin.Logger.LogDebug($"ShopItem.InitializeItem({_itemID})");
         if (Game.TryUpdateDeal(_itemID, out var sprite, out var name, out _))
         {
             _sprite = sprite;
@@ -1048,7 +972,7 @@ internal class ShopSubMenu_Patch
     [HarmonyPostfix]
     public static void UpdateDeal(DealProperties _deal, int _dealIndex, ShopSubMenu __instance)
     {
-        Plugin.Logger.LogDebug($"ShopSubMenu.UpdateDeal({_deal.dealID}, {_dealIndex})");
+        // Plugin.Logger.LogDebug($"ShopSubMenu.UpdateDeal({_deal.dealID}, {_dealIndex})");
         if (Game.TryUpdateDeal(_deal.dealID, out _, out var name, out var playerName))
         {
             var description = name;
@@ -1070,7 +994,7 @@ internal class ShopSubMenuItem_Patch
     [HarmonyPostfix]
     public static void SetDealID(ShopSubMenuItem __instance, DealProperties _deal, bool _locked)
     {
-        Plugin.Logger.LogDebug($"ShopSubMenuItem.SetDealID({_deal.dealID})");
+        // Plugin.Logger.LogDebug($"ShopSubMenuItem.SetDealID({_deal.dealID})");
         if (!_locked && Game.TryUpdateDeal(_deal.dealID, out var sprite, out _, out _))
         {
             _ = __instance.icon.SetSprite(sprite);
@@ -1085,7 +1009,7 @@ internal class SavePoint_Patch
     [HarmonyPrefix]
     public static bool ChangeCharacters()
     {
-        Plugin.Logger.LogDebug("SavePoint.ChangeCharacters()");
+        // Plugin.Logger.LogDebug("SavePoint.ChangeCharacters()");
         return Game.CanCycleCharacter();
     }
 
@@ -1093,7 +1017,7 @@ internal class SavePoint_Patch
     [HarmonyPrefix]
     public static void UpdateCharacters(SavePoint __instance)
     {
-        Plugin.Logger.LogDebug("SavePoint.UpdateCharacters()");
+        // Plugin.Logger.LogDebug("SavePoint.UpdateCharacters()");
         Game.UpdateSaveCharacters(__instance);
     }
 
@@ -1118,41 +1042,6 @@ internal class SavePoint_Patch
         {
             Game.CampfireTriggerExited();
         }
-    }
-}
-
-[HarmonyPatch(typeof(Room))]
-internal class Room_Patch
-{
-    [HarmonyPatch(nameof(Room.ActivateInisde))]
-    [HarmonyPostfix]
-    public static void ActivateInisde(Room __instance)
-    {
-        Plugin.Logger.LogDebug(
-            $"Room {__instance.RoomID} '{__instance.name}' (Area {__instance.GetRoomArea()})"
-        );
-
-        // if (__instance.objectSwitches.Count > 0)
-        // {
-        //     List<int> ids = [];
-        //     foreach (var objSwitch in __instance.objectSwitches)
-        //     {
-        //         ids.Add(objSwitch.actorID);
-        //     }
-
-        //     Plugin.Logger.LogDebug($"Switches: {string.Join(", ", ids)}");
-        // }
-
-        // if (__instance.switchableObjects.Count > 0)
-        // {
-        //     List<int> ids = [];
-        //     foreach (var switchObj in __instance.switchableObjects)
-        //     {
-        //         ids.Add(switchObj.actorID);
-        //     }
-
-        //     Plugin.Logger.LogDebug($"Switchable objects: {string.Join(", ", ids)}");
-        // }
     }
 }
 
@@ -1311,7 +1200,7 @@ internal class Room_Bram_Patch
     [HarmonyPrefix]
     public static void ActivatePre()
     {
-        Plugin.Logger.LogDebug("Room_Bram.ActivatePre()");
+        // Plugin.Logger.LogDebug("Room_Bram.ActivatePre()");
         Game.ActivateBramRoom();
     }
 
@@ -1319,7 +1208,7 @@ internal class Room_Bram_Patch
     [HarmonyPostfix]
     public static void ActivatePost()
     {
-        Plugin.Logger.LogDebug("Room_Bram.ActivatePost()");
+        // Plugin.Logger.LogDebug("Room_Bram.ActivatePost()");
         Game.DeactivateBramRoom();
     }
 }
@@ -1342,7 +1231,7 @@ internal class PE_Splash_Patch
     [HarmonyPrefix]
     public static bool TriggerContainerReward(PE_Splash __instance)
     {
-        Plugin.Logger.LogDebug("PE_Splash.TriggerContainerReward()");
+        // Plugin.Logger.LogDebug("PE_Splash.TriggerContainerReward()");
         return Game.SpawnParticle(__instance.particleParent);
     }
 }
