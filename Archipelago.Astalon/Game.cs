@@ -794,7 +794,7 @@ public static class Game
 
         var icon = GetIcon(itemInfo);
         var sound = "pickup";
-        if (itemInfo.Flags.HasFlag(ItemFlags.Advancement))
+        if (itemInfo.Flags.HasFlag(ItemFlags.Advancement | ItemFlags.NeverExclude))
         {
             sound = "secret";
         }
