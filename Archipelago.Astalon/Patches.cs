@@ -504,7 +504,7 @@ internal class Player_Patch
     )
     {
         Plugin.Logger.LogDebug(
-            $"Player.SetCheckpoint({_actor}, {_checkpointID}, {_checkpointRoomID},{_checkpointData}, {_checkpointArea}, {_checkpointType}, {_checkpointPosition})"
+            $"Player.SetCheckpoint({_actor}, {_checkpointID}, {_checkpointRoomID}, {_checkpointData}, {_checkpointArea}, {_checkpointType}, {_checkpointPosition})"
         );
         Game.CampfireVisited(_checkpointID);
     }
@@ -1256,5 +1256,23 @@ internal class VoidPortalPatch
     public static bool Trigger(INT_VoidPortal __instance)
     {
         return Game.TryTriggerVoidPortal(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(EnemyOrbRock))]
+internal class EnemyOrbRockPatch
+{
+    [HarmonyPatch(nameof(EnemyOrbRock.Activate)), HarmonyPrefix]
+    public static void Activate(EnemyOrbRock __instance)
+    {
+        Plugin.Logger.LogDebug($"EnemyOrbRock.Activate({__instance})");
+        __instance.maxHealth = 1;
+        if (__instance.lifeHealth > __instance.maxHealth)
+        {
+            __instance.lifeHealth = __instance.maxHealth;
+        }
+        __instance.fullDamageEvent.damageAmount = 1;
+        __instance.secondDamageEvent.damageAmount = 1;
+        __instance.thirdDamageEvent.damageAmount = 1;
     }
 }
