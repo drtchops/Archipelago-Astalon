@@ -4909,4 +4909,13 @@ public static class Data
         (long)ApLocationId.ShopBramHunter,
         (long)ApLocationId.ShopBramWhiplash,
     ];
+
+    public static Dictionary<string, string> TranslationSubs = new()
+    {
+        { "MENU_GAMEMODE_NAME1", "I. Archipelago" },
+        {
+            "MENU_GAMEMODE_DESCRIPTION1",
+            "1-5 explorers search for the source of burger king. Their search brings them to the mouth of an evil seed. Will the seed hold the checks that they seek?"
+        },
+    };
 }

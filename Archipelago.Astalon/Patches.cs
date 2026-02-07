@@ -937,9 +937,17 @@ internal class LocalizationManager_Patch
     [HarmonyPostfix]
     public static void TryGetTranslation(string Term, ref string Translation, ref bool __result)
     {
+        // Plugin.Logger.LogDebug(
+        //     $"LocalizationManager.TryGetTranslation({Term}, {Translation}, {__result})"
+        // );
         if (Term.StartsWith("ARCHIPELAGO:"))
         {
             Translation = Term[12..];
+            __result = true;
+        }
+        else if (Data.TranslationSubs.TryGetValue(Term, out var found_str))
+        {
+            Translation = found_str;
             __result = true;
         }
     }
@@ -1274,5 +1282,22 @@ internal class EnemyOrbRockPatch
         __instance.fullDamageEvent.damageAmount = 1;
         __instance.secondDamageEvent.damageAmount = 1;
         __instance.thirdDamageEvent.damageAmount = 1;
+    }
+}
+
+[HarmonyPatch(typeof(MainMenuManager))]
+internal class MainMenuManagerPatch
+{
+    [HarmonyPatch(nameof(MainMenuManager.UpdateSaveSlotDetails)), HarmonyPostfix]
+    public static void UpdateSaveSlotDetailsPostfix(MainMenuManager __instance)
+    {
+        var saveFile = GameInitialization.GetSlot(__instance.currentSavesMenuItemIndex);
+        if (
+            !saveFile.newSave
+            && !string.IsNullOrWhiteSpace(saveFile.GetObjectData(Game.SaveObjectId))
+        )
+        {
+            __instance.saveDetailsCharName.text = "AP";
+        }
     }
 }
