@@ -8,6 +8,7 @@ using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
+using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json.Linq;
 
 namespace Archipelago.Astalon.Archipelago;
@@ -25,6 +26,8 @@ public class ArchipelagoClient
 {
     private const string MinArchipelagoVersion = "0.6.0";
     private const string CampfiresDSKey = "campfires";
+    private const string PortalsDSKey = "portals";
+    private const string ElevatorsDSKey = "elevators";
 
     public bool Connected => _session?.Socket.Connected ?? false;
     private bool _attemptingConnection;
@@ -133,6 +136,10 @@ public class ArchipelagoClient
         );
         _attemptingConnection = false;
         _session.DataStorage[Scope.Slot, CampfiresDSKey].Initialize(Array.Empty<int>());
+        _session
+            .DataStorage[Scope.Slot, PortalsDSKey]
+            .Initialize(JObject.FromObject(new Dictionary<int, int>()));
+        _session.DataStorage[Scope.Slot, ElevatorsDSKey].Initialize(Array.Empty<int>());
     }
 
     public void Disconnect()
@@ -444,6 +451,28 @@ public class ArchipelagoClient
         {
             Plugin.Logger.LogError($"Unexpected issue unlocking campfires from server data: {ex}");
         }
+    }
+
+    public void RevealPortal(int sourceId, int destId)
+    {
+        if (!Connected)
+        {
+            return;
+        }
+
+        Dictionary<int, int> newValue = new() { { sourceId, destId } };
+        _session.DataStorage[Scope.Slot, PortalsDSKey] += Operation.Update(newValue);
+    }
+
+    public void SyncElevators()
+    {
+        if (!Connected)
+        {
+            return;
+        }
+
+        _session.DataStorage[Scope.Slot, ElevatorsDSKey] +=
+            Player.PlayerDataLocal.elevatorsFound.ToArray();
     }
 
     public int CountItem(long id)

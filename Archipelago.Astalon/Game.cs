@@ -1555,6 +1555,7 @@ public static class Game
                 var (roomId, _) = Data.VoidPortalsByName[pair[1]];
                 var toRoom = GameManager.GetRoomFromID(roomId);
                 _ = portal.StartCoroutine(portal.Trigger_Routine(toRoom));
+                Plugin.ArchipelagoClient.RevealPortal(portal.Room.RoomID, roomId);
                 return false;
             }
         }

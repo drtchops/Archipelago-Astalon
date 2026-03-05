@@ -413,6 +413,16 @@ internal class PlayerData_Patch
         return true;
     }
 
+    [HarmonyPatch(nameof(PlayerData.ElevatorFound))]
+    [HarmonyPostfix]
+    public static void ElevatorFoundPostfix()
+    {
+        if (Plugin.State.Valid && !Plugin.State.SlotData.RandomizeElevator)
+        {
+            Plugin.ArchipelagoClient.SyncElevators();
+        }
+    }
+
     [HarmonyPatch(nameof(PlayerData.InitCheckpoint)), HarmonyPrefix]
     public static bool InitCheckpoint()
     {
