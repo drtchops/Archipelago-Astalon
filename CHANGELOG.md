@@ -5,17 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.28.0] - 2026-??-??
+## [1.0.0] - 2026-??-??
 
 - Added starting location option
-- Added skull puzzles to switch rando
 - Added option to randomize orb multipliers
 - Added option to shuffle void portals
+- Added skull puzzles to switch rando
 - Added toggle for tag link
-- Add option to autohint shop items
+- Add option to auto-hint shop items
 - Walking into a locked door with key rando on will now tell you the name of the item you need to open it
-- Removed old Astalon Tracker, you can use Universal Tracker directly now
 - Added custom `/explain` command to UT integration
+- Removed old Astalon Tracker, you can use Universal Tracker directly now
+
+## [0.27.1] - 2026-03-11
+
+- Fix logic issue with RoA centaur region
+- APWorld only fix, mod version is still v0.27.0
 
 ## [0.27.0] - 2025-12-18
 
