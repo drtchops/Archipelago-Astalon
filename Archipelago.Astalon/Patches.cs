@@ -295,13 +295,16 @@ internal class PlayerData_Patch
 
         switch (keyType)
         {
-            case Key.KeyType.White when !Plugin.State.SlotData.RandomizeWhiteKeys:
+            case Key.KeyType.White
+                when !Plugin.State.Valid || !Plugin.State.SlotData.RandomizeWhiteKeys:
                 Player.PlayerDataLocal.whiteKeys += 1;
                 break;
-            case Key.KeyType.Blue when !Plugin.State.SlotData.RandomizeBlueKeys:
+            case Key.KeyType.Blue
+                when !Plugin.State.Valid || !Plugin.State.SlotData.RandomizeBlueKeys:
                 Player.PlayerDataLocal.blueKeys += 1;
                 break;
-            case Key.KeyType.Red when !Plugin.State.SlotData.RandomizeRedKeys:
+            case Key.KeyType.Red
+                when !Plugin.State.Valid || !Plugin.State.SlotData.RandomizeRedKeys:
                 Player.PlayerDataLocal.redKeys += 1;
                 break;
         }
