@@ -3703,6 +3703,7 @@ public static class Data
         { ApItemId.ElevatorTr, 2705 },
     };
 
+    // TODO: update these in case datapackage fails
     public static readonly Dictionary<ApItemId, string> ItemNames = new()
     {
         { ApItemId.CharacterArias, "Arias" },

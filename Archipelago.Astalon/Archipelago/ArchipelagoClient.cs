@@ -230,13 +230,13 @@ public class ArchipelagoClient
                 {
                     var itemName = entry.Value.ItemDisplayName;
                     var isAstalon = entry.Value.ItemGame == Game.Name;
-                    if (
-                        isAstalon
-                        && Data.ItemNames.TryGetValue((ApItemId)entry.Value.ItemId, out var name)
-                    )
-                    {
-                        itemName = name;
-                    }
+                    // if (
+                    //     isAstalon
+                    //     && Data.ItemNames.TryGetValue((ApItemId)entry.Value.ItemId, out var name)
+                    // )
+                    // {
+                    //     itemName = name;
+                    // }
 
                     var player = entry.Value.Player;
                     var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
@@ -286,10 +286,10 @@ public class ArchipelagoClient
         var index = helper.Index - 1;
         var item = helper.DequeueItem();
         var itemName = item.ItemName;
-        if (Data.ItemNames.TryGetValue((ApItemId)item.ItemId, out var name))
-        {
-            itemName = name;
-        }
+        // if (Data.ItemNames.TryGetValue((ApItemId)item.ItemId, out var name))
+        // {
+        //     itemName = name;
+        // }
         itemName ??= item.ItemDisplayName;
 
         Plugin.Logger.LogInfo($"Received item #{index}: {item.ItemId} - {itemName}");

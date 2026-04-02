@@ -1908,6 +1908,7 @@ public static class Game
             return true;
         }
 
+        ApItemId? itemId = null;
         if (
             door.keyType == Key.KeyType.White
             && Plugin.State.SlotData.RandomizeWhiteKeys
@@ -1917,8 +1918,7 @@ public static class Game
             )
         )
         {
-            DisplayRequiredMessage(door, Data.ItemNames[whiteKeyId]);
-            return false;
+            itemId = whiteKeyId;
         }
         if (
             door.keyType == Key.KeyType.Blue
@@ -1926,8 +1926,7 @@ public static class Game
             && Data.BlueDoorToItem.TryGetValue((door.Room.roomID, door.actorID), out var blueKeyId)
         )
         {
-            DisplayRequiredMessage(door, Data.ItemNames[blueKeyId]);
-            return false;
+            itemId = blueKeyId;
         }
         if (
             door.keyType == Key.KeyType.Red
@@ -1935,7 +1934,13 @@ public static class Game
             && Data.RedDoorToItem.TryGetValue((door.Room.roomID, door.actorID), out var redKeyId)
         )
         {
-            DisplayRequiredMessage(door, Data.ItemNames[redKeyId]);
+            itemId = redKeyId;
+        }
+
+        if (itemId != null)
+        {
+            // TODO: get from datapackage instead
+            DisplayRequiredMessage(door, Data.ItemNames[(ApItemId)itemId]);
             return false;
         }
 
