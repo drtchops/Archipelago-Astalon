@@ -446,6 +446,21 @@ internal class PlayerData_Patch
         // Plugin.Logger.LogDebug("PlayerData.ClearStatuses() Postfix");
         Game.ClearStatuses();
     }
+
+    [HarmonyPatch(nameof(PlayerData.ElevatorCount)), HarmonyPrefix]
+    public static bool ElevatorCountPrefix(ref int __result)
+    {
+        if (
+            Plugin.State.Valid
+            && Plugin.State.SlotData.StartingLocation != StartingLocation.GorgonTomb
+            && Plugin.State.ReceivedElevators.Count == 1
+        )
+        {
+            __result = 2;
+            return false;
+        }
+        return true;
+    }
 }
 
 [HarmonyPatch(typeof(Player))]
@@ -1205,12 +1220,28 @@ internal class Elevator_Patch
 
     [HarmonyPatch(nameof(Elevator.TriggerElevatorMenu))]
     [HarmonyPrefix]
-    public static void TriggerElevatorMenu(Elevator __instance)
+    public static bool TriggerElevatorMenu(Elevator __instance)
     {
         Plugin.Logger.LogDebug(
             $"Elevator.TriggerElevatorMenu({__instance.actorID}, {__instance.room?.roomID})"
         );
         Game.ElevatorUnlocked(__instance.room?.roomID ?? -1);
+
+        if (
+            !__instance.elevatorTriggered
+            && !GameplayUIManager.Instance.FullMapOpen
+            && !GameplayUIManager.Instance.InGameMenuOpen
+            && Player.PlayerDataLocal.ElevatorCount() > 1
+            && Player.Instance.GetController().isEnabled
+            && (InputListener.DPadUp || InputListener.VerticalMenu > 0f)
+        )
+        {
+            __instance.DeactivateElevatorPrompt();
+            GameplayUIManager.OpenElevatorMenu(__instance);
+            return false;
+        }
+
+        return true;
     }
 }
 

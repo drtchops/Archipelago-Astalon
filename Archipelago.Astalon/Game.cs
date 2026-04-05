@@ -1939,7 +1939,6 @@ public static class Game
 
         if (itemId != null)
         {
-            // TODO: get from datapackage instead
             DisplayRequiredMessage(door, Data.ItemNames[(ApItemId)itemId]);
             return false;
         }
@@ -2427,7 +2426,8 @@ public static class Game
 
         if (destination == "Entrance")
         {
-            return Player.PlayerDataLocal.currentRoomID != 5;
+            return Player.PlayerDataLocal.currentRoomID != 5
+                && Plugin.State.SlotData.StartingLocation == StartingLocation.GorgonTomb;
         }
 
         if (Data.Checkpoints.TryGetValue(destination, out var checkpoint))
