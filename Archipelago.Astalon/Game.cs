@@ -1041,10 +1041,9 @@ public static class Game
         }
 
         if (
-            (
-                roomId != ((int)ElevatorId.Apex)
-                || Plugin.State.SlotData.ApexElevator == ApexElevator.Included
-            ) && Data.ElevatorToLocation.TryGetValue(roomId, out var location)
+            (roomId != ((int)ElevatorId.Gt1) || Plugin.State.SlotData.StartingLocation != StartingLocation.GorgonTomb)
+            && (roomId != ((int)ElevatorId.Apex) || Plugin.State.SlotData.ApexElevator == ApexElevator.Included)
+            && Data.ElevatorToLocation.TryGetValue(roomId, out var location)
         )
         {
             SendLocation(location);
@@ -1527,10 +1526,9 @@ public static class Game
         }
 
         if (
-            (
-                roomId != ((int)ElevatorId.Apex)
-                || Plugin.State.SlotData.ApexElevator == ApexElevator.Included
-            ) && Data.ElevatorToLocation.ContainsKey(roomId)
+            (roomId != ((int)ElevatorId.Gt1) || Plugin.State.SlotData.StartingLocation != StartingLocation.GorgonTomb)
+            && (roomId != ((int)ElevatorId.Apex) || Plugin.State.SlotData.ApexElevator == ApexElevator.Included)
+            && Data.ElevatorToLocation.ContainsKey(roomId)
         )
         {
             result = Plugin.State.CheckedElevators.Contains(roomId);

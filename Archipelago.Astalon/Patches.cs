@@ -450,11 +450,7 @@ internal class PlayerData_Patch
     [HarmonyPatch(nameof(PlayerData.ElevatorCount)), HarmonyPrefix]
     public static bool ElevatorCountPrefix(ref int __result)
     {
-        if (
-            Plugin.State.Valid
-            && Plugin.State.SlotData.StartingLocation != StartingLocation.GorgonTomb
-            && Plugin.State.ReceivedElevators.Count == 1
-        )
+        if (Plugin.State.Valid && Plugin.State.ReceivedElevators.Count == 1)
         {
             __result = 2;
             return false;
@@ -1231,7 +1227,7 @@ internal class Elevator_Patch
             !__instance.elevatorTriggered
             && !GameplayUIManager.Instance.FullMapOpen
             && !GameplayUIManager.Instance.InGameMenuOpen
-            && Player.PlayerDataLocal.ElevatorCount() > 1
+            && Player.PlayerDataLocal.elevatorsFound.Count >= 1
             && Player.Instance.GetController().isEnabled
             && (InputListener.DPadUp || InputListener.VerticalMenu > 0f)
         )
