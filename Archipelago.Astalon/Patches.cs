@@ -1142,7 +1142,7 @@ internal class SwitchableObject_Patch
         if (
             isRandomized
             && (
-                location == ApLocationId.MechSkullPuzzle || location == ApLocationId.HotpSkullPuzzle
+                location == ApLocationId.MechSkullPuzzle || location == ApLocationId.HopSkullPuzzle
             )
             && !Game.ReceivingItem
         )

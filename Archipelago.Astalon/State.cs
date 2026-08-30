@@ -29,7 +29,7 @@ public enum StartingLocation
 {
     GorgonTomb = 0,
     Mechanism = 1,
-    HallOfThePhantoms = 2,
+    HallOfPhantoms = 2,
     RuinsOfAsh = 3,
     Apex = 4,
     Catacombs = 5,

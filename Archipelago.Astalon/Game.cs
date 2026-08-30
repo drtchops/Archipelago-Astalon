@@ -1170,7 +1170,7 @@ public static class Game
         {
             StartingLocation.GorgonTomb => Data.Checkpoints["Entrance"],
             StartingLocation.Mechanism => Data.Checkpoints["Mechanism Start"],
-            StartingLocation.HallOfThePhantoms => Data.Checkpoints["HotP Bell"],
+            StartingLocation.HallOfPhantoms => Data.Checkpoints["HoP Bell"],
             StartingLocation.RuinsOfAsh => Data.Checkpoints["RoA Start"],
             StartingLocation.Apex => Data.Checkpoints["The Apex"],
             StartingLocation.Catacombs => Data.Checkpoints["Catacombs Bow"],

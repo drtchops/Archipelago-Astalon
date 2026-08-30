@@ -144,7 +144,7 @@ public static class Debug
         { "Mechanism Start", "Mechanism Sword", "Mechanism Bottom", null },
         { "Mechanism Shortcut", "Mechanism Right", "Mechanism Top", "Mechanism Boss" },
         { "CD 1", "CD 2", "CD 3", "CD 4" },
-        { "HotP Epimetheus", "HotP Bell", "HotP Claw", "HotP Boss" },
+        { "HoP Epimetheus", "HoP Bell", "HoP Claw", "HoP Boss" },
         { "Cathedral 1", "Cathedral 2", null, null },
         { "RoA Start", "RoA Left", "RoA Middle", null },
         { "RoA Elevator", "RoA Boss", null, null },
