@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.0.0] - 2026-04-01
+## [1.0.0] - 2026-09-01
 
 - Added starting location option
 - Added option to randomize orb multipliers
@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Rename all switch items to better describe what they unlock
 - Walking into a locked door with key rando on will now tell you the name of the item you need to open it
 - Added custom `/explain` command to UT integration
+- Redid all the tracker maps and added a dedicated shop map
 - Removed old Astalon Tracker, you can use Universal Tracker directly now
 
 ## [0.27.1] - 2026-03-11
