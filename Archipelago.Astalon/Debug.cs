@@ -341,13 +341,11 @@ public static class Debug
         style.alignment = TextAnchor.MiddleLeft;
 
         var room = GameManager.GetRoomFromID(Player.PlayerDataLocal.currentRoomID);
-        GUI.Box(new(0, 0, 300, 200), $@"
-            Room: {room.roomID}
-            Area: {room.GetRoomArea()}
-            Character: {Player.Instance.characterProperty.characterID}
-            Player Coords: ({Player.Instance.transform.position.x}, {Player.Instance.transform.position.y})
-            Room Coords: ({room.roomInitialPosition.x}, {room.roomInitialPosition.y})
-        ", style);
+        GUI.Box(new(0, 0, 300, 200), $@"Room: {room.roomID}
+Area: {room.GetRoomArea()}
+Character: {Player.Instance.characterProperty.characterID}
+Player Coords: ({Math.Round(Player.Instance.transform.position.x)}, {Math.Round(Player.Instance.transform.position.y)})
+Room Coords: ({room.roomInitialPosition.x}, {room.roomInitialPosition.y})", style);
 
         GUI.EndGroup();
     }
