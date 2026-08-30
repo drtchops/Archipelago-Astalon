@@ -412,6 +412,16 @@ public class ArchipelagoClient
             $"{_session.ConnectionInfo.Slot}_{_session.ConnectionInfo.Team}_astalon_coords"
         ] = JObject.FromObject(coords);
 
+        StoreArea(area);
+    }
+
+    public void StoreArea(int area)
+    {
+        if (!Connected)
+        {
+            return;
+        }
+
         if (area is not 0 and not 22)
         {
             _session.DataStorage[

@@ -1265,6 +1265,8 @@ public static class Game
         {
             PlayerData.ResetCandles();
         }
+
+        Plugin.ArchipelagoClient.StoreArea(-1);
     }
 
     public static void HandleTag(int character)
@@ -1636,6 +1638,19 @@ public static class Game
         var area = room.GetRoomArea();
         switch (room.roomID)
         {
+            case 2775:
+            case 2776:
+            case 2777:
+            case 2778:
+            case 2779:
+            case 5529:
+            case 5530:
+            case 6033:
+            case 9568:
+            case 9609:
+            case 9613:
+                area = 69;
+                break;
             case 2704:
             case 2705:
                 area = 19;
