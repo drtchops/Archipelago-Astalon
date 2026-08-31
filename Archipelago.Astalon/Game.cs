@@ -566,6 +566,11 @@ public static class Game
             UpdateObjectData(9114, 985, "talkZeek", "True");
         }
 
+        if (Plugin.State.SlotData.StartingLocation == StartingLocation.CyclopsDen)
+        {
+            UpdateObjectData(8811, 3728, "wasOpened", "True");
+        }
+
         if (
             Plugin.State.SlotData.CostMultiplier != 100
             && GameManager
