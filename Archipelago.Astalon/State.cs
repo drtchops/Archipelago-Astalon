@@ -34,6 +34,9 @@ public enum StartingLocation
     Apex = 4,
     Catacombs = 5,
     TowerRoots = 6,
+    CyclopsDen = 7,
+    Cathedral = 8,
+    SerpentPath = 9,
 }
 
 public enum ApexElevator

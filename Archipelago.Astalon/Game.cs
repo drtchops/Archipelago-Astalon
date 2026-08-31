@@ -1175,6 +1175,9 @@ public static class Game
             StartingLocation.Apex => Data.Checkpoints["The Apex"],
             StartingLocation.Catacombs => Data.Checkpoints["Catacombs Bow"],
             StartingLocation.TowerRoots => Data.Checkpoints["Tower Roots"],
+            StartingLocation.CyclopsDen => Data.Checkpoints["CD 1"],
+            StartingLocation.Cathedral => Data.Checkpoints["Cathedral 1"],
+            StartingLocation.SerpentPath => Data.Checkpoints["SP 1"],
             _ => Data.Checkpoints["Entrance"],
         };
     }
