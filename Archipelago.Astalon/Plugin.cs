@@ -196,13 +196,13 @@ public class Il2CppBase : MonoBehaviour
         DontDestroyOnLoad(addComponent.gameObject);
     }
 
-    private void Start()
+    public void Start()
     {
         ArchipelagoConsole.Awake();
     }
 
     // adapted from https://github.com/alwaysintreble/BepInEx5ArchipelagoPluginTemplate
-    private void OnGUI()
+    public void OnGUI()
     {
         ArchipelagoConsole.OnGUI();
         Debug.OnGUI();

@@ -1153,6 +1153,23 @@ internal class SwitchableObject_Patch
     }
 }
 
+[HarmonyPatch(typeof(SwitchableGate))]
+internal class SwitchableGatePatch
+{
+    [HarmonyPatch(nameof(SwitchableGate.LateActivate)), HarmonyPrefix]
+    public static void LateActivatePrefix(SwitchableGate __instance)
+    {
+        Plugin.Logger.LogDebug($"SwitchableGate.LateActivatePrefix({__instance.actorID})");
+        Game.GateActivate(__instance);
+    }
+
+    [HarmonyPatch(nameof(SwitchableGate.LateActivate)), HarmonyPostfix]
+    public static void LateActivatePostfix(SwitchableGate __instance)
+    {
+        Game.GateDeactivate(__instance);
+    }
+}
+
 [HarmonyPatch(typeof(SwitchableGate._FlashRenderer_d__10))]
 internal class SwitchableGate_FlashRenderer_d__10_Patch
 {

@@ -1633,6 +1633,27 @@ public static class Game
         }
     }
 
+    public static void GateActivate(SwitchableGate gate)
+    {
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeSwitches || (gate.actorID != 2872 && gate.actorID != 1343))
+        {
+            return;
+        }
+
+        var locationId = gate.actorID == 2872 ? ApLocationId.HopSkullPuzzle : ApLocationId.MechSkullPuzzle;
+        gate.objectOn = !IsLocationChecked(locationId);
+    }
+
+    public static void GateDeactivate(SwitchableGate gate)
+    {
+        if (!Plugin.State.Valid || !Plugin.State.SlotData.RandomizeSwitches || (gate.actorID != 2872 && gate.actorID != 1343))
+        {
+            return;
+        }
+
+        gate.objectOn = GetObjectValue(gate.actorID, "objectOn") == "True";
+    }
+
     public static int GetRoomArea(Room room)
     {
         var area = room.GetRoomArea();
