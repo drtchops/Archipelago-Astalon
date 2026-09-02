@@ -983,7 +983,7 @@ public static class Data
         { ApItemId.ShopUpgradeBramAxe, "Deal_Bram_GoldenAxe" },
         { ApItemId.ShopUpgradeBramHunter, "Deal_Bram_MonsterHunter" },
         { ApItemId.ShopUpgradeBramWhiplash, "Deal_Bram_Whiplash" },
-        { ApItemId.Heal5, "Candle_1_Lit_1_01" },
+        { ApItemId.Heal5, "ap_icon_candle" },
     };
 
     public static readonly Dictionary<int, ApLocationId> AttackMap = new()
@@ -4678,7 +4678,7 @@ public static class Data
         ],
         [
             (
-                "{char}Bram{/char}:\nFood $200, Data $150, Rend $800, Candles $3,600, Utility $150.",
+                "{char}Bram{/char}:\nFood $200, Data $150, Rent $800, Candles $3,600, Utility $150.",
                 GameplayUIManager.DBPosition.TopLeft
             ),
             (

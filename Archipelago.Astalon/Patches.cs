@@ -9,23 +9,30 @@ using UnityEngine;
 namespace Archipelago.Astalon;
 
 [HarmonyPatch(typeof(Collectable))]
-internal class Collectable_Patch
+internal class CollectablePatch
 {
-    [HarmonyPatch(nameof(Collectable.Activate))]
-    [HarmonyPostfix]
-    public static void Activate(Collectable __instance)
+    [HarmonyPatch(nameof(Collectable.Activate)), HarmonyPostfix]
+    public static void ActivatePostfix(Collectable __instance)
     {
         Plugin.Logger.LogDebug($"Collectable.Activate({__instance.actorID})");
         Game.UpdateEntity(__instance.gameObject, __instance.actorID);
     }
+
+    [HarmonyPatch(nameof(Collectable.Collect)), HarmonyPrefix]
+    public static void CollectPrefix(Collectable __instance)
+    {
+        if (__instance.gameObject.TryGetComponent<SpriteRenderer>(out var sprite))
+        {
+            sprite.enabled = false;
+        }
+    }
 }
 
 [HarmonyPatch(typeof(Item))]
-internal class Item_Patch
+internal class ItemPatch
 {
-    [HarmonyPatch(nameof(Item.Collect))]
-    [HarmonyPrefix]
-    public static void Collect(Item __instance)
+    [HarmonyPatch(nameof(Item.Collect)), HarmonyPrefix]
+    public static bool CollectPrefix(Item __instance)
     {
         Plugin.Logger.LogDebug($"Item.Collect({__instance}, {__instance.actorID})");
         if (Game.TryGetItemLocation(__instance.itemProperties.itemID, out _))
@@ -33,12 +40,41 @@ internal class Item_Patch
             __instance.useItemBox = false;
             __instance.collectedSound = null;
             __instance.collectedText = null;
+
+            if (__instance.interacted)
+            {
+                return false;
+            }
+            __instance.interacted = true;
+            if (__instance.gameObject.TryGetComponent<SpriteRenderer>(out var sprite))
+            {
+                sprite.enabled = false;
+            }
+            for (var i = 0; i < __instance.selfColliders.Length; i++)
+            {
+                __instance.selfColliders[i].enabled = false;
+            }
+            __instance.wasPickedUp = true;
+            __instance.ResetData();
+            __instance.SaveState();
+            if (__instance.itemProperties != null)
+            {
+                Player.PlayerDataLocal.CollectItem(__instance.itemProperties);
+                if (__instance.itemProperties.itemTogglable)
+                {
+                    Player.PlayerDataLocal.EnableItem(__instance.itemProperties.itemID);
+                }
+            }
+            __instance.e_collected?.Invoke();
+            __instance.e_pickedUp?.Invoke();
+
+            return false;
         }
+        return true;
     }
 
-    [HarmonyPatch(nameof(Item.Activate))]
-    [HarmonyPostfix]
-    public static void Activate(Item __instance)
+    [HarmonyPatch(nameof(Item.Activate)), HarmonyPostfix]
+    public static void ActivatePostfix(Item __instance)
     {
         // Plugin.Logger.LogDebug($"Item.Activate({__instance}, {__instance.actorID})");
         Game.UpdateItem(__instance);
@@ -176,11 +212,10 @@ internal class ItemGorgonHeart_Patch
 }
 
 [HarmonyPatch(typeof(Key))]
-internal class Key_Patch
+internal class KeyPatch
 {
-    [HarmonyPatch(nameof(Key.Collect))]
-    [HarmonyPrefix]
-    public static void Collect(Key __instance)
+    [HarmonyPatch(nameof(Key.Collect)), HarmonyPrefix]
+    public static void CollectPrefix(Key __instance)
     {
         Plugin.Logger.LogDebug(
             $"Key.Collect({__instance}, {__instance.actorID}, {__instance.room.roomID})"
@@ -190,16 +225,19 @@ internal class Key_Patch
             __instance.useItemBox = false;
             __instance.collectedSound = null;
             __instance.collectedText = null;
+            if (__instance.gameObject.TryGetComponent<SpriteRenderer>(out var sprite))
+            {
+                sprite.enabled = false;
+            }
         }
     }
 }
 
 [HarmonyPatch(typeof(KeyPickable))]
-internal class KeyPickable_Collect_Patch
+internal class KeyPickablePatch
 {
-    [HarmonyPatch(nameof(KeyPickable.Collect))]
-    [HarmonyPrefix]
-    public static void Collect(KeyPickable __instance)
+    [HarmonyPatch(nameof(KeyPickable.Collect)), HarmonyPrefix]
+    public static void CollectPrefix(KeyPickable __instance)
     {
         Plugin.Logger.LogDebug(
             $"KeyPickable.Collect({__instance}, {__instance.actorID}, {__instance.room?.roomID}, {__instance.keyType}, {__instance.poolName})"
@@ -209,6 +247,23 @@ internal class KeyPickable_Collect_Patch
             __instance.useItemBox = false;
             __instance.collectedSound = null;
             __instance.collectedText = null;
+            if (__instance.gameObject.TryGetComponent<SpriteRenderer>(out var sprite))
+            {
+                sprite.enabled = false;
+            }
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Actor))]
+internal class ActorPatch
+{
+    [HarmonyPatch(nameof(Actor.Deactivate)), HarmonyPrefix]
+    public static void DeactivatePrefix(Actor __instance)
+    {
+        if (__instance.gameObject.TryGetComponent<SpriteRenderer>(out var sprite))
+        {
+            sprite.enabled = false;
         }
     }
 }

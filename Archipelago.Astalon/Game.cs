@@ -46,7 +46,7 @@ public static class Game
     public static string MoveDirection { get; set; }
     public static int RoomWarp { get; set; }
 
-    private static readonly string DataDir = Path.GetFullPath("BepInEx/data/Archipelago");
+    private static readonly string DataDir = Path.GetFullPath("BepInEx/data/Archipelago.Astalon");
     private static bool _saveNew;
     private static bool _saveLoaded;
     private static bool _saveValid;
@@ -60,116 +60,80 @@ public static class Game
     private static int _tagCounter = -1;
     private static string _queuedDeath;
 
-#if DEBUG
-    private static tk2dBaseSprite _baseSprite;
-    private static tk2dSpriteCollectionData _spriteCollectionData;
-    private static tk2dSpriteAnimationClip _spriteAnimationClip;
+    #region Visuals
 
-    // private static bool _injectedSprite;
-    // private static int _injectedSpriteId;
-    private static bool _injectedAnimation;
+    private static readonly Dictionary<string, Sprite> _itemSprites = [];
+    private static readonly Queue<(GameObject, string)> _iconsToProcess = new();
+    private static GameObject _itemIcon2;
 
-    #region AnimationExperiments
-
-    public static void Awake()
+    public static Sprite MakeIconSprite(string name)
     {
-        var apTexture = LoadImageAsTexture("ap-item.png");
-        var gameObject = tk2dSprite.CreateFromTexture(
-            apTexture,
-            tk2dSpriteCollectionSize.ForTk2dCamera(),
-            new(0, 0, apTexture.width, apTexture.height),
-            new(0.5f, 0.5f)
-        );
-        _baseSprite = gameObject.GetComponent<tk2dSprite>();
-        _baseSprite.collection.spriteDefinitions[0].name = "AP_ITEM";
-
-        _spriteCollectionData = tk2dSpriteCollectionData.CreateFromTexture(
-            LoadImageAsTexture("multi-images.png"),
-            tk2dSpriteCollectionSize.ForTk2dCamera(),
-            new(["AP_ITEM", "AP_ITEM_BRIGHT"]),
-            new([new(0, 0, 16, 16), new(16, 0, 16, 16)]),
-            new([new(8, 8), new(8, 8)])
-        );
-
-        _spriteAnimationClip = new()
+        if (_itemSprites.TryGetValue(name, out var sprite))
         {
-            fps = 6,
-            loopStart = 0,
-            name = "AP_ITEM",
-            wrapMode = tk2dSpriteAnimationClip.WrapMode.Loop,
-            frames = new([
-                new()
-                {
-                    eventFloat = 0,
-                    eventInfo = null,
-                    eventInt = 0,
-                    spriteCollection = _spriteCollectionData,
-                    spriteId = 0,
-                    triggerEvent = false,
-                },
-                new()
-                {
-                    eventFloat = 0,
-                    eventInfo = null,
-                    eventInt = 0,
-                    spriteCollection = _spriteCollectionData,
-                    spriteId = 1,
-                    triggerEvent = false,
-                },
-            ]),
-        };
-    }
-
-    public static Texture2D LoadImageAsTexture(string filename)
-    {
-        var path = $"{DataDir}/{filename}";
-        var bytes = File.ReadAllBytes(path);
-        Texture2D texture = new(1, 1, TextureFormat.RGBA32, false);
-        _ = texture.LoadImage(bytes, markNonReadable: true);
-        texture.filterMode = FilterMode.Bilinear;
-        return texture;
-    }
-
-    public static void UpdateSprite(tk2dBaseSprite sprite)
-    {
-        // if (!_injectedSprite)
-        // {
-        //     Plugin.Logger.LogDebug("Injecting");
-        //     var newDefinitions = sprite.collection.spriteDefinitions.ToList();
-        //     newDefinitions.Add(sprite.collection.spriteDefinitions[0]);
-        //     sprite.collection.spriteDefinitions = newDefinitions.ToArray();
-        //     _injectedSprite = true;
-        //     _injectedSpriteId = sprite.collection.spriteDefinitions.Count - 1;
-        // }
-
-        var sr = sprite.GetComponent<SpriteRenderer>();
-        Plugin.Logger.LogDebug($"has sr: {sr != null}");
-        Plugin.Logger.LogDebug(sr?.sprite);
-
-        // sprite.SetSprite(_injectedSpriteId);
-        // sprite.SetSprite(_baseSprite.Collection, 1);
-        _ = tk2dSprite.AddComponent(sprite.gameObject, _baseSprite.Collection, 0);
-    }
-
-    public static void UpdateAnimation(tk2dSpriteAnimator animator)
-    {
-        if (!_injectedAnimation)
-        {
-            List<tk2dSpriteAnimationClip> newClips = [.. animator.library.clips];
-            newClips.Add(_spriteAnimationClip);
-            animator.library.clips = newClips.ToArray();
-            _injectedAnimation = true;
+            return sprite;
         }
 
-        var clipId = animator.GetClipIdByName("AP_ITEM");
-        animator.defaultClipId = clipId;
-        animator.Play("AP_ITEM");
+        var path = $"{DataDir}/{name}.png";
+        var bytes = File.ReadAllBytes(path);
+        Texture2D texture = new(16, 16, TextureFormat.RGBA32, false);
+        _ = texture.LoadImage(bytes, markNonReadable: true);
+        texture.name = name;
+        texture.filterMode = FilterMode.Point;
+
+        sprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), new(0.5f, 0.5f), 1f);
+        sprite.name = name;
+        _itemSprites[name] = sprite;
+        return sprite;
     }
 
-    #endregion
-#endif
+    public static void UpdateSprite(GameObject gameObject, string iconName)
+    {
+        var spriteObject = gameObject.transform.Find("SpriteHolder/Sprite");
+        if (spriteObject != null)
+        {
+            gameObject = spriteObject.gameObject;
+        }
 
-    #region Visuals
+        var sr = gameObject.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.sprite = MakeIconSprite(iconName);
+            if (gameObject.TryGetComponent<Actor>(out var actor))
+            {
+                sr.enabled = actor.isActive;
+            }
+            return;
+        }
+
+        var destroying = false;
+        if (gameObject.TryGetComponent<MeshRenderer>(out var mr))
+        {
+            UnityEngine.Object.Destroy(mr);
+            destroying = true;
+        }
+        if (gameObject.TryGetComponent<MeshFilter>(out var mf))
+        {
+            UnityEngine.Object.Destroy(mf);
+            destroying = true;
+        }
+
+        if (destroying)
+        {
+            _iconsToProcess.Enqueue((gameObject, iconName));
+            return;
+        }
+
+        sr = gameObject.AddComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.sprite = MakeIconSprite(iconName);
+            if (gameObject.TryGetComponent<Actor>(out var actor))
+            {
+                sr.enabled = actor.isActive;
+            }
+        }
+    }
+
 
     public static void UpdateItem(Item item)
     {
@@ -289,16 +253,15 @@ public static class Game
             }
         }
 
-        var sprite = gameObject.GetComponent<tk2dBaseSprite>();
-        _ = (sprite?.SetSprite(icon));
-        // if (icon == "AP_ITEM" && sprite != null)
-        // {
-        //     UpdateSprite(sprite);
-        // }
-        // else
-        // {
-        //     sprite?.SetSprite(icon);
-        // }
+        if (icon.StartsWith("ap_icon"))
+        {
+            UpdateSprite(gameObject, icon);
+        }
+        else
+        {
+            var sprite = gameObject.GetComponent<tk2dBaseSprite>();
+            _ = (sprite?.SetSprite(icon));
+        }
     }
 
     #endregion
@@ -713,16 +676,20 @@ public static class Game
 
     public static string GetDefaultIcon(ItemFlags flags = ItemFlags.None)
     {
-        return flags.HasFlag(ItemFlags.Advancement) || flags.HasFlag(ItemFlags.Trap)
-            ? "BlueOrb_1"
-            : "Orb_Idle_1";
+        return flags.HasFlag(ItemFlags.Advancement | ItemFlags.NeverExclude) || flags.HasFlag(ItemFlags.Trap)
+            ? "ap_icon_gold"
+            : flags.HasFlag(ItemFlags.Advancement)
+            ? "ap_icon_default"
+            : flags.HasFlag(ItemFlags.NeverExclude)
+            ? "ap_icon_blue"
+            : "ap_icon_grey";
     }
 
     public static string GetIcon(ApItemInfo itemInfo)
     {
         if (itemInfo == null)
         {
-            return "Orb_Idle_1";
+            return "ap_icon_grey";
         }
 
         if (!itemInfo.IsAstalon)
@@ -743,17 +710,17 @@ public static class Game
             : itemName.StartsWith("BlueDoor") ? "BlueKey_1"
             : itemName.StartsWith("RedDoor") ? "RedKey_1"
             : itemName.StartsWith("Orbs") ? "SoulOrb_Big"
-            : itemName.StartsWith("Elevator") ? "ElevatorMenu_Icon_OldMan"
+            : itemName.StartsWith("Elevator") ? "ap_icon_elevator"
             : itemName.StartsWith("Switch")
             || itemName.StartsWith("Crystal")
             || itemName.StartsWith("Face")
-                ? "Frog"
+                ? "ap_icon_switch"
             : GetDefaultIcon(itemInfo.Flags);
     }
 
     public static string GetClip(string icon)
     {
-        return icon.StartsWith("Deal_") || icon.StartsWith("ElevatorMenu_")
+        return icon.StartsWith("ap_icon") || icon.StartsWith("Deal_") || icon.StartsWith("ElevatorMenu_")
             ? null
             : icon switch
             {
@@ -761,12 +728,7 @@ public static class Game
                 "BlueKey_1" => "BlueKey",
                 "RedKey_1" => "RedKey",
                 "RedOrb_1" => "DeathOrb",
-                "BlueOrb_1" => "TrapOrb",
                 "SoulOrb_Big" => "Orb_Big_UI",
-                "Orb_Idle_1" => "SecretsOrb_Idle",
-                "Candle_1_Lit_1_01" => "Candle1_Lit",
-                "Frog" => null,
-                "AP_ITEM" => null,
                 _ => icon,
             };
     }
@@ -824,8 +786,43 @@ public static class Game
         }
 
         var itemBox = FormatItemBox(itemInfo);
+        if (itemBox.Icon.StartsWith("ap_icon"))
+        {
+            if (_itemIcon2 == null)
+            {
+                var itemBoxContainer = GameplayUIManager.Instance.itemBox.transform;
+                var oldIcon = GameplayUIManager.Instance.itemBoxIcon.transform;
+                var oldRenderer = oldIcon.GetComponent<Renderer>();
+
+                _itemIcon2 = new("ItemIcon2");
+                var sr = _itemIcon2.AddComponent<SpriteRenderer>();
+                sr.sortingGroupID = oldRenderer.sortingGroupID;
+                sr.sortingGroupOrder = oldRenderer.sortingGroupOrder;
+                sr.sortingLayerID = oldRenderer.sortingLayerID;
+                sr.sortingLayerName = oldRenderer.sortingLayerName;
+                sr.sortingOrder = oldRenderer.sortingOrder;
+
+                _itemIcon2.transform.SetParent(itemBoxContainer);
+                _itemIcon2.transform.SetPositionAndRotation(oldIcon.position, oldIcon.rotation);
+                _itemIcon2.transform.localPosition = oldIcon.localPosition;
+                itemBoxContainer.FindChild("ItemBoxBackgroundObject").SetAsLastSibling();
+            }
+
+            _itemIcon2.active = true;
+            _itemIcon2.GetComponent<SpriteRenderer>().sprite = MakeIconSprite(itemBox.Icon);
+            GameplayUIManager.Instance.itemBoxIcon.gameObject.active = false;
+        }
+        else
+        {
+            if (_itemIcon2 != null)
+            {
+                _itemIcon2.active = false;
+            }
+            GameplayUIManager.Instance.itemBoxIcon.gameObject.active = true;
+        }
+
         GameplayUIManager.Instance.DisplayItemBox(
-            itemBox.Icon,
+            itemBox.Icon.StartsWith("ap_icon") ? "Orb_Idle_1" : itemBox.Icon,
             itemBox.Message,
             itemBox.Duration,
             itemBox.DisableController
@@ -2442,6 +2439,13 @@ public static class Game
         {
             StartRocksTrap();
             QueuedRocks--;
+        }
+
+        var iconCount = 0;
+        while (iconCount < 10 && _iconsToProcess.TryDequeue(out var icon))
+        {
+            UpdateSprite(icon.Item1, icon.Item2);
+            iconCount++;
         }
     }
 

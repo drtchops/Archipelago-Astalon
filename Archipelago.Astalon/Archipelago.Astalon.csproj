@@ -23,34 +23,29 @@
   <Target Name="CopyMod" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <OutputFiles Include="$(TargetPath)" />
-      <OutputFiles
-        Include="$(TargetDir)/$(TargetName).pdb"
-        Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "
-      />
+      <OutputFiles Include="$(TargetDir)/$(TargetName).pdb" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
       <OutputFiles Include="$(TargetDir)/Archipelago.MultiClient.Net.dll" />
       <OutputFiles Include="$(TargetDir)/Newtonsoft.Json.dll" />
     </ItemGroup>
+    <ItemGroup>
+      <AssetFiles Include="$(ProjectDir)assets/*.png" />
+    </ItemGroup>
+
     <RemoveDir Directories="$(ExportDir)/" />
     <MakeDir Directories="$(ExportDir)/" />
     <MakeDir Directories="$(ExportDir)/zip/BepInEx/plugins/$(TargetName)/" />
-    <MakeDir
-      Condition="!Exists('$(AstalonRefs)/plugins/$(TargetName)/')"
-      Directories="$(AstalonRefs)/plugins/$(TargetName)/"
-    />
-    <Copy
-      SourceFiles="@(OutputFiles)"
-      DestinationFolder="$(AstalonRefs)/plugins/$(TargetName)/"
-    ></Copy>
+    <MakeDir Directories="$(ExportDir)/zip/BepInEx/data/$(TargetName)/" />
+    <MakeDir Condition="!Exists('$(AstalonRefs)/plugins/$(TargetName)/')" Directories="$(AstalonRefs)/plugins/$(TargetName)/" />
+    <MakeDir Condition="!Exists('$(AstalonRefs)/data/$(TargetName)/')" Directories="$(AstalonRefs)/data/$(TargetName)/" />
+
+    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(AstalonRefs)/plugins/$(TargetName)/" />
+    <Copy SourceFiles="@(AssetFiles)" DestinationFolder="$(AstalonRefs)/data/$(TargetName)/" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ExportDir)/" />
     <Copy SourceFiles="$(SolutionDir)/README.md" DestinationFolder="$(ExportDir)/zip/" />
-    <Copy
-      SourceFiles="@(OutputFiles)"
-      DestinationFolder="$(ExportDir)/zip/BepInEx/plugins/$(TargetName)/"
-    />
-    <ZipDirectory
-      SourceDirectory="$(ExportDir)/zip/"
-      DestinationFile="$(ExportDir)/$(TargetName)-v$(Version).zip"
-    />
+    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(ExportDir)/zip/BepInEx/plugins/$(TargetName)/" />
+    <Copy SourceFiles="@(AssetFiles)" DestinationFolder="$(ExportDir)/zip/BepInEx/data/$(TargetName)/" />
+
+    <ZipDirectory SourceDirectory="$(ExportDir)/zip/" DestinationFile="$(ExportDir)/$(TargetName)-v$(Version).zip" />
     <RemoveDir Directories="$(ExportDir)/zip/" />
     <GetFileHash Files="$(ExportDir)/$(TargetName)-v$(Version).zip" Algorithm="SHA256">
       <Output TaskParameter="Items" ItemName="FilesWithHashes" />
