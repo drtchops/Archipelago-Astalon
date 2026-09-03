@@ -5,14 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.0.0] - 2026-09-01
+## [1.0.0] - 2026-09-??
 
 - Added starting location option
 - Added option to randomize orb multipliers
 - Added option to shuffle void portals
 - Added skull puzzles to switch rando
 - Added toggle for tag link
-- Add option to auto-hint shop items
+- Items now show up as custom AP logos instead of unrelated icons
+- Added option to auto-hint shop items
+- Added trap weights option and a fun new trap
 - Rename all switch items to better describe what they unlock
 - Walking into a locked door with key rando on will now tell you the name of the item you need to open it
 - Added custom `/explain` command to UT integration
