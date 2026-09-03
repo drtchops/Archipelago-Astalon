@@ -795,6 +795,7 @@ public enum ApItemId
     SwitchMechSkullPuzzle,
     SwitchHopSkullPuzzle,
     OrbMulti,
+    TrapMaiden,
 }
 
 public enum ElevatorId

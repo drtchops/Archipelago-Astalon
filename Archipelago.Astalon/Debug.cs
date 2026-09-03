@@ -328,6 +328,10 @@ public static class Debug
         {
             Game.QueuedRocks++;
         }
+        if (GUI.Button(new(950, 640, 150, 20), "Maiden"))
+        {
+            Game.QueuedMaidens++;
+        }
 
         if (Player.PlayerDataLocal == null)
         {

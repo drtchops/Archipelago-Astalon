@@ -1115,6 +1115,15 @@ internal class SavePoint_Patch
             Game.CampfireTriggerExited();
         }
     }
+
+    [HarmonyPatch(nameof(SavePoint.SaveGame)), HarmonyPrefix]
+    public static void SaveGame(SavePoint __instance)
+    {
+        if (__instance.playerInRange && __instance.canSave && !SaveManager.CurrentSave.demoMode && !GameplayUIManager.Instance.InGameMenuOpen && !GameplayUIManager.Instance.FullMapOpen)
+        {
+            Game.CampfireUsed();
+        }
+    }
 }
 
 [HarmonyPatch(typeof(ObjectSwitch))]

@@ -34,6 +34,7 @@ public static class Game
     public static bool IsInShop { get; set; }
     public static int QueuedCutscenes { get; set; }
     public static int QueuedRocks { get; set; }
+    public static int QueuedMaidens { get; set; }
     public static int TaggedKong { get; set; } = -1;
 
     public static bool UnlockElevators { get; set; }
@@ -59,6 +60,7 @@ public static class Game
     private static bool _cutscenePlaying;
     private static int _tagCounter = -1;
     private static string _queuedDeath;
+    private static Transform _deadMaiden;
 
     #region Visuals
 
@@ -1030,6 +1032,9 @@ public static class Game
                 case ApItemId.TrapRocks:
                     QueuedRocks++;
                     break;
+                case ApItemId.TrapMaiden:
+                    QueuedMaidens++;
+                    break;
                 case ApItemId.OrbMulti:
                     if (Player.PlayerDataLocal.SoulMultiplier < 8)
                     {
@@ -1159,6 +1164,14 @@ public static class Game
             {
                 Plugin.State.VisitedCampfires.Add(id);
             }
+        }
+    }
+
+    public static void CampfireUsed()
+    {
+        if (_deadMaiden != null && _deadMaiden.gameObject.activeInHierarchy)
+        {
+            _deadMaiden.GetComponent<EnemyMiniboss_DeadMaiden>().Kill(new(0, 0), null);
         }
     }
 
@@ -2462,6 +2475,12 @@ public static class Game
             QueuedRocks--;
         }
 
+        if (QueuedMaidens > 0 && CanSpawnMaiden())
+        {
+            StartMaidenTrap();
+            QueuedMaidens--;
+        }
+
         var iconCount = 0;
         while (iconCount < 10 && _iconsToProcess.TryDequeue(out var icon))
         {
@@ -2740,5 +2759,36 @@ public static class Game
         Player.Instance.Room.isRocks = true;
         Room.previousRoomWasRocks = false;
         Player.Instance.Room.ActivatePostTransitionRoomOptions();
+    }
+
+    public static bool CanSpawnMaiden()
+    {
+        return IsGameStateNormal()
+            && (_deadMaiden == null || !_deadMaiden.gameObject.activeInHierarchy)
+            && Player.Instance.Room != null
+            && !Player.Instance.Room.savePoint
+            && Player.Instance.Room.roomType != "elevator"
+            && Player.Instance.Room.roomType != "boss"
+            && Player.Instance.Room.roomID != 5
+            && Player.Instance.Room.roomID != 4112;
+    }
+
+    public static void StartMaidenTrap()
+    {
+        if (!CanSpawnMaiden())
+        {
+            return;
+        }
+
+        _deadMaiden = PoolManager.Pools["Enemies"].Spawn("MonsterDeadMaiden");
+        _deadMaiden.SetParent(GameManager.Instance.gameWorldTransform);
+        _deadMaiden.position = new Vector2(Player.Instance.transform.position.x - 100, Player.Instance.transform.position.y + 80);
+        var component = _deadMaiden.GetComponent<EnemyMiniboss_DeadMaiden>();
+        component.Initialize(null);
+        component.Activate();
+        component.LateActivate();
+        component.CurrentHealth = component.GetMaxHealth();
+        AudioManager.FadeMusicToPrimary(0.01f);
+        AudioManager.PlayMusic("Solaria");
     }
 }
