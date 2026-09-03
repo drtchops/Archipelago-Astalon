@@ -816,17 +816,18 @@ internal class GameplayUIManager_Patch
             $"GameplayUIManager.OpenConfirmPurchaseMenu({_confirmPurchaseDeal.dealID})"
         );
         if (
-            Game.TryUpdateDeal(_confirmPurchaseDeal.dealID, out _, out var name, out var playerName)
+            Game.TryUpdateDeal(_confirmPurchaseDeal.dealID, out _, out var name, out var playerName, out var originalLocation)
         )
         {
-            // TODO: make text box wider
             var title = name;
             if (playerName != null)
             {
-                title = $"{playerName}'s {name}";
+                title = $"{playerName}'s {name} ({originalLocation})";
             }
 
             __instance.confirmPurchaseDealTitle.text = title;
+            __instance.confirmPurchaseDealTitle.wordWrapWidth = 280;
+            __instance.confirmPurchaseMenu.transform.FindChild("ConfirmPurchaseMenu").GetComponent<tk2dSlicedSprite>().dimensions = new(300, 100);
         }
     }
 
@@ -1038,13 +1039,14 @@ internal class ShopItem_Patch
     [HarmonyPatch(nameof(ShopItem.InitializeItem))]
     [HarmonyPrefix]
     public static void InitializeItem(
+        ShopItem __instance,
         DealProperties.DealID _itemID,
         ref string _sprite,
         ref string _name
     )
     {
         // Plugin.Logger.LogDebug($"ShopItem.InitializeItem({_itemID})");
-        if (Game.TryUpdateDeal(_itemID, out var sprite, out var name, out _))
+        if (Game.TryUpdateDeal(_itemID, out var sprite, out var name, out _, out _, __instance.itemIcon.transform))
         {
             _sprite = sprite;
             _name = "ARCHIPELAGO:" + name;
@@ -1060,31 +1062,14 @@ internal class ShopSubMenu_Patch
     public static void UpdateDeal(DealProperties _deal, int _dealIndex, ShopSubMenu __instance)
     {
         // Plugin.Logger.LogDebug($"ShopSubMenu.UpdateDeal({_deal.dealID}, {_dealIndex})");
-        if (Game.TryUpdateDeal(_deal.dealID, out _, out var name, out var playerName))
+        if (Game.TryUpdateDeal(_deal.dealID, out _, out var name, out var playerName, out _, __instance.dealItems[_dealIndex].transform.GetChild(0)))
         {
             var description = name;
             if (playerName != null)
             {
                 description = $"{playerName}'s {name}";
             }
-
-            __instance.dealTitle.text = name;
             __instance.dealDescription.text = description;
-        }
-    }
-}
-
-[HarmonyPatch(typeof(ShopSubMenuItem))]
-internal class ShopSubMenuItem_Patch
-{
-    [HarmonyPatch(nameof(ShopSubMenuItem.SetDealID))]
-    [HarmonyPostfix]
-    public static void SetDealID(ShopSubMenuItem __instance, DealProperties _deal, bool _locked)
-    {
-        // Plugin.Logger.LogDebug($"ShopSubMenuItem.SetDealID({_deal.dealID})");
-        if (!_locked && Game.TryUpdateDeal(_deal.dealID, out var sprite, out _, out _))
-        {
-            _ = __instance.icon.SetSprite(sprite);
         }
     }
 }

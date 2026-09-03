@@ -984,6 +984,7 @@ public static class Data
         { ApItemId.ShopUpgradeBramHunter, "Deal_Bram_MonsterHunter" },
         { ApItemId.ShopUpgradeBramWhiplash, "Deal_Bram_Whiplash" },
         { ApItemId.Heal5, "ap_icon_candle" },
+        { ApItemId.OrbMulti, "Icon_SoulMultiplier2" },
     };
 
     public static readonly Dictionary<int, ApLocationId> AttackMap = new()
@@ -4916,6 +4917,34 @@ public static class Data
         (long)ApLocationId.ShopBramHunter,
         (long)ApLocationId.ShopBramWhiplash,
     ];
+
+    public static readonly Dictionary<ApLocationId, string> ShopNames = new()
+    {
+        { ApLocationId.ShopGift, "Gift" },
+        { ApLocationId.ShopKnowledge, "Knowledge" },
+        { ApLocationId.ShopMercy, "Mercy" },
+        { ApLocationId.ShopOrbSeeker, "Orb Seeker" },
+        { ApLocationId.ShopMapReveal, "Map Reveal" },
+        { ApLocationId.ShopCartographer, "Cartographer" },
+        { ApLocationId.ShopDeathOrb, "Death Orb" },
+        { ApLocationId.ShopDeathPoint, "Death Point" },
+        { ApLocationId.ShopTitansEgo, "Titan's Ego" },
+        { ApLocationId.ShopAlgusArcanist, "Arcanist" },
+        { ApLocationId.ShopAlgusShock, "Shock Field" },
+        { ApLocationId.ShopAlgusMeteor, "Meteor Rain" },
+        { ApLocationId.ShopAriasGorgonslayer, "Gorgonslayer" },
+        { ApLocationId.ShopAriasLastStand, "Last Stand" },
+        { ApLocationId.ShopAriasLionheart, "Lionheart" },
+        { ApLocationId.ShopKyuliAssassin, "Assassin Strike" },
+        { ApLocationId.ShopKyuliBullseye, "Bullseye" },
+        { ApLocationId.ShopKyuliRay, "Shining Ray" },
+        { ApLocationId.ShopZeekJunkyard, "Junkyard Hunt" },
+        { ApLocationId.ShopZeekOrbs, "Orb Monger" },
+        { ApLocationId.ShopZeekLoot, "Bigger Loot" },
+        { ApLocationId.ShopBramAxe, "Golden Axe" },
+        { ApLocationId.ShopBramHunter, "Monster Hunter" },
+        { ApLocationId.ShopBramWhiplash, "Whiplash" },
+    };
 
     public static Dictionary<string, string> TranslationSubs = new()
     {

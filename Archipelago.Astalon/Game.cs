@@ -64,7 +64,6 @@ public static class Game
 
     private static readonly Dictionary<string, Sprite> _itemSprites = [];
     private static readonly Queue<(GameObject, string)> _iconsToProcess = new();
-    private static GameObject _itemIcon2;
 
     public static Sprite MakeIconSprite(string name)
     {
@@ -84,6 +83,34 @@ public static class Game
         sprite.name = name;
         _itemSprites[name] = sprite;
         return sprite;
+    }
+
+    public static GameObject CreateIconObject(Transform source)
+    {
+        var sourceRenderer = source.GetComponent<Renderer>();
+        Plugin.Logger.LogDebug($"{source.name} {source.parent?.name}");
+
+        GameObject icon = new($"{source.name}-Sprite");
+        var sr = icon.AddComponent<SpriteRenderer>();
+        if (sr is null)
+        {
+            Plugin.Logger.LogDebug("sr is null oh no");
+        }
+        if (sourceRenderer is null)
+        {
+            Plugin.Logger.LogDebug("sourceRenderer is null oh no");
+        }
+        sr.sortingGroupID = sourceRenderer.sortingGroupID;
+        sr.sortingGroupOrder = sourceRenderer.sortingGroupOrder;
+        sr.sortingLayerID = sourceRenderer.sortingLayerID;
+        sr.sortingLayerName = sourceRenderer.sortingLayerName;
+        sr.sortingOrder = sourceRenderer.sortingOrder;
+
+        icon.transform.SetParent(source.parent);
+        icon.transform.SetPositionAndRotation(source.position, source.rotation);
+        icon.transform.localPosition = source.localPosition;
+
+        return icon;
     }
 
     public static void UpdateSprite(GameObject gameObject, string iconName)
@@ -262,6 +289,23 @@ public static class Game
             var sprite = gameObject.GetComponent<tk2dBaseSprite>();
             _ = (sprite?.SetSprite(icon));
         }
+    }
+
+    public static string UpdateIcon(Transform icon, string sprite)
+    {
+        var spriteIcon = icon.parent.FindChild($"{icon.name}-Sprite") ?? CreateIconObject(icon).transform;
+
+        if (sprite.StartsWith("ap_icon"))
+        {
+            spriteIcon.gameObject.active = true;
+            spriteIcon.GetComponent<SpriteRenderer>().sprite = MakeIconSprite(sprite);
+            icon.gameObject.active = false;
+            return "Orb_Idle_1";
+        }
+
+        spriteIcon.gameObject.active = false;
+        icon.gameObject.active = true;
+        return sprite;
     }
 
     #endregion
@@ -729,6 +773,7 @@ public static class Game
                 "RedKey_1" => "RedKey",
                 "RedOrb_1" => "DeathOrb",
                 "SoulOrb_Big" => "Orb_Big_UI",
+                "Icon_SoulMultiplier2" => null,
                 _ => icon,
             };
     }
@@ -786,43 +831,10 @@ public static class Game
         }
 
         var itemBox = FormatItemBox(itemInfo);
-        if (itemBox.Icon.StartsWith("ap_icon"))
-        {
-            if (_itemIcon2 == null)
-            {
-                var itemBoxContainer = GameplayUIManager.Instance.itemBox.transform;
-                var oldIcon = GameplayUIManager.Instance.itemBoxIcon.transform;
-                var oldRenderer = oldIcon.GetComponent<Renderer>();
-
-                _itemIcon2 = new("ItemIcon2");
-                var sr = _itemIcon2.AddComponent<SpriteRenderer>();
-                sr.sortingGroupID = oldRenderer.sortingGroupID;
-                sr.sortingGroupOrder = oldRenderer.sortingGroupOrder;
-                sr.sortingLayerID = oldRenderer.sortingLayerID;
-                sr.sortingLayerName = oldRenderer.sortingLayerName;
-                sr.sortingOrder = oldRenderer.sortingOrder;
-
-                _itemIcon2.transform.SetParent(itemBoxContainer);
-                _itemIcon2.transform.SetPositionAndRotation(oldIcon.position, oldIcon.rotation);
-                _itemIcon2.transform.localPosition = oldIcon.localPosition;
-                itemBoxContainer.FindChild("ItemBoxBackgroundObject").SetAsLastSibling();
-            }
-
-            _itemIcon2.active = true;
-            _itemIcon2.GetComponent<SpriteRenderer>().sprite = MakeIconSprite(itemBox.Icon);
-            GameplayUIManager.Instance.itemBoxIcon.gameObject.active = false;
-        }
-        else
-        {
-            if (_itemIcon2 != null)
-            {
-                _itemIcon2.active = false;
-            }
-            GameplayUIManager.Instance.itemBoxIcon.gameObject.active = true;
-        }
+        var baseSprite = UpdateIcon(GameplayUIManager.Instance.itemBoxIcon.transform, itemBox.Icon);
 
         GameplayUIManager.Instance.DisplayItemBox(
-            itemBox.Icon.StartsWith("ap_icon") ? "Orb_Idle_1" : itemBox.Icon,
+            baseSprite,
             itemBox.Message,
             itemBox.Duration,
             itemBox.DisableController
@@ -1394,12 +1406,15 @@ public static class Game
         DealProperties.DealID dealId,
         out string sprite,
         out string name,
-        out string playerName
+        out string playerName,
+        out string originalLocation,
+        Transform iconSource = null
     )
     {
         sprite = null;
         name = null;
         playerName = null;
+        originalLocation = null;
 
         if (!Plugin.State.Valid)
         {
@@ -1414,11 +1429,17 @@ public static class Game
         {
             name = shopItem.Name;
             playerName = shopItem.IsLocal ? null : shopItem.PlayerName;
+            originalLocation = Data.ShopNames[location];
             sprite = GetIcon(shopItem);
 
             if (dealId is DealProperties.DealID.Deal_DeathOrb or DealProperties.DealID.Deal_Gift)
             {
                 name = $"*{name}";
+            }
+
+            if (iconSource != null)
+            {
+                sprite = UpdateIcon(iconSource, sprite);
             }
 
             return true;
