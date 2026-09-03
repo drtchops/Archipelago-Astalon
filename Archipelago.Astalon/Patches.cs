@@ -1394,7 +1394,17 @@ internal class MainMenuManagerPatch
             && !string.IsNullOrWhiteSpace(saveFile.GetObjectData(Game.SaveObjectId))
         )
         {
-            __instance.saveDetailsCharName.text = "AP";
+            __instance.saveDetailsCharName.text = "AP!";
+            _ = Game.UpdateIcon(__instance.saveDetailsPortrait.transform, "ap_icon_default");
+        }
+        else
+        {
+            __instance.saveDetailsPortrait.gameObject.active = true;
+            var newIcon = __instance.saveDetailsPortrait.transform.parent.FindChild($"{__instance.saveDetailsPortrait.transform.name}-Sprite");
+            if (newIcon != null)
+            {
+                newIcon.gameObject.active = false;
+            }
         }
     }
 }
